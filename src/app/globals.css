@@ -1,0 +1,106 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, monospace;
+
+  --color-navy-950: #0a1428;
+  --color-navy-900: #0f1d3a;
+  --color-navy-800: #162a50;
+  --color-navy-700: #1f3765;
+  --color-navy-600: #2c4a80;
+  --color-navy-500: #47649b;
+  --color-navy-200: #c5d0e3;
+  --color-navy-100: #e5eaf3;
+  --color-navy-50: #f2f5fa;
+
+  --color-paper: #f7f5f0;
+  --color-surface: #ffffff;
+  --color-line: #e3dfd6;
+  --color-line-strong: #cfc9bc;
+  --color-ink: #131b2b;
+  --color-muted: #5a6476;
+  --color-faint: #8a92a1;
+
+  --color-teal-700: #0b5f5c;
+  --color-teal-600: #0e7c77;
+  --color-teal-100: #d3ece9;
+  --color-teal-50: #ecf6f5;
+  --color-gold-700: #8a6a1f;
+  --color-gold-600: #a8822b;
+  --color-gold-100: #f1e6c9;
+  --color-gold-50: #faf5e8;
+
+  --color-risk-700: #a1251b;
+  --color-risk-50: #fbeeec;
+  --color-warn-700: #9a5a06;
+  --color-warn-50: #fdf3e2;
+  --color-ok-700: #17663f;
+  --color-ok-50: #eaf5ee;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.45;
+  font-feature-settings: "tnum" 1, "cv11" 1;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* dense data tables */
+.dt {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+.dt th {
+  position: sticky;
+  top: 0;
+  background: var(--color-navy-50);
+  color: var(--color-navy-700);
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  text-align: left;
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-line);
+  white-space: nowrap;
+}
+.dt td {
+  padding: 6px 10px;
+  border-bottom: 1px solid var(--color-line);
+  vertical-align: top;
+}
+.dt tbody tr:hover td {
+  background: #fbfaf7;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-teal-600);
+  outline-offset: 1px;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: white;
+    font-size: 11px;
+  }
+  .print-full {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: none !important;
+  }
+}

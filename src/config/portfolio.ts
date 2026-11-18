@@ -1,0 +1,92 @@
+import type { PortfolioDataset } from "@/lib/shared/types";
+
+// Portfolio dataset v1. ONLY companies named as portfolio in the case materials.
+// The case states the portfolio is not given, so this dataset is explicitly unverified (M-01).
+export const PORTFOLIO_V1: PortfolioDataset = {
+  version: "portfolio-v1",
+  createdAt: "2026-11-18T00:00:00.000Z",
+  verified: false,
+  note: "Built from the 6 invested deal memos and partner meeting notes (MeetRecord). The full fund portfolio was not supplied; this list is known to be incomplete.",
+  companies: [
+    {
+      id: "pf-eplane",
+      name: "The ePlane Company",
+      sector: "Deeptech (aerial mobility)",
+      description: "eVTOL aircraft and UAVs for short-range intracity travel.",
+      categoryTerms: ["evtol", "aircraft", "uav", "drone", "aerial", "aviation", "air mobility", "flying"],
+      customerTerms: ["commuters", "air taxi", "cargo"],
+      channelTerms: [],
+      source: "Deal Memo 1 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-unbox",
+      name: "Unbox Robotics",
+      sector: "Deeptech (warehouse robotics)",
+      description: "AI-assisted robotic package-sorting systems for warehouses and fulfilment centres.",
+      categoryTerms: ["robotics", "robot", "sorting", "warehouse automation", "fulfilment", "fulfillment"],
+      customerTerms: ["warehouse", "logistics companies", "e-commerce", "fulfilment centres"],
+      channelTerms: ["enterprise procurement"],
+      source: "Deal Memo 3 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-wint",
+      name: "Wint Wealth",
+      sector: "Fintech (bonds / fixed income)",
+      description: "Platform making bond-market products accessible to retail investors.",
+      categoryTerms: ["bonds", "bond", "fixed income", "fixed-income", "debt products", "wealth", "investing platform"],
+      customerTerms: ["retail investors"],
+      channelTerms: [],
+      source: "Deal Memo 5 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-giva",
+      name: "Giva",
+      sector: "Consumer brand (jewellery, D2C)",
+      description: "Online-first fine silver jewellery brand expanding into gold and lab-grown diamonds.",
+      categoryTerms: ["jewellery", "jewelry", "silver", "gold", "diamond", "lab-grown"],
+      customerTerms: ["gifting"],
+      channelTerms: ["marketplaces", "d2c"],
+      source: "Deal Memo 7 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-superk",
+      name: "SuperK",
+      sector: "Consumer tech (small-town retail)",
+      description: "Tech-enabled grocery retail network for small towns; rebrands neighbourhood stores and supplies them.",
+      categoryTerms: ["small-town retail", "grocery retail", "kirana", "neighbourhood stores", "store network", "franchise", "restocking", "small-town"],
+      customerTerms: ["store owners", "shopkeepers", "kirana", "small towns", "andhra pradesh", "neighbourhood stores"],
+      channelTerms: ["distributors", "field agents"],
+      source: "Deal Memo 9 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-jaikisan",
+      name: "Jai Kisan",
+      sector: "Fintech (rural / agri credit)",
+      description: "Financing for farmers and rural households for income-generating purchases.",
+      categoryTerms: ["rural credit", "agri credit", "farmer", "lending", "loans", "financing", "credit"],
+      customerTerms: ["farmers", "rural households", "rural", "small towns"],
+      channelTerms: ["channel partners", "nbfc"],
+      source: "Deal Memo 11 (invested)",
+      verified: false,
+    },
+    {
+      id: "pf-meetrecord",
+      name: "MeetRecord",
+      sector: "B2B software (meeting notes / call summaries)",
+      description: "Named in Meeting 4 as an existing portfolio company in meeting notes and call summaries. No further detail supplied.",
+      categoryTerms: ["call summaries", "call summary", "meeting notes", "call recording", "transcription", "transcribe", "conversation intelligence", "note-takers", "sales calls"],
+      customerTerms: ["sales teams", "sales reps", "inside sales"],
+      channelTerms: ["crm"],
+      source: "Partner Meeting Notes, Meeting 4",
+      verified: false,
+    },
+  ],
+};
+
+export const INCOMPLETE_PORTFOLIO_WARNING =
+  "Portfolio overlap check incomplete — portfolio dataset not fully verified.";

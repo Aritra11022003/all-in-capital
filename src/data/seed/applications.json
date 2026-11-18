@@ -1,0 +1,656 @@
+[
+ {
+  "key": "StockSathi",
+  "files": [
+   {
+    "filename": "StockSathi_Deck.pdf",
+    "size": 101040,
+    "sha256": "6fb980454ae2d453248cd3ed7f6a48541f484b3da21dbdfff10153edf205742d",
+    "pages": [
+     {
+      "index": 1,
+      "text": "StockSathi\nRestocking and credit for India's small-town kirana stores\nPre-seed deck | Raising INR 2 Cr | Hyderabad"
+     },
+     {
+      "index": 2,
+      "text": "Kirana owners restock the hard way\nStockSathi 2\n3 trips a week\nOwners travel to the nearest\nwholesale market, losing half\na day each time.\nNo credit\nBanks do not lend against\nstock. Informal suppliers\ncharge 3 to 4% a month.\nNo price view\nPrices vary by distributor and\nby day. Owners rarely know if\nthey overpay.\nBased on 60 owner interviews in Karimnagar and Warangal, June to July 2026."
+     },
+     {
+      "index": 3,
+      "text": "Why now\nStockSathi 3\nUPI everywhere\nAlmost every store takes UPI.\nThat gives a payment trail we\ncan use to judge credit.\nQuick commerce\nQuick-commerce apps are\npulling customers from small\nstores. Owners now need\nbetter prices and stock.\nPhones and voice\nCheap smartphones and\nlocal-language voice input let\nowners order without typing."
+     },
+     {
+      "index": 4,
+      "text": "Order, get delivered, pay later\nStockSathi 4\n1\nOrder\nOwner picks items in a simple\nvernacular app\n2\nDeliver\nNext-morning delivery from\npartner distributors\n3\nPay later\n7 to 14 days credit on repeat\norders"
+     },
+     {
+      "index": 5,
+      "text": "Traction: 38 retailers, 4 months in\nStockSathi 5\n38\nretailers onboarded\n22 of 38\nhave ordered more than once\nINR 3.8 L\nGMV in October"
+     },
+     {
+      "index": 6,
+      "text": "Market size: how we got there\nStockSathi 6\nTAM INR 17 lakh Cr 12M kirana stores x INR 1.2 L monthly purchases x 12\nSAM INR 64,800 Cr ~450K stores in Tier 3 to 5 towns of Telangana and AP x INR\n1.2 L x 12\nSOM INR 518 Cr In 3 years: 2% of SAM stores (9,000) x 40% of their purchases\n(INR 48K a month) x 12\nAssumptions: INR 1.2 L monthly purchases per store from our 60 owner interviews. Store counts are our estimates."
+     },
+     {
+      "index": 7,
+      "text": "Go-to-market and acquisition cost\nStockSathi 7\nField agents\n24 of 38 stores\nNeighbour\nreferrals\n9 of 38 stores\nDistributor\nintros\n5 of 38 stores\nINR 2,860\nblended CAC, October\nINR 520\nmonthly margin per active store\n~5.5 months\npayback on trade margin alone\nCAC = INR 40,000 field cost / 14 stores\nonboarded in October. Small sample,\none town.\nNext: test agent-free onboarding via\ndistributor reps to bring CAC down."
+     },
+     {
+      "index": 8,
+      "text": "We earn on every order, and on credit\nStockSathi 8\nTrade margin\nAbout 4% margin from distributors on every\norder delivered.\nCredit fee\n1.5% fee on credit orders. Pilot with 12 retailers,\nfunded from our own capital for now.\nCredit is about a third of October GMV. NBFC partnership in discussion."
+     },
+     {
+      "index": 9,
+      "text": "How we are different\nStockSathi 9\nStockSathi B2B marketplaces Wholesale markets\nSmall-town focus Yes Mostly metro Yes\nVernacular app Yes Partial No\nCredit on orders Pilot Limited Informal\nNext-day delivery Yes Yes No"
+     },
+     {
+      "index": 10,
+      "text": "The team\nStockSathi 10\nAarav Deshmukh, CEO\n8 years in FMCG distribution and field\noperations. Ran a regional sales team at a large\ndistributor.\nPooja Nair, CTO\n5 years as a software engineer at a payments\ncompany. Built the ordering app and credit rules.\nBoth full-time since April 2026. Two field agents on the team."
+     },
+     {
+      "index": 11,
+      "text": "The ask: INR 2 Cr for 300 stores\nStockSathi 11\n40%\nCredit book\n35%\nTeam and tech\n25%\nExpansion to 2 new towns\nIn 12 months: 300 live stores, INR 40 L monthly GMV, CAC under INR 2,000."
+     }
+    ]
+   },
+   {
+    "filename": "StockSathi_Form Response.pdf",
+    "size": 77691,
+    "sha256": "69dd73eed837a36cef7150befeb4f31fbfadfd43c81c347b21f6b848724b59aa",
+    "pages": [
+     {
+      "index": 1,
+      "text": "MESA MBA C4 | TERM 2 | CASE 3 | INBOUND APPLICATION 1 OF 10\nAll In Capital — Application Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote\nthem. Pair with the applicant's deck (Application_01_StockSathi_Deck.pptx).\nCompany\nCompany name StockSathi (StockSathi Technologies Pvt. Ltd.)\nWebsite www.stocksathi.example\nLocation Hyderabad, Telangana\nIncorporated March 2026\nOne-line description B2B restocking app with short-term credit for small-town kirana stores.\nSector (as selected) Consumer tech\nStage (as selected) Pre-seed\nTeam size 4 (2 founders, 2 field agents)\nFounders\nFounder 1 Aarav Deshmukh, CEO\nLinkedIn: linkedin.com/in/aarav-deshmukh-example\nBackground: FMCG distribution and field operations, 8 years. Ran a regional\nsales team at a large distributor.\nFounder 2 Pooja Nair, CTO\nLinkedIn: linkedin.com/in/pooja-nair-example\nBackground: Software engineer at a payments company, 5 years. Built the\nordering app and our credit-scoring rules.\nTime commitment Both full-time since April 2026.\nPrior startup experience None for either founder.\nEquity split Founders 85%, angels 15%. ESOP pool to be created.\nProduct and traction\nWhat have you built? A vernacular Android app for store owners to order from partner distributors,\nwith next-morning delivery and 7 to 14 days credit for repeat customers. Live in\nKarimnagar only."
+     },
+     {
+      "index": 2,
+      "text": "Active customers 42 retailers onboarded, 22 of whom have ordered more than once.\nRevenue / GMV GMV of about INR 9 lakh in the last three months. Revenue is trade margin of\nabout 4% plus a credit fee on credit orders.\nGrowth GMV has grown every month since the July launch.\nRepeat behaviour Repeat customers reorder about once a week.\nCustomer acquisition Two field agents visit stores and onboard them. Word of mouth between\nneighbouring stores has helped. Our CAC is under INR 2,000 per store.\nUnit economics Positive contribution on delivered orders once a store has ordered twice.\nCredit\nHow is credit funded? Credit is provided through our NBFC partner. We take the first-loss risk.\nCredit book size About INR 85,000 outstanding across 12 retailers.\nDefaults to date None so far. We follow up personally on late payments.\nRegulatory status Not registered as an NBFC.\nCompetition and differentiation\nWho else is doing this? Large B2B marketplaces and local wholesale markets.\nWhy will you win? We focus only on small towns and speak the owner's language, literally and in\nhow we assess credit.\nFundraising\nAmount raising INR 2 Cr\nValuation expectation INR 12 Cr post-money\nExisting investors Three angels from the FMCG and logistics industry, INR 25 lakh in total.\nUse of funds Credit book, hiring, expansion to two more towns.\nOther investors in conversation One pre-seed fund. No term sheet yet.\nHow did you hear about us? Introduction through a founder in your Fund I portfolio."
+     },
+     {
+      "index": 3,
+      "text": "Anything else we should know?\nWe have been told our credit-scoring approach is an edge. Happy to walk you through it on a call. We would\nalso welcome your help with introductions to NBFCs."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "CAPilot",
+  "files": [
+   {
+    "filename": "CAPilot_Deck.pdf",
+    "size": 62925,
+    "sha256": "b8eafef6c1db9f265e741fa09064454f19f2bed799a501aaa343616a00e8793d",
+    "pages": [
+     {
+      "index": 1,
+      "text": "CAPilot\nAI assistant for CA firms: GST reconciliation and notice replies\nPre-seed | Raising INR 1.5 Cr | Ahmedabad"
+     },
+     {
+      "index": 2,
+      "text": "CA firms drown in compliance work\nCAPilot 3\nMatching is manual\nStaff spend about 40% of their time matching\nGST invoices.\nNotices pile up\nEach tax notice reply takes 3 to 5 hours to\ndraft."
+     },
+     {
+      "index": 3,
+      "text": "Upload, reconcile, draft\nCAPilot 4\n1\nUpload\nUpload books and GST portal\ndata.\n2\nReconcile\nAI matches invoices and flags\nmismatches.\n3\nDraft\nAI drafts the notice reply for\nthe CA to review."
+     },
+     {
+      "index": 4,
+      "text": "Traction: INR 9.4 L annual recurring revenue\nCAPilot 5\nAug Sep Oct\n18\n41\n78\nMonthly recurring revenue (INR thousand)\n31\npaying CA firms\nINR 9.4 L\nannual recurring revenue\n2\nfirms churned"
+     },
+     {
+      "index": 5,
+      "text": "The market\nCAPilot 6\nINR 1.4 lakh Cr\nIndian tax and compliance services\nmarket\nEven 1% of this market is a INR 1,400\nCr opportunity for CAPilot."
+     },
+     {
+      "index": 6,
+      "text": "How we make money\nCAPilot 7\nSubscription\nINR 2,500 to 6,000 a month per firm, based\non seats.\nNotice-reply credits\nINR 400 per drafted reply above the plan\nlimit."
+     },
+     {
+      "index": 7,
+      "text": "Competition\nCAPilot 8\nCAPilot Tally and Zoho ClearTax\nGST reconciliation Yes Basic Yes\nAI notice replies Yes No No\nBuilt for small CA firms Yes Yes Partial"
+     },
+     {
+      "index": 8,
+      "text": "The team\nCAPilot 9\nDhruv Shah, CEO\nQualified CA. 4 years in practice handling\nGST for 60 clients.\nIsha Merchant, CTO\n3 years at a SaaS company. Built the\nmatching engine."
+     },
+     {
+      "index": 9,
+      "text": "The ask: INR 1.5 Cr\nCAPilot 10\n50%\nEngineering and AI\n30%\nSales\n20%\nCompliance and security\nIn 12 months: 150 paying firms and INR 7 L monthly recurring revenue."
+     }
+    ]
+   },
+   {
+    "filename": "CAPilot_Form.pdf",
+    "size": 30800,
+    "sha256": "a87039aa34d3295ca31735fe3d0d61309b68fe4556e850acdc49c6139d3717e5",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name CAPilot (CAPilot Labs Pvt. Ltd.)\nWebsite www.capilot.example\nLocation Ahmedabad, Gujarat\nIncorporated December 2025\nOne-line description AI assistant for CA firms to reconcile GST data and draft notice replies.\nSector (as selected) Fintech\nStage (as selected) Pre-seed\nTeam size 6\nFounders\nFounder 1 Dhruv Shah, CEO. Qualified Chartered Accountant, 4 years in practice\nhandling GST for about 60 clients. linkedin.com/in/dhruv-shah-example\nFounder 2 Isha Merchant, CTO. 3 years at a SaaS company. Built the matching\nengine. linkedin.com/in/isha-merchant-example\nTime commitment Both full-time since February 2026.\nPrior startup experience None.\nEquity split Founders 90%, one angel 10%.\nProduct and traction\nWhat have you built? A web app where CA firms upload books and GST portal data. It\nmatches invoices, flags mismatches and drafts notice replies for the CA\nto review.\nCustomers 24 paying CA firms, 7 on free trial. 2 firms have churned.\nRevenue Monthly recurring revenue INR 78,000 (INR 9.4 L annualised).\nCustomer acquisition Mostly the founders' network and referrals from other CAs. We have\nnot measured acquisition cost yet.\nAccuracy and liability Every drafted reply is reviewed by the CA before filing. Responsibility\nsits with the CA.\nKey risks Model errors on unusual notices and dependence on GST portal data\nformats."
+     },
+     {
+      "index": 2,
+      "text": "Fundraising\nAmount raising INR 1.5 Cr\nValuation expectation INR 10 Cr post-money\nExisting investors One angel, INR 15 L.\nUse of funds Engineering and AI, sales, compliance and security.\nOther investors in\nconversation\nNone yet.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe believe CA firms are underserved by existing tools. We would welcome a call."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "CareCorner",
+  "files": [
+   {
+    "filename": "CareCorner_Deck.pdf",
+    "size": 68156,
+    "sha256": "867505c10ecf978d0411fcae810f54d9fa8975cb3c9fa8dc689dc4cdfa4b0ce7",
+    "pages": [
+     {
+      "index": 1,
+      "text": "CareCorner\nNeighbourhood clinics with diagnostics for Tier-2\nIndia\nPre-seed | Raising INR 3 Cr | Hyderabad"
+     },
+     {
+      "index": 2,
+      "text": "Tier-2 families lack good primary care\nCareCorner 3\nHospitals are far\nFamilies travel 20 to 40 km for\na basic consultation and tests.\nQuality varies\nSmall clinics often lack tests\nand follow-up.\nCosts surprise\nFamilies pay per visit with no\ncontinuity of care."
+     },
+     {
+      "index": 3,
+      "text": "Consult, test, follow up\nCareCorner 4\n1\nConsult\nA family doctor in a 1,200 sq ft\nneighbourhood clinic.\n2\nTest\nIn-house diagnostics with results\nthe same day.\n3\nFollow up\nWhatsApp reminders and a\nhealth record per family."
+     },
+     {
+      "index": 4,
+      "text": "Traction: 3 clinics, INR 9.8 L in October\nCareCorner 5\nJun Jul Aug Sep Oct\n3.9\n5.2\n7.0\n8.6\n9.8\nMonthly revenue, 3 clinics (INR lakh)\n3\nclinics open\nINR 9.8 L\nOctober revenue\nMonth 8\nfirst clinic breakeven"
+     },
+     {
+      "index": 5,
+      "text": "Market size: how we got there\nCareCorner 6\nTAM INR 1.14 lakh Cr 190M Indian households x INR 6,000 a year on primary care and\ndiagnostics\nSAM INR 5,400 Cr 9M households in Tier-2 cities of Telangana, AP and Karnataka x\nINR 6,000\nSOM INR 35 Cr In 3 years: 25 clinics x INR 1.4 Cr annual revenue per clinic\nSpend per household is our estimate from clinic billing and a 90-household survey."
+     },
+     {
+      "index": 6,
+      "text": "Patient acquisition and clinic economics\nCareCorner 7\nLocal doctor referrals\n45% of new patients\nWhatsApp and Google listings\n35% of new patients\nHealth camps and tie-ups\n20% of new patients\nINR 210\ncost per new patient\nINR 28 L\ncapex per clinic\nMonth 8\nbreakeven\nRevenue per clinic at maturity: INR\n1.4 Cr a year, 62% from\nconsultations and diagnostics, 38%\nfrom pharmacy."
+     },
+     {
+      "index": 7,
+      "text": "The team\nCareCorner 8\nDr. Lakshmi Reddy, CEO\nMBBS, 8 years in family medicine. Designs the\nclinical protocols.\nVikram Rao, COO\n6 years in operations at a hospital chain. Runs\nsite selection and rollout.\nTeam of 14, including 3 doctors."
+     },
+     {
+      "index": 8,
+      "text": "The ask: INR 3 Cr\nCareCorner 9\n47%\nFive new clinics\n28%\nWorking capital\n25%\nTeam and systems\nIn 12 months: 8 clinics, INR 45 L monthly revenue, 3 clinics at breakeven."
+     }
+    ]
+   },
+   {
+    "filename": "CareCorner_Form.pdf",
+    "size": 30524,
+    "sha256": "1abab4728570ad9864173750ef1786888da920eaa1d320d01a662aed56fc429e",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name CareCorner (CareCorner Health Pvt. Ltd.)\nWebsite www.carecorner.example\nLocation Hyderabad, Telangana\nIncorporated August 2025\nOne-line description Neighbourhood primary-care clinics with in-house diagnostics for Tier-2\ncities.\nSector (as selected) Other (Healthcare)\nStage (as selected) Pre-seed\nTeam size 14, including 3 doctors\nFounders\nFounder 1 Dr. Lakshmi Reddy, CEO. MBBS, 8 years in family medicine.\nlinkedin.com/in/lakshmi-reddy-example\nFounder 2 Vikram Rao, COO. 6 years in operations at a hospital chain.\nlinkedin.com/in/vikram-rao-example\nTime commitment Both full-time since August 2025.\nPrior startup experience None.\nEquity split Founders 75%, angels 25%.\nProduct and traction\nWhat have you built? Three 1,200 sq ft neighbourhood clinics in Hyderabad suburbs, each\nwith a family doctor, in-house diagnostics and a pharmacy.\nRevenue INR 9.8 L across the three clinics in October 2026. The first clinic\nreached monthly breakeven in month 8.\nPatient acquisition About INR 210 per new patient. Local doctor referrals 45%, WhatsApp\nand Google listings 35%, health camps 20%.\nCapex INR 28 L per clinic, funded by angels and a INR 40 L bank loan.\nKey risks Capital intensity, doctor retention, and slower ramp in new locations.\nFundraising\nAmount raising INR 3 Cr\nValuation expectation INR 18 Cr post-money"
+     },
+     {
+      "index": 2,
+      "text": "Existing investors Angels INR 60 L, bank loan INR 40 L.\nUse of funds Five new clinics, working capital, team and systems.\nOther investors in\nconversation\nTwo healthcare-focused funds.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe can share clinic-level P&Ls."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "EarnWise",
+  "files": [
+   {
+    "filename": "EarnWise_Deck.pdf",
+    "size": 59196,
+    "sha256": "4a2c74092aefa1736d716484dd0e26640d2126811cb721b41e11f897f84b1df2",
+    "pages": [
+     {
+      "index": 1,
+      "text": "EarnWise\nEarned wage access for India's gig and shift workers\nPre-seed | Raising INR 2 Cr | Gurugram"
+     },
+     {
+      "index": 2,
+      "text": "Workers wait a month for pay they have\nearned\nEarnWise 3\nCash gaps\nGig and shift workers face\nexpenses long before payday.\nExpensive loans\nMany borrow at 5 to 10% a\nmonth from informal lenders.\nAttrition\nEmployers lose workers who\nneed money sooner."
+     },
+     {
+      "index": 3,
+      "text": "Why now\nEarnWise 4\nUPI wallets\nWorkers are paid and spend\ndigitally.\nGig boom\nMillions work for platforms\nand staffing firms.\nHR tech\nEmployers integrate payroll\nsystems more easily."
+     },
+     {
+      "index": 4,
+      "text": "Earn, withdraw, repay\nEarnWise 5\n1\nEarn\nWorkers see wages they have\nalready earned.\n2\nWithdraw\nThey withdraw up to 50%\ninstantly, for a flat fee.\n3\nRepay\nThe employer deducts it from the\nnext payroll."
+     },
+     {
+      "index": 5,
+      "text": "Traction: INR 38 L advanced in 4 months\nEarnWise 6\nJul Aug Sep Oct\n4\n9\n11\n14\nMonthly advances (INR lakh)\n3\nenterprise clients live\n1,600\nworkers enabled\nINR 38 L\nadvances disbursed"
+     },
+     {
+      "index": 6,
+      "text": "The market\nEarnWise 7\nTAM INR 14,400 Cr 10M gig and shift workers x INR 12,000 average monthly advance x\n12\nWe believe the opportunity grows as the workforce formalises."
+     },
+     {
+      "index": 7,
+      "text": "The team\nEarnWise 8\nRohit Arora, Founder and CEO\nEx-Goldman Sachs. Ex-Google. MBA, IIM\nAhmedabad.\nTech\nLed by an advisor, ex-CTO of a lending startup.\nTeam of 12."
+     },
+     {
+      "index": 8,
+      "text": "The ask: INR 2 Cr\nEarnWise 9\n40%\nAdvances book\n30%\nSales\n30%\nTeam\nIn 12 months: 15 enterprise clients and 25,000 workers."
+     }
+    ]
+   },
+   {
+    "filename": "EarnWise_Form.pdf",
+    "size": 29622,
+    "sha256": "c55df682fdd6d1d93a4cb2fda23c512df86e6caf993d4d6aa38d7d394e842bc6",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name EarnWise (EarnWise Financial Technologies Pvt. Ltd.)\nWebsite www.earnwise.example\nLocation Gurugram, Haryana\nIncorporated January 2026\nOne-line description Earned wage access for gig and shift workers.\nSector (as selected) Fintech\nStage (as selected) Pre-seed\nTeam size 5 (founder, 2 outsourced developers, 1 operations, 1 sales)\nFounders\nFounder Rohit Arora, Founder and CEO. Summer analyst internship (10 weeks) at\nan investment bank. 5-month contract role through a vendor at a large\ntechnology company. MBA at a tier-2 business school (2022 to 2024). 18\nmonths at a payments startup. linkedin.com/in/rohit-arora-example\nTime commitment Full-time since January 2026.\nPrior startup experience 18 months as an employee at a payments startup.\nEarlier co-founder A co-founder left in July 2026 and has moved on.\nEquity split Founder 85%, one angel 15%.\nProduct and traction\nWhat have you built? A web and mobile app that lets workers withdraw up to 50% of earned\nwages. The employer deducts the advance at payroll.\nCustomers 1 enterprise client live and 2 in pilot.\nWorkers 1,600 workers enabled.\nAdvances INR 38 L disbursed since July 2026.\nFunding of advances Advances are funded by our partner NBFC's balance sheet under an\nagreement in principle, and partly by the founder's savings.\nCustomer acquisition Direct outreach by the founder to HR heads.\nKey risks Regulation of digital lending and employer payroll integration.\nFundraising\nAmount raising INR 2 Cr"
+     },
+     {
+      "index": 2,
+      "text": "Valuation expectation INR 12 Cr post-money\nExisting investors One angel, INR 25 L.\nUse of funds Advances book, sales, team.\nOther investors in\nconversation\nNone.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe have a strong market and we are moving fast."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "GrainKind",
+  "files": [
+   {
+    "filename": "GrainKind_Deck.pdf",
+    "size": 98749,
+    "sha256": "562a00d54697756860162dd6574a565ec7ff387509dde03150ede9febbbb36e7",
+    "pages": [
+     {
+      "index": 1,
+      "text": "GrainKind\nMillet-based breakfast and snacks for urban\nfamilies\nPre-seed | Raising INR 2.5 Cr | Bengaluru"
+     },
+     {
+      "index": 2,
+      "text": "Healthy snacks lose to biscuits\nGrainKind 3\nTaste loses\nMost better-for-you snacks\ngive up on taste. Families go\nback to biscuits within weeks.\nMillets confuse\nParents want millets but do\nnot know how to cook them.\nLabels mislead\nClaims like 'natural' and 'high-\nfibre' are used loosely.\nSurvey of 420 urban parents, July 2025."
+     },
+     {
+      "index": 3,
+      "text": "Seven products, three hero SKUs\nGrainKind 4\nRagi choco\ncrunch\n42% of orders. Kid-\ntested taste.\nMillet muesli\n28% of orders. Higher-\nmargin breakfast\npack.\nJowar puffs\n17% of orders. Quick-\ncommerce favourite.\nFour others\n13% of orders. Still in\ntests."
+     },
+     {
+      "index": 4,
+      "text": "Traction: INR 16.5 L in October\nGrainKind 5\nJun Jul Aug Sep Oct\n4.8\n7.1\n10.2\n13.0\n16.5\nMonthly revenue (INR lakh)\nINR 16.5 L\nOctober revenue\n38%\n90-day repeat, August cohort\n3,100\ncustomers in cohort data"
+     },
+     {
+      "index": 5,
+      "text": "Unit economics, October 2026\nGrainKind 6\nMetric Value\nAverage first order value INR 540\nGross margin (after COGS and packaging) 48%\nBlended CAC (paid and referral) INR 340\nOrders per customer, June cohort (5 months) 2.4\nContribution after CAC and logistics 11%"
+     },
+     {
+      "index": 6,
+      "text": "Market size: how we got there\nGrainKind 7\nTAM INR 91,200 Cr 38M urban households buying packaged breakfast and better-for-\nyou snacks x INR 2,400 a year\nSAM INR 14,400 Cr 6M households in 8 metros that bought a health-positioned brand\nonline or on quick commerce x INR 2,400\nSOM INR 28.8 Cr In 3 years: 1.5% of SAM households (90,000) x INR 3,200 a year\nHousehold counts from public consumer panels and our own survey. INR 2,400 is our estimate from order data and a parent survey."
+     },
+     {
+      "index": 7,
+      "text": "Go-to-market and CAC by channel\nGrainKind 8\nPaid social\n45% of new customers\nNutritionist referrals\n20% of new customers\nQuick commerce\n25% of new customers\nGyms and sampling\n10% of new customers\nINR 340\nblended CAC\nINR 210\nnutritionist referral CAC\n1.8x\n12-month LTV to CAC\nCAC by channel: paid social INR\n410, nutritionists INR 210, quick\ncommerce INR 290 after promos,\nsampling INR 380. Revenue mix:\nown site 55%, Amazon 25%, quick\ncommerce 20%."
+     },
+     {
+      "index": 8,
+      "text": "How we are different\nGrainKind 9\nGrainKind Large cereal brands Other millet brands\nTaste-first recipes Yes Mixed Mixed\nMillet-based Yes Rare Yes\nPrice per 100 g INR 62 INR 45 INR 70\nCohort data tracked Yes n/a Unknown"
+     },
+     {
+      "index": 9,
+      "text": "The team\nGrainKind 10\nRitu Hegde, CEO\n6 years in category and brand roles at a large\npackaged-food company. Trained in food science.\nSanjay Kulkarni, COO\n5 years in supply chain at a quick-commerce\ncompany. Runs sourcing and the co-packer.\nFirst-time founders. Team of 9. All products made by one co-packer in Hosur."
+     },
+     {
+      "index": 10,
+      "text": "The ask: INR 2.5 Cr\nGrainKind 11\n40%\nInventory and working\ncapital\n30%\nGrowth channel tests\n30%\nTeam and R&D\nIn 12 months: INR 40 L monthly revenue, 90-day repeat at 45%, contribution margin at 15%."
+     }
+    ]
+   },
+   {
+    "filename": "GrainKind_Form.pdf",
+    "size": 32043,
+    "sha256": "d095e3f0176713959c8a8ae15f62d4880190d3fd0e79e558aeb3b2a960b71d99",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name GrainKind (GrainKind Foods Pvt. Ltd.)\nWebsite www.grainkind.example\nLocation Bengaluru, Karnataka\nIncorporated July 2025\nOne-line description Millet-based breakfast and snacks for urban families.\nSector (as selected) Consumer brands\nStage (as selected) Pre-seed\nTeam size 9\nFounders\nFounder 1 Ritu Hegde, CEO. 6 years in category and brand roles at a large\npackaged-food company. Food science degree. linkedin.com/in/ritu-\nhegde-example\nFounder 2 Sanjay Kulkarni, COO. 5 years in supply chain at a quick-commerce\ncompany. linkedin.com/in/sanjay-kulkarni-example\nTime commitment Both full-time since July 2025.\nPrior startup experience None. First-time founders.\nEquity split Founders 82%, angels 18%.\nProduct and traction\nWhat have you built? Seven millet-based products. Three hero SKUs account for 87% of\norders. All made by one co-packer in Hosur.\nRevenue INR 16.5 L in October 2026. INR 72 L since launch in November 2025.\nChannel mix Own site 55%, Amazon 25%, quick commerce 20%.\nRepeat behaviour 90-day repeat rate was 31% (June cohort), 34% (July) and 38% (August).\nCohort data covers 3,100 customers.\nUnit economics Gross margin 48% after COGS and packaging. Blended CAC INR 340.\nContribution after CAC and logistics is 11%. 12-month LTV to CAC is\nabout 1.8x on current data.\nCustomer acquisition Paid social 45% of new customers (CAC INR 410), quick commerce 25%\n(INR 290 after promos), nutritionist referrals 20% (INR 210), gyms and\nsampling 10% (INR 380)."
+     },
+     {
+      "index": 2,
+      "text": "Key risks Single co-packer, rising paid social costs, and slower repeat on Jowar\npuffs.\nFundraising\nAmount raising INR 2.5 Cr\nValuation expectation INR 14 Cr post-money\nExisting investors Three angels from the food and retail industry, INR 45 L in total.\nUse of funds Inventory and working capital, growth channel tests, team and R&D.\nOther investors in\nconversation\nOne consumer fund.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe can share our cohort sheet and co-packer agreement on request."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "Pumpwise",
+  "files": [
+   {
+    "filename": "Pumpwise_Deck.pdf",
+    "size": 97134,
+    "sha256": "79603014b0ecd10345aea65a13e18ba936980b59eee7edad6eb1d43f9eda4600",
+    "pages": [
+     {
+      "index": 1,
+      "text": "Pumpwise\nPredictive maintenance for small-factory motors and pumps\nPre-seed | Raising INR 2.2 Cr | Pune"
+     },
+     {
+      "index": 2,
+      "text": "A pump failure stops the whole line\nPumpwise 3\nBreakdowns halt\nproduction\nA failed pump at a small plant\nstops work for 1 to 3 days.\nMonitoring costs too\nmuch\nImported condition monitors\ncost INR 40,000+ per motor,\nwith annual contracts.\nChecks are by hand\nTechnicians do weekly rounds,\nso failures are found after\nthey happen.\nFrom visits to 38 plants in the Pune and Coimbatore clusters, Nov 2025 to Feb 2026."
+     },
+     {
+      "index": 3,
+      "text": "Why now\nPumpwise 4\nCheap sensors\nVibration and temperature\nchips now cost under INR\n1,200 a unit.\nCheap connectivity\nLow-power radios and Indian\nmobile data make remote\nmonitoring affordable.\nSmall-data models\nA model can learn a motor's\nnormal pattern in 2 weeks,\nwith no failure history."
+     },
+     {
+      "index": 4,
+      "text": "Clip on, learn, alert\nPumpwise 5\n1\nClip on\nFit a sensor on the motor in 10\nminutes. No wiring.\n2\nLearn\nThe model learns normal\nvibration and heat over 14 days.\n3\nAlert\nWhatsApp alert when behaviour\ndrifts, days before failure."
+     },
+     {
+      "index": 5,
+      "text": "Traction: 6 paying customers in 5 months\nPumpwise 6\nJun Jul Aug Sep Oct\n20\n48\n80\n112\n140\nPaid sensors deployed\n6 of 11\npilots converted to paid\n140\nsensors live\nINR 1.05 L\nmonthly recurring"
+     },
+     {
+      "index": 6,
+      "text": "Market size: how we got there\nPumpwise 7\nTAM INR 16,200 Cr ~300K manufacturing MSMEs with 20+ motors x 60 sensors x INR\n9,000 a year\nSAM INR 4,536 Cr ~84K firms in Maharashtra, Tamil Nadu and Gujarat clusters x 60 x\nINR 9,000\nSOM INR 21.6 Cr In 3 years: 400 customers x 60 sensors x INR 9,000\n300K is 12% of ~2.5M Udyam-registered manufacturing MSMEs, based on our plant visits. Subscription revenue only; hardware excluded."
+     },
+     {
+      "index": 7,
+      "text": "Go-to-market and acquisition cost\nPumpwise 8\nCluster associations\n3 of 6 paid customers\nPump distributors\n2 of 6 paid customers\nDirect outreach\n1 of 6 paid customers\nINR 73,000\ncost per paid customer\n55%\npilot to paid\n< 4 months\npayback on first-year gross profit\nCAC = cost of 11 pilots (INR 4.4 L) /\n6 paid customers. A pilot is 10 free\nsensors for 30 days."
+     },
+     {
+      "index": 8,
+      "text": "We earn on hardware and subscription\nPumpwise 9\nHardware\nINR 9,500 per sensor. Cost to us: INR 3,200.\nSubscription\nINR 750 per sensor a month at about 85% gross\nmargin.\nAverage customer: 23 sensors and INR 3.1 L first-year gross profit."
+     },
+     {
+      "index": 9,
+      "text": "How we are different\nPumpwise 10\nPumpwise Imported systems Manual rounds\nPrice per motor INR 9,500 + 750/mo INR 40,000+ Low\nSetup time 10 minutes Days None\nEarly warning Yes Yes No\nBuilt for small plants Yes No Yes"
+     },
+     {
+      "index": 10,
+      "text": "The team\nPumpwise 11\nKarthik Subramanian, CEO\nIIT Madras, mechanical. 5 years as a reliability\nengineer at an engine maker.\nNeeraj Pillai, CTO\n4 years in embedded systems at an auto-\ncomponents supplier. Designed the sensor and\nfirmware.\nTeam of 7. Sensors made by a contract manufacturer in Pune."
+     },
+     {
+      "index": 11,
+      "text": "The ask: INR 2.2 Cr\nPumpwise 12\n45%\nTeam: embedded, ML, field\n30%\nSensors and pilots\n25%\nCertification and operations\nIn 12 months: 30 paying customers, INR 12 L monthly recurring, pilot-to-paid at 65%."
+     }
+    ]
+   },
+   {
+    "filename": "Pumpwise_Form.pdf",
+    "size": 31574,
+    "sha256": "3d32ebe0654faaa753f0dcbb54afd4cb094ddf6b47593a4af33b58d0cfcfa732",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name Pumpwise (Pumpwise Technologies Pvt. Ltd.)\nWebsite www.pumpwise.example\nLocation Pune, Maharashtra\nIncorporated October 2025\nOne-line description Plug-on vibration and heat sensors with anomaly alerts for motors and\npumps in small factories.\nSector (as selected) Deeptech\nStage (as selected) Pre-seed\nTeam size 7 (2 founders, 3 engineers, 2 field staff)\nFounders\nFounder 1 Karthik Subramanian, CEO. IIT Madras, mechanical engineering. 5 years\nas a reliability engineer at an engine maker. linkedin.com/in/karthik-\nsubramanian-example\nFounder 2 Neeraj Pillai, CTO. 4 years in embedded systems at an auto-components\nsupplier. Designed the sensor board and firmware.\nlinkedin.com/in/neeraj-pillai-example\nTime commitment Both full-time since October 2025.\nPrior startup experience None for either founder.\nEquity split Founders 80%, angels 12%, ESOP 8%.\nProduct and traction\nWhat have you built? A clip-on sensor measuring vibration and temperature, a gateway, and a\nmodel that learns each motor's normal pattern in 14 days. Alerts go to\nWhatsApp.\nCustomers 11 pilots started since March 2026. 6 converted to paid, across 140\nsensors (average 23 per customer).\nRevenue INR 14.2 L cumulative, of which hardware INR 13.3 L. Monthly recurring\nsubscription INR 1.05 L.\nCustomer acquisition 3 of 6 paid customers came through a cluster association, 2 through a\npump distributor, 1 direct. Cost per paid customer is about INR 73,000\n(11 pilots at INR 4.4 L / 6). This excludes founder time."
+     },
+     {
+      "index": 2,
+      "text": "Evidence of value Customers report 9 unplanned stoppages caught early during pilots,\nestimated by them at INR 1.8 L average downtime cost each. These\nfigures are customer-reported, not audited.\nKey risks Sensor accuracy across motor types, hardware supply, and longer sales\ncycles in larger plants.\nFundraising\nAmount raising INR 2.2 Cr\nValuation expectation INR 11 Cr post-money\nExisting investors INR 30 L: a INR 10 L incubator grant and two angels (INR 20 L).\nUse of funds Team, sensor inventory and pilots, certification and operations.\nOther investors in\nconversation\nTwo pre-seed funds.\nHow did you hear about us? Public application form. Our incubator mentor also suggested we apply.\nAnything else we should know?\nWe would value a conversation about manufacturing scale-up and calibration. Happy to share pilot data."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "RentRoute",
+  "files": [
+   {
+    "filename": "RentRoute_Deck.pdf",
+    "size": 59507,
+    "sha256": "c28cc8a5e4d0dd005646edbc29ffbffadf0b58e967439a54ddc5da75d60f33e4",
+    "pages": [
+     {
+      "index": 1,
+      "text": "RentRoute\nPay your rent with your credit card\nPre-seed | Raising INR 1.8 Cr | Bengaluru"
+     },
+     {
+      "index": 2,
+      "text": "Rent is the biggest bill\nRentRoute 3\nBiggest expense\nRent takes 25 to 40% of a\nyoung professional's income.\nCards sit idle\nLandlords will not accept\ncards, so reward points go\nunused.\nTiming gap\nRent is due on the 1st. Salary\nmay arrive later."
+     },
+     {
+      "index": 3,
+      "text": "Add, pay, done\nRentRoute 4\n1\nAdd rent details\nEnter your landlord's bank details\nonce.\n2\nPay by card\nPay rent with any credit card.\n3\nLandlord gets cash\nRent reaches the landlord's bank\naccount within a day."
+     },
+     {
+      "index": 4,
+      "text": "Traction: INR 6.1 Cr of rent paid in 4 months\nRentRoute 5\nJul Aug Sep Oct\n0.4\n1.0\n1.9\n2.8\nMonthly rent paid (INR Cr)\n1,900\nusers\n2,400\nrent payments\nINR 11 L\nrevenue (1.8% fee)"
+     },
+     {
+      "index": 5,
+      "text": "The market\nRentRoute 6\nINR 1.5 lakh Cr\nannual urban rent paid in India\nCapturing just 1% would mean INR 1,500 Cr\nof annual rent volume."
+     },
+     {
+      "index": 6,
+      "text": "Competition\nRentRoute 7\nWe have no direct competitors.\nExisting payment apps focus on other bills like electricity, mobile and credit\ncard repayments."
+     },
+     {
+      "index": 7,
+      "text": "How we make money\nRentRoute 8\nPlatform fee\nUsers pay 1.8% of the rent amount.\nNext\nReferral income from card issuers is coming."
+     },
+     {
+      "index": 8,
+      "text": "The team\nRentRoute 9\nSameer Qureshi, CEO\nProduct manager at a fintech for 4 years.\nLaunched two payments features.\nDivya Menon, Growth\n5 years in consumer marketing.\nEngineering handled by contract developers."
+     },
+     {
+      "index": 9,
+      "text": "The ask: INR 1.8 Cr\nRentRoute 10\n55%\nMarketing\n25%\nEngineering\n20%\nOperations\nIn 12 months: INR 20 Cr monthly rent volume."
+     }
+    ]
+   },
+   {
+    "filename": "RentRoute_Form.pdf",
+    "size": 30607,
+    "sha256": "b6513ef0bcc48dc089c5b5a3e022a128decfb0f7abd6586811255800b1332580",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name RentRoute (RentRoute Technologies Pvt. Ltd.)\nWebsite www.rentroute.example\nLocation Bengaluru, Karnataka\nIncorporated May 2026\nOne-line description App to pay rent by credit card.\nSector (as selected) Fintech\nStage (as selected) Pre-seed\nTeam size 4 (2 founders, 2 contract developers)\nFounders\nFounder 1 Sameer Qureshi, CEO. Product manager at a fintech for 4 years;\nlaunched two payments features. linkedin.com/in/sameer-qureshi-\nexample\nFounder 2 Divya Menon, Growth. 5 years in consumer marketing.\nlinkedin.com/in/divya-menon-example\nTime commitment Sameer full-time since June 2026. Divya full-time since August 2026.\nPrior startup experience None.\nEquity split Founders 100%.\nProduct and traction\nWhat have you built? A mobile app that lets users pay rent by credit card. We pay the\nlandlord's bank account through a payment aggregator partner.\nUsers 1,900 registered. 1,100 have paid at least once.\nRent volume INR 6.1 Cr paid since July 2026 across 2,400 payments.\nRevenue Users pay a 1.8% fee: INR 11 L gross. After the 0.9% we pay the\npayment partner, net revenue is INR 5.5 L.\nCustomer acquisition Mostly organic and word of mouth. In small paid tests we saw about\nINR 120 per registered user. We have not measured cost per paying\nuser.\nDependencies We rely on a single payment aggregator partner. Banks and card\nnetworks have changed rules on rent payments before, and a change\nwould hit us directly."
+     },
+     {
+      "index": 2,
+      "text": "Fundraising\nAmount raising INR 1.8 Cr\nValuation expectation INR 12 Cr post-money\nExisting investors None. Founders have put in INR 18 L of savings.\nUse of funds Marketing, engineering, operations.\nOther investors in\nconversation\nNone.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe believe rent is a large, underserved payment category."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "Settlr",
+  "files": [
+   {
+    "filename": "Settlr_Deck.pdf",
+    "size": 76150,
+    "sha256": "322f96f83b329950dd98ae173f2c20855c3e9ff8773ef7131bdff527ea0e1955",
+    "pages": [
+     {
+      "index": 1,
+      "text": "Settlr\nPayments and invoice financing for Indian SMEs\nSeries A | Raising INR 30 Cr | Mumbai"
+     },
+     {
+      "index": 2,
+      "text": "SMEs wait 60 days to get paid\nSettlr 3\nLate payments\nSMEs wait an average 60\ndays to receive payment\nfrom buyers.\nCostly credit\nInformal invoice\ndiscounting costs 24 to\n36% a year.\nManual collections\nTeams chase buyers on\ncalls and spreadsheets."
+     },
+     {
+      "index": 3,
+      "text": "Invoice, collect, finance\nSettlr 4\n1\nInvoice\nSend invoices with a payment\nlink.\n2\nCollect\nBuyers pay by UPI, card or\nbank transfer.\n3\nFinance\nGet paid early against any\ninvoice, at 1.2% a month."
+     },
+     {
+      "index": 4,
+      "text": "Traction: INR 86 Cr monthly volume\nSettlr 5\nJun Jul Aug Sep Oct\n52\n61\n70\n79\n86\nMonthly payment volume (INR Cr)\nINR 78 L\nnet revenue, October\n1,150\nSME customers\n31\nteam members"
+     },
+     {
+      "index": 5,
+      "text": "Market size\nSettlr 6\nTAM INR 9.4 lakh Cr 2.1M B2B-trading SMEs x INR 4.5 Cr annual B2B payments\nSAM INR 1.8 lakh Cr 400K SMEs in 6 metros x INR 4.5 Cr\nSOM INR 6,750 Cr In 3 years: 15,000 SMEs x INR 4.5 Cr\nVolumes processed through Settlr. Revenue is a fraction of volume."
+     },
+     {
+      "index": 6,
+      "text": "Go-to-market and CAC\nSettlr 7\nCA and accountant partners\n40% of new customers\nDirect sales\n35% of new customers\nInbound and referrals\n25% of new customers\nINR 14,500\nCAC per SME\n7 months\npayback\n112%\nnet revenue retention\nAverage SME pays INR 6,800 a\nmonth in fees and financing\ncharges. Gross margin 58%."
+     },
+     {
+      "index": 7,
+      "text": "How we make money\nSettlr 8\nPayment fee\n0.4% on each payment collected.\nFinancing spread\nAbout 1.2% a month on invoices financed,\nfunded through NBFC partners."
+     },
+     {
+      "index": 8,
+      "text": "The team\nSettlr 9\nRahul Mehta, CEO\n10 years in transaction banking. Led SME\nproduct at a private bank.\nSonal Iyer, CTO\n8 years in payments engineering at a large\nfintech.\nTeam of 31. Seed round of INR 9 Cr raised in 2024."
+     },
+     {
+      "index": 9,
+      "text": "The ask: INR 30 Cr Series A\nSettlr 10\n45%\nFinancing book\n30%\nSales and distribution\n25%\nProduct, risk and\ncompliance\nIn 18 months: INR 300 Cr monthly volume, 4,500 SMEs, break-even operations."
+     }
+    ]
+   },
+   {
+    "filename": "Settlr_Form.pdf",
+    "size": 29807,
+    "sha256": "4409821bfb67297d91f2f7ffade0f2567d2b7878a5b805bdefaedb63e5a78d9d",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name Settlr (Settlr Fintech Pvt. Ltd.)\nWebsite www.settlr.example\nLocation Mumbai, Maharashtra\nIncorporated April 2023\nOne-line description Payments and invoice financing for Indian SMEs.\nSector (as selected) Fintech\nStage (as selected) Series A\nTeam size 31\nFounders\nFounder 1 Rahul Mehta, CEO. 10 years in transaction banking; led SME product at\na private bank. linkedin.com/in/rahul-mehta-example\nFounder 2 Sonal Iyer, CTO. 8 years in payments engineering at a large fintech.\nlinkedin.com/in/sonal-iyer-example\nTime commitment Both full-time since 2023.\nPrior startup experience None.\nEquity split Founders 58%, seed investors 30%, ESOP 12%.\nProduct and traction\nWhat have you built? A payments platform for SMEs with payment links, collections\nreconciliation and invoice financing funded by NBFC partners.\nCustomers 1,150 SMEs.\nVolume and revenue INR 86 Cr payment volume in October 2026. Net revenue INR 78 L.\nUnit economics CAC INR 14,500 per SME, payback 7 months, gross margin 58%, net\nrevenue retention 112%.\nCustomer acquisition CA and accountant partners 40%, direct sales 35%, inbound and\nreferrals 25%.\nKey risks Credit losses on financed invoices, dependence on NBFC partners,\nregulation of digital lending.\nFundraising\nAmount raising INR 30 Cr"
+     },
+     {
+      "index": 2,
+      "text": "Valuation expectation INR 180 Cr post-money\nExisting investors INR 9 Cr seed round in 2024, led by two institutional funds.\nUse of funds Financing book, sales and distribution, product, risk and compliance.\nOther investors in\nconversation\nFour Series A funds.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe are looking for a lead investor for our Series A."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "Talkbook",
+  "files": [
+   {
+    "filename": "Talkbook_Deck.pdf",
+    "size": 80144,
+    "sha256": "8d7ece23c991e3c88d9b4fcee8a74ebdc5810158fcf47329a05ff102f653a18a",
+    "pages": [
+     {
+      "index": 1,
+      "text": "Talkbook\nAI call summaries and CRM updates for Indian sales teams\nPre-seed | Raising INR 2 Cr | Chennai"
+     },
+     {
+      "index": 2,
+      "text": "Sales calls disappear into thin air\nTalkbook 3\nReps hate CRM entry\nReps spend about 5 hours a\nweek on notes and CRM\nupdates.\nManagers cannot coach\nManagers hear about 3% of\ntheir team's calls.\nIndian languages break\ntools\nHindi-English and Tamil-\nEnglish calls are poorly\ntranscribed by global tools."
+     },
+     {
+      "index": 3,
+      "text": "Why now\nTalkbook 4\nBetter speech models\nCode-mixed speech can now\nbe transcribed far more\naccurately.\nCheaper inference\nCost per call minute has fallen\n8x in two years.\nSales teams scaling\nBFSI, edtech and real estate\nteams are hiring inside sales\nfast."
+     },
+     {
+      "index": 4,
+      "text": "Call, summarise, update\nTalkbook 5\n1\nCall\nReps call as usual from their\nphone or dialer.\n2\nSummarise\nTalkbook transcribes and\nsummarises in the rep's language.\n3\nUpdate\nFields in the CRM fill in\nautomatically."
+     },
+     {
+      "index": 5,
+      "text": "Traction: 16 paying teams in 4 months\nTalkbook 6\nJul Aug Sep Oct\n40\n85\n140\n210\nMonthly recurring revenue (INR thousand)\n16\npaying teams\n340\npaid seats\nINR 2.1 L\nmonthly recurring revenue"
+     },
+     {
+      "index": 6,
+      "text": "Market size: how we got there\nTalkbook 7\nTAM INR 4,200 Cr 7M sales reps in India x INR 6,000 per seat a year\nSAM INR 660 Cr 1.1M reps in inside-sales teams (BFSI, edtech, SaaS, real estate) x\nINR 6,000\nSOM INR 27 Cr In 3 years: 45,000 seats x INR 6,000\nRep counts from industry estimates. INR 6,000 a seat a year is our current price."
+     },
+     {
+      "index": 7,
+      "text": "Go-to-market and CAC\nTalkbook 8\nFounder-led outbound\n9 of 16 teams\nCustomer referrals\n5 of 16 teams\nCRM consultants\n2 of 16 teams\nINR 48,000\nCAC per team\n~5 months\npayback\n70%\ngross margin\nAverage team pays INR 13,000 a\nmonth. CAC counts founder time at\na nominal salary."
+     },
+     {
+      "index": 8,
+      "text": "How we are different\nTalkbook 9\nTalkbook Global call-AI tools Meeting note-takers\nHindi, Tamil, Telugu code-mixed Strong Weak Weak\nPrice per seat a month INR 500 INR 9,000+ INR 1,500\nAuto CRM update Yes Yes Limited\nBuilt for India Yes No No"
+     },
+     {
+      "index": 9,
+      "text": "The team\nTalkbook 10\nArun Kumar, CEO\n6 years as a product lead at a CRM software\ncompany.\nMeenakshi S, CTO\n4 years in speech ML at a speech-technology\ncompany.\nTeam of 8."
+     },
+     {
+      "index": 10,
+      "text": "The ask: INR 2 Cr\nTalkbook 11\n50%\nEngineering and language\nmodels\n30%\nSales\n20%\nSecurity and operations\nIn 12 months: 80 paying teams and INR 12 L monthly recurring revenue."
+     }
+    ]
+   },
+   {
+    "filename": "Talkbook_Form.pdf",
+    "size": 30696,
+    "sha256": "754d15f0b2971e8e978ad5c337f5092dd2f9744ea63a998e91cf15add54b54e7",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name Talkbook (Talkbook AI Pvt. Ltd.)\nWebsite www.talkbook.example\nLocation Chennai, Tamil Nadu\nIncorporated February 2026\nOne-line description AI call summaries and automatic CRM updates for Indian sales teams,\nincluding code-mixed languages.\nSector (as selected) Consumer tech\nStage (as selected) Pre-seed\nTeam size 8\nFounders\nFounder 1 Arun Kumar, CEO. 6 years as a product lead at a CRM software company.\nlinkedin.com/in/arun-kumar-example\nFounder 2 Meenakshi S, CTO. 4 years in speech ML at a speech-technology\ncompany. linkedin.com/in/meenakshi-s-example\nTime commitment Both full-time since March 2026.\nPrior startup experience None.\nEquity split Founders 95%, ESOP 5%.\nProduct and traction\nWhat have you built? A call-recording and transcription layer for sales teams, with summaries\nand CRM field updates. Handles Hindi-English, Tamil-English and Telugu-\nEnglish calls.\nCustomers 16 paying teams, 340 paid seats.\nRevenue MRR INR 1.9 L (INR 500 per seat per month).\nUnit economics CAC about INR 48,000 per team, including founder time at a nominal\nsalary. Gross margin 70%. Payback about 5 months.\nCustomer acquisition Founder-led outbound brought 9 teams, referrals 5 and CRM\nconsultants 2.\nCompetition Gong and similar global tools, and meeting note-takers like Otter and\nFireflies. We do not know of an India-first player."
+     },
+     {
+      "index": 2,
+      "text": "Key risks Telecom call-recording restrictions, accuracy on noisy calls, and\ncustomer concentration in BFSI.\nFundraising\nAmount raising INR 2 Cr\nValuation expectation INR 12 Cr post-money\nExisting investors None.\nUse of funds Engineering and language models, sales, security and operations.\nOther investors in\nconversation\nOne pre-seed fund.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe would value introductions to sales leaders at Indian BFSI and edtech companies."
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "key": "Yatrika",
+  "files": [
+   {
+    "filename": "Yatrika_Deck.pdf",
+    "size": 44448,
+    "sha256": "563d5c018beb8c0fba227b9a05a9bdb309b439ee5be87f2f800a2596f59ff237",
+    "pages": [
+     {
+      "index": 1,
+      "text": "Yatrika\nFamily trips, planned by AI, led by locals\nPre-seed | Jaipur"
+     },
+     {
+      "index": 2,
+      "text": "Our team\nYatrika 3\nManish Joshi, Founder. 10 years running his family's travel agency in Jaipur, serving over 3,000\nfamilies.\nKavya Nair, Co-founder (Tech). 3 years as a web developer.\nOur team has deep passion for travel and a strong love for technology. We believe in building with\nheart."
+     },
+     {
+      "index": 3,
+      "text": "Traction\nYatrika 4\nIn just 7 months we have served thousands of travellers across Rajasthan and Uttarakhand, with 3x\ngrowth and many 5-star reviews.\nWe have built a strong brand in Jaipur and are growing across India."
+     },
+     {
+      "index": 4,
+      "text": "The ask\nYatrika 5\nWe are raising funds to grow.\nWe will use the money for marketing, technology, hiring, expansion into new cities and building our\nbrand."
+     },
+     {
+      "index": 5,
+      "text": "Our solution\nYatrika 6\nYatrika uses AI to plan complete family trips from Tier-2 cities, with vetted local guides, taxis and\nstays, bookable in one place.\nFamilies answer 6 questions and get an itinerary in 2 minutes. Trips are confirmed on WhatsApp."
+     },
+     {
+      "index": 6,
+      "text": "Our vision\nYatrika 7\nTo become India's most loved family travel brand."
+     },
+     {
+      "index": 7,
+      "text": "Market\nYatrika 8\nINR 3 lakh Cr\nIndian domestic tourism spend\nDomestic travel is growing fast as Tier-2\nfamilies travel more. We are well placed\nto capture this growth."
+     },
+     {
+      "index": 8,
+      "text": "Our vision\nYatrika 9\nTo become India's most loved family travel brand."
+     },
+     {
+      "index": 9,
+      "text": "The problem\nYatrika 10\nPlanning a family trip is stressful. Families in Tier-2 cities rely on relatives, agents and random\nwebsites.\nPrices are not clear, quality varies, and there is no one to call when things go wrong."
+     },
+     {
+      "index": 10,
+      "text": "Thank you\nYatrika 11\nhello@yatrika.example"
+     }
+    ]
+   },
+   {
+    "filename": "Yatrika_Form.pdf",
+    "size": 29973,
+    "sha256": "d48e3eb086b67efdcdd954a405390b36e6fecec2f19245e1041a1d19896d0e8f",
+    "pages": [
+     {
+      "index": 1,
+      "text": "ALL IN CAPITAL | INBOUND APPLICATION\nApplication Form Response\nSubmitted through the fund's public application form. Responses are reproduced as the applicant wrote them.\nCompany\nCompany name Yatrika (Yatrika Travel Pvt. Ltd.)\nWebsite www.yatrika.example\nLocation Jaipur, Rajasthan\nIncorporated March 2026\nOne-line description AI-planned family trips with local guides, taxis and stays.\nSector (as selected) Consumer tech\nStage (as selected) Pre-seed\nTeam size 4\nFounders\nFounder 1 Manish Joshi. 10 years running his family's travel agency in Jaipur, which\nhas served over 3,000 families. linkedin.com/in/manish-joshi-example\nFounder 2 Kavya Nair. 3 years as a web developer. linkedin.com/in/kavya-nair-\nexample\nTime commitment Both full-time since March 2026.\nPrior startup experience Manish has run a family business. Kavya has none.\nEquity split Founders 100%.\nProduct and traction\nWhat have you built? A web app where families answer 6 questions and receive an AI-drafted\nitinerary. The itinerary uses a language model and 40 hand-built route\ntemplates. Bookings are confirmed manually on WhatsApp.\nCustomers 410 bookings since launch, covering about 1,300 travellers.\nRevenue Total booking value INR 38.6 L. We earn a 12% commission, so revenue\nis INR 4.6 L.\nRepeat 14% of families have booked a second trip.\nCustomer acquisition Referrals from Manish's earlier agency customers and Instagram. Paid\nacquisition is about INR 640 per booking.\nKey risks Quality of local partners, seasonality and manual operations that do not\nyet scale."
+     },
+     {
+      "index": 2,
+      "text": "Fundraising\nAmount raising INR 1.2 Cr\nValuation expectation INR 8 Cr post-money\nExisting investors None.\nUse of funds Marketing, technology, hiring, expansion.\nOther investors in\nconversation\nNone.\nHow did you hear about us? Public application form.\nAnything else we should know?\nWe are passionate about travel and would love to tell you more on a call."
+     }
+    ]
+   }
+  ]
+ }
+]

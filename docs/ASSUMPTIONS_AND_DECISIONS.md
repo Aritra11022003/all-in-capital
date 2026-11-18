@@ -1,0 +1,23 @@
+# Assumptions and Decisions
+
+Each decision lists the reason and, where the build spec asked for something else, the deviation.
+
+| ID | Decision | Why | Deviation from spec |
+|---|---|---|---|
+| D-01 | **The deployed demo opens with no login wall.** The visitor lands as Kushal and can switch to Aditya or Riya from the top bar. | The grading rubric needs the link to load "without errors or a login wall". | Invite-only Supabase Auth is specified in `supabase/migrations` and `docs/SECURITY.md` as **production mode**. It is not active in the demo. |
+| D-02 | **Demo data is stored in the browser** (localStorage, versioned, with export/import/reset). | Needs no accounts or keys, works on Vercel Hobby, can't break the link. | Supabase Postgres is the canonical store in production mode. Full schema, constraints, indexes and RLS are in `supabase/migrations/`. The app's data layer has a single store interface. The Supabase adapter is **not wired yet** (see KNOWN_LIMITATIONS). |
+| D-03 | **Documents are extracted in the browser** (`unpdf`, JSZip). `/api/process` also exposes the same pure engine for text input. | Vercel functions reject request bodies over 4.5 MB. Real decks with images are often bigger. Extraction in the browser has no size cliff, no cold start, and documents never leave the user's machine. | The spec asks for server-side jobs. The job queue still exists, is visible, runs one job at a time, and has retry. It runs in the browser in demo mode. |
+| D-04 | The Next.js app sits at the repo root, not `apps/web`. | Vercel deploys with zero config. The spec's folders are kept under `src/lib/engine/*` and `src/lib/shared/*`. | Folder layout adapted. |
+| D-05 | UI primitives are hand-written in shadcn style (Tailwind and `clsx`, no Radix). | Fewer dependencies and a smaller bundle. Same look and API. | No shadcn CLI. |
+| D-06 | **MockAIProvider is a deterministic, rule-based evaluator.** Every output is stamped `SIMULATED · MockAIProvider v1`. | No API keys or local models (Part G). Results are reproducible and testable. It never claims to have researched anything. | — |
+| D-07 | Raw case PDFs are **git-ignored**. Text extracted from them is committed in `src/data/seed/` so the public demo can show the batch. | The rubric needs a public repo, and the spec says not to publish confidential files. | **Needs your confirmation.** If MESA treats the case text as confidential, set `NEXT_PUBLIC_LOAD_CASE_SEED=false`, delete the seed folder, and the app starts empty. |
+| D-08 | No Playwright browser tests. End-to-end coverage is the full pipeline integration test plus a manual browser check. | Playwright downloads ~300 MB of browsers. Part G asks for minimal local storage. | Documented. |
+| D-09 | Criterion weights in thesis v1 are equal (1.0). They are marked **proposed**. Kushal must approve a new version to change them. | The spec says "do not hardcode speculative weights". | — |
+| D-10 | Each criterion is scored 1–5 or **null (insufficient evidence)**. The overall score is the weighted mean of scored criteria, always shown with evidence coverage. There is no "x/10". | Unknown is not zero. Kushal: "a seven out of ten … can't tell me which part of our thesis" is useless. | — |
+| D-11 | A missing critical metric lowers a score only when the criterion's policy lists it. In v1 the only such rule is **consumer brands: repeat rate**, citing Meeting 1 ("a missing number should drag the score"). | Avoids penalising every missing early-stage metric. | — |
+| D-12 | Founder-quality signals ignore credentials (school, employer brand, degrees). Credentials are listed as "not scored". Credentials in the deck that the form contradicts become a conflict. | Meeting 3: "credentials are not a business. Score the evidence, not the pedigree." | — |
+| D-13 | Lending and credit businesses get a **risk-ownership check** (who funds the book, who bears losses, whether defaults are tracked). | Memos 6 and 11, Meeting 2. It is shown as a revealed-thesis signal, not a hard rule, because Kushal declined to write it down as one. | — |
+| D-14 | Deeptech and regulated businesses get a **regulatory milestone check**. Aditya is added automatically to deeptech calls. | Memos 1 and 8, Meeting 3. | — |
+| D-15 | Recommendations are limited to *Take a call*, *Request further information* and *Pass for partner consideration*. Only Kushal can record a final outcome. | Part O. | — |
+| D-16 | Amounts are parsed in INR. "L"/"lakh" = 1e5 and "Cr" = 1e7. | All supplied applications use INR. | — |
+| D-17 | Dates use IST. The case's "today" is taken from the system clock. | Applications reference Oct–Nov 2026. | — |
