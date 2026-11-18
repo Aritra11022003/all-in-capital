@@ -81,3 +81,7 @@ There is also a stateless API: `POST /api/process` with `{ "deckText": "...", "f
 ## Data notice
 
 Raw case PDFs are **not** in this repository (`data/` is git-ignored). The demo batch is loaded from text derived from them in `src/data/seed/`. Set `NEXT_PUBLIC_LOAD_CASE_SEED=false` to start empty.
+
+## Credits
+
+- India map geometry on the Overview: [`@svg-maps/india`](https://github.com/VictorCazanave/svg-maps/tree/master/packages/india) by Victor Cazanave, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Used unmodified as path data; city pins are placed by the app.

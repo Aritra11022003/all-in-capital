@@ -4,39 +4,44 @@
   --font-sans: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
   --font-mono: var(--font-plex-mono), ui-monospace, monospace;
 
-  --color-navy-950: #0a1428;
-  --color-navy-900: #0f1d3a;
-  --color-navy-800: #162a50;
-  --color-navy-700: #1f3765;
-  --color-navy-600: #2c4a80;
-  --color-navy-500: #47649b;
-  --color-navy-200: #c5d0e3;
-  --color-navy-100: #e5eaf3;
-  --color-navy-50: #f2f5fa;
+  /* Brand palette: "Evergreen & Brass".
+     The `navy-*` names are kept for compatibility; the scale is now the evergreen brand colour. */
+  --color-navy-950: #08201a;
+  --color-navy-900: #0d2b22;
+  --color-navy-800: #143a2e;
+  --color-navy-700: #1c4b3c;
+  --color-navy-600: #2a6150;
+  --color-navy-500: #4b7f6d;
+  --color-navy-200: #c3d6cd;
+  --color-navy-100: #e2ece7;
+  --color-navy-50: #f0f5f2;
 
-  --color-paper: #f7f5f0;
+  --color-paper: #f6f4ee;
   --color-surface: #ffffff;
-  --color-line: #e3dfd6;
-  --color-line-strong: #cfc9bc;
-  --color-ink: #131b2b;
-  --color-muted: #5a6476;
-  --color-faint: #8a92a1;
+  --color-line: #e5e1d6;
+  --color-line-strong: #d0c9b8;
+  --color-ink: #17211c;
+  --color-muted: #59645e;
+  --color-faint: #8a938d;
 
-  --color-teal-700: #0b5f5c;
-  --color-teal-600: #0e7c77;
-  --color-teal-100: #d3ece9;
-  --color-teal-50: #ecf6f5;
-  --color-gold-700: #8a6a1f;
-  --color-gold-600: #a8822b;
-  --color-gold-100: #f1e6c9;
-  --color-gold-50: #faf5e8;
+  /* jade — positive / take a call */
+  --color-teal-700: #0e6e5c;
+  --color-teal-600: #138a73;
+  --color-teal-100: #d0ece4;
+  --color-teal-50: #eaf6f2;
+  /* brass — attention / request info / brand accent */
+  --color-gold-700: #87611c;
+  --color-gold-600: #b3832b;
+  --color-gold-100: #f1e3c2;
+  --color-gold-50: #fbf5e7;
 
-  --color-risk-700: #a1251b;
-  --color-risk-50: #fbeeec;
-  --color-warn-700: #9a5a06;
-  --color-warn-50: #fdf3e2;
-  --color-ok-700: #17663f;
-  --color-ok-50: #eaf5ee;
+  /* terracotta — risk / pass */
+  --color-risk-700: #a8432e;
+  --color-risk-50: #fbefea;
+  --color-warn-700: #9b5f0e;
+  --color-warn-50: #fcf3e2;
+  --color-ok-700: #2e6a3c;
+  --color-ok-50: #ecf5ee;
 }
 
 html,
@@ -82,7 +87,7 @@ body {
   vertical-align: top;
 }
 .dt tbody tr:hover td {
-  background: #fbfaf7;
+  background: #faf8f3;
 }
 
 :focus-visible {
@@ -106,130 +111,55 @@ body {
 }
 
 /* ---------------------------------------------------------------
-   Overview "command centre" — presentation only (dark canvas)
+   Overview — presentation only, on the shared palette
 ---------------------------------------------------------------- */
-.ov-canvas {
-  background:
-    radial-gradient(1200px 600px at 75% -10%, rgba(31, 181, 160, 0.10), transparent 60%),
-    radial-gradient(900px 500px at 0% 30%, rgba(71, 100, 155, 0.16), transparent 60%),
-    #07101f;
-}
-.ov {
-  color: #e6edf7;
-}
 .ov-card {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(148, 180, 220, 0.13);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 12px 32px -18px rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(6px);
+  background: var(--color-surface);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 2px rgba(23, 33, 28, 0.04), 0 8px 24px -16px rgba(23, 33, 28, 0.18);
+}
+.ov-hero {
+  background:
+    radial-gradient(700px 420px at 30% 40%, rgba(79, 209, 168, 0.13), transparent 65%),
+    radial-gradient(520px 360px at 95% 0%, rgba(233, 180, 76, 0.10), transparent 60%),
+    linear-gradient(160deg, var(--color-navy-900), var(--color-navy-950));
+  border: 1px solid var(--color-navy-800);
+  box-shadow: 0 20px 50px -28px rgba(8, 32, 26, 0.75);
+  color: #e8f0ec;
 }
 .ov-hover {
   transition: transform 0.25s cubic-bezier(0.2, 0.7, 0.2, 1), border-color 0.25s, box-shadow 0.25s;
 }
 .ov-hover:hover {
   transform: translateY(-3px);
-  border-color: rgba(94, 234, 212, 0.35);
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.05) inset, 0 18px 40px -16px rgba(20, 184, 166, 0.35);
+  border-color: var(--color-teal-100);
+  box-shadow: 0 1px 2px rgba(23, 33, 28, 0.04), 0 18px 36px -18px rgba(19, 138, 115, 0.35);
 }
-.ov-section-title {
-  font-size: 15px;
+.ov-title {
+  font-size: 14.5px;
   font-weight: 600;
-  color: #fff;
   letter-spacing: -0.01em;
-}
-.ov-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 34px;
-  padding: 0 14px;
-  border-radius: 9px;
-  font-size: 13px;
-  font-weight: 500;
-  transition: background 0.2s, border-color 0.2s, transform 0.2s;
-}
-.ov-btn:hover {
-  transform: translateY(-1px);
-}
-.ov-btn-ghost {
-  border: 1px solid rgba(148, 180, 220, 0.22);
-  color: #e6edf7;
-  background: rgba(255, 255, 255, 0.04);
-}
-.ov-btn-ghost:hover {
-  border-color: rgba(94, 234, 212, 0.45);
-}
-.ov-btn-primary {
-  background: linear-gradient(180deg, #2fc4a8, #1a9c87);
-  color: #04140f;
-  box-shadow: 0 6px 20px -8px rgba(47, 196, 168, 0.7);
+  color: var(--color-navy-900);
 }
 
-/* dark table skin for the shared ApplicationsTable */
-.ov-table .dt th {
-  background: rgba(255, 255, 255, 0.035);
-  color: #8fa3c2;
-  border-bottom-color: rgba(148, 180, 220, 0.12);
-}
-.ov-table .dt td {
-  border-bottom-color: rgba(148, 180, 220, 0.08);
-  color: #d5deeb;
-}
-.ov-table .dt tbody tr {
-  transition: background 0.15s;
-}
-.ov-table .dt tbody tr:hover td {
-  background: rgba(94, 234, 212, 0.05);
-}
-.ov-table .dt a {
-  color: #fff;
-}
-.ov-table .dt a:hover {
-  color: #5eead4;
-}
-.ov-table .text-faint {
-  color: #6f819e;
-}
-
-/* motion */
-@keyframes ov-rise {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: none; }
-}
-@keyframes ov-fade {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes ov-draw {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
-}
-@keyframes ov-pulse {
-  0% { transform: scale(0.35); opacity: 0.55; }
-  100% { transform: scale(1.6); opacity: 0; }
-}
-@keyframes ov-flow {
-  from { stroke-dashoffset: 1; }
-  to { stroke-dashoffset: 0; }
-}
-@keyframes ov-grow {
-  from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
-}
-@keyframes ov-blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.35; }
-}
+@keyframes ov-rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes ov-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ov-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+@keyframes ov-pulse { 0% { transform: scale(0.4); opacity: 0.6; } 100% { transform: scale(1.9); opacity: 0; } }
+@keyframes ov-grow { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes ov-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+@keyframes ov-pop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: none; } }
 .ov-rise { animation: ov-rise 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-.ov-fade { animation: ov-fade 0.9s ease-out 0.35s both; }
+.ov-fade { animation: ov-fade 0.9s ease-out 0.3s both; }
 .ov-draw { stroke-dasharray: 1; animation: ov-draw 1.1s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both; }
-.ov-pulse { animation: ov-pulse 2.4s ease-out infinite; }
-.ov-arc { stroke-dasharray: 1; animation: ov-flow 1.6s ease-out both; }
+.ov-pulse { transform-box: fill-box; transform-origin: center; animation: ov-pulse 2.6s ease-out infinite; }
 .ov-bar { transform-origin: left; animation: ov-grow 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.2s both; }
 .ov-live { animation: ov-blink 2s ease-in-out infinite; }
+.ov-pop { transform-box: fill-box; transform-origin: center; animation: ov-pop 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+.ov-state { transition: fill 0.25s, stroke 0.25s; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ov-rise, .ov-fade, .ov-draw, .ov-pulse, .ov-arc, .ov-bar, .ov-live { animation: none !important; }
+  .ov-rise, .ov-fade, .ov-draw, .ov-pulse, .ov-bar, .ov-live, .ov-pop { animation: none !important; }
   .ov-pulse { opacity: 0; }
   .ov-hover:hover { transform: none; }
 }

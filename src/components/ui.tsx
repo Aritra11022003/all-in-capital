@@ -27,7 +27,7 @@ export function Button({ variant = "secondary", size = "md", className, ...p }: 
 
 export type Tone = "neutral" | "navy" | "teal" | "gold" | "risk" | "warn" | "ok";
 const TONES: Record<Tone, string> = {
-  neutral: "bg-[#f1efe9] text-muted ring-line",
+  neutral: "bg-[#f1eee6] text-muted ring-line",
   navy: "bg-navy-50 text-navy-700 ring-navy-200",
   teal: "bg-teal-50 text-teal-700 ring-teal-100",
   gold: "bg-gold-50 text-gold-700 ring-gold-100",
