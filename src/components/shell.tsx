@@ -148,7 +148,7 @@ export function Shell({ children }: { children: ReactNode }) {
           <div className="mt-1">Data stored in this browser only. No AI keys, no external research.</div>
         </div>
       </aside>
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className={cx("flex min-w-0 flex-1 flex-col", pathname === "/" && "ov-canvas")}>
         <header className="no-print sticky top-0 z-40 flex h-12 items-center justify-between gap-3 border-b border-navy-800 bg-navy-900 px-4">
           <div className="flex items-center gap-2 md:hidden">
             <select aria-label="Navigate" value={NAV.find((n) => (n.href === "/" ? pathname === "/" : pathname.startsWith(n.href)))?.href ?? "/"} onChange={(e) => (window.location.href = e.target.value)} className="rounded border border-navy-600 bg-navy-800 px-2 py-1 text-[12px] text-white">
