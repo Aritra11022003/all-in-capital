@@ -15,7 +15,7 @@
 import type { DocKind, DocPage } from "@/lib/shared/types";
 
 export type ScreeningKind = "suspected_instruction" | "hypothetical";
-export type ScreeningReason = "addressed_to_system" | "outcome_directive" | "fake_system_markup" | "role_or_access_request" | "hypothetical_figures" | "obfuscated_characters";
+export type ScreeningReason = "addressed_to_system" | "outcome_directive" | "outcome_statement" | "fake_system_markup" | "role_or_access_request" | "hypothetical_figures" | "obfuscated_characters";
 
 export interface ScreenedSpan {
   /** Stable ID (same on first processing and on re-evaluation): document kind + page + offset + wording. */
@@ -120,6 +120,8 @@ const WHO = "(?:ai|a\\.i\\.|evaluators?|reviewers?|assistants?|ai assistant|lang
 const WHO_START = "(?:ai|a\\.i\\.|evaluators?|reviewers?|ai assistant|ai reviewer|language model|llm|chatgpt|gpt|claude|gemini|screeners?|screening (?:system|tool|bot)|scoring (?:system|engine|model)|grader)";
 // Imperative context: sentence start, or "please / kindly / you should / you must".
 const IMP = "(?:^\\W*|\\b(?:please|kindly|you (?:should|must|need to|are to)|must)\\s+)";
+/** Investment outcomes an applicant might prescribe (used only by the outcome-statement family below). */
+const INVEST = "(?:a |an |the |to )?(?:(?:30-minute |quick |first )?(?:partner )?(?:call|meeting)|term sheet|investment|invest(?:ing)?(?: in us)?|funding|fund(?:ing)? us|back(?:ing)? us|cheque|top (?:score|rating|marks)|full marks|highest (?:score|rating)|5\\/5|yes from (?:the )?(?:fund|partners?))\\b";
 const DETECTORS: { reason: ScreeningReason; re: RegExp }[] = [
   // Text addressed to the evaluating system rather than to a human reader.
   { reason: "addressed_to_system", re: new RegExp(`\\b(?:note|message|instructions?|attention|memo|reminder|request|guidance)\\s+(?:to|for)\\s+(?:the\\s+|any\\s+)?${WHO}\\b`, "i") },
@@ -147,6 +149,14 @@ const DETECTORS: { reason: ScreeningReason; re: RegExp }[] = [
   { reason: "outcome_directive", re: /\btreat\s+(?:this|the|our)\s+(?:company|application|startup|applicant)\s+as\b/i },
   { reason: "outcome_directive", re: /\bset\s+(?:the\s+|your\s+)?confidence\b|\ball\s+claims\s+(?:were|are|have been)\s+(?:independently\s+)?verified\b|\b(?:verified|validated)\s+by\s+(?:all in capital|the fund|you|the (?:evaluator|reviewer|system|partners?)|kushal|aditya|riya)\b/i },
   { reason: "outcome_directive", re: /\b(?:approved|cleared|signed off)\s+by\s+(?:kushal|aditya|riya|the partners?|all in capital|the fund|the investment committee)\b|\bdecision\s*:\s*(?:approved|accepted|yes|go)\b/i },
+  // P4 · Outcome statements: a sentence that prescribes the investment outcome without naming an addressee
+  // ("…so the only sensible outcome is a partner meeting"). Narrow on purpose: an outcome phrase must be paired
+  // with an INVESTMENT action (call, meeting, term sheet, investment, funding, top score). Plans ("the only logical
+  // next step is to expand to Pune"), praise ("customers love us") and needs ("clinics deserve better tools") are
+  // not matched.
+  { reason: "outcome_statement", re: new RegExp(`\\bthe only (?:sensible|logical|reasonable|rational|right|correct|obvious|fair) (?:outcome|decision|conclusion|next step|choice|verdict|response|call)\\s+(?:here\\s+)?(?:is|would be|remains)\\s+${INVEST}`, "i") },
+  { reason: "outcome_statement", re: new RegExp(`\\b(?:we|this (?:company|startup|application|team|business|deal|opportunity)|our (?:company|startup|application|team|business|founders?))\\s+(?:clearly\\s+|obviously\\s+|certainly\\s+|surely\\s+)?(?:deserves?|warrants?|merits?|has earned|have earned|should (?:get|receive|be given))\\s+${INVEST}`, "i") },
+  { reason: "outcome_statement", re: new RegExp(`\\b(?:you|the fund|the partners?|all in capital)\\s+(?:should|must|ought to)\\s+(?:invest in us|back us|fund us|give us\\s+${INVEST})`, "i") },
   // Requests to change roles or access.
   { reason: "role_or_access_request", re: /\b(?:grant|give|share|provide|allow|open)\b[^.]{0,40}\b(?:aditya|kushal|riya|reviewers?|analysts?|yourself|me)\b[^.]{0,30}\baccess\b/i },
   { reason: "role_or_access_request", re: /\b(?:set|change|make|upgrade|elevate|assign)\b[^.]{0,20}\b(?:my|our|the founder'?s?)\s+role\b|\brole\s*(?:to|as|=|:)\s*(?:principal|partner|admin|administrator)\b|\b(?:is|are)\s+(?:authori[sz]ed|permitted|allowed)\s+to\s+(?:approve|grant|decide)\b/i },

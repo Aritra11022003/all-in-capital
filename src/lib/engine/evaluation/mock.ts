@@ -11,7 +11,7 @@ import type {
   RevealedCheck,
   Signal,
 } from "@/lib/shared/types";
-import type { EvaluationInput } from "./provider";
+import { qualifiesForThesisException, type EvaluationInput } from "./provider";
 import { flat } from "../extraction/text";
 import { formatInr } from "../evidence/metrics";
 import { redactContactDetails, spanLocation } from "../safety/untrusted";
@@ -543,6 +543,22 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
   if (rec === "take_call" && overlap?.results.some((r) => r.relationship === "direct_competitor")) {
     rec = "request_info";
     reasons.push("Possible direct overlap with a portfolio company — Kushal to speak to the portfolio founder before any call (RP-8, Meeting 4).");
+  }
+  // P4 · P-B (strict): an out-of-thesis "take a call" needs independent evidence that a person logged and reviewed.
+  // Applicant figures alone (however often repeated across form and deck) hold it at "request info". Scores,
+  // weights and thresholds are unchanged; this only constrains the recommendation and never passes or rejects.
+  if (rec === "take_call" && stated.fit === "out_of_scope") {
+    const support = (input.reviewedEvidence ?? []).filter(qualifiesForThesisException);
+    if (!support.length) {
+      rec = "request_info";
+      reasons.length = 0;
+      reasons.push(
+        `Thesis exception not supported (P-B): ${p.sectorSelected ?? p.sectorKey} is outside the stated thesis, and the case for a call (overall ${overall}/5) rests only on applicant-provided figures. Repeating a claim in the form and the deck is not independent corroboration. Held at "request info" until a reviewer logs independent supporting evidence.`,
+      );
+      flags.push({ level: "warning", text: "Thesis exception held at request info: no independent evidence has been logged by a reviewer (P-B). The score is unchanged." });
+    } else {
+      reasons.push(`Thesis exception supported by independent evidence logged by a reviewer (P-B): ${support.map((e) => `"${e.title}" (${e.sourceType.replace(/_/g, " ")}, ${e.publisher}; logged by ${e.addedBy} on ${e.loggedAt.slice(0, 10)}; criteria: ${e.criteria.join(", ")})`).join("; ")}.`);
+    }
   }
   if (rec !== "pass_for_consideration" && highConf.length) reasons.push(`Ask about: ${highConf.map((c) => c.label).join("; ")}.`);
   // P2 · C5 (wording only): name a thesis exception explicitly. Thresholds and rules are unchanged.

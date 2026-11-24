@@ -21,6 +21,7 @@ import {
   nowIso,
   setJobStep,
   type WorkspaceData,
+  reviewedEvidenceFor,
 } from "./workspace";
 
 type Mutate = (fn: (d: WorkspaceData) => void) => void;
@@ -95,6 +96,8 @@ export async function reevaluate(mutate: Mutate, read: Read, appId: string, role
     // P3 / D1: superseded and flag-only conflicts, facts and human corrections never reach scoring.
     claims: scoringClaims(d.claims.filter((c) => c.applicationId === appId)),
     conflicts: scoredConflicts(d.conflicts.filter((c) => c.applicationId === appId)),
+    // P-B: independent evidence a reviewer has logged can support a thesis exception on re-evaluation.
+    reviewedEvidence: reviewedEvidenceFor(d, appId),
     thesis: activeThesis(d),
     criteria: activeCriteria(d),
     learningRules: d.learningRules,

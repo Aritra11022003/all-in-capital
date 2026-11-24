@@ -1,5 +1,5 @@
 // Provider-independent AI interface. MockAIProvider is the default and the only active provider.
-import type { Claim, Conflict, CriteriaVersion, Evaluation, LearningRule, OverlapCheck, ThesisVersion } from "@/lib/shared/types";
+import type { Claim, Conflict, CriteriaVersion, CriterionId, Evaluation, LearningRule, OverlapCheck, Role, SourceType, ThesisVersion } from "@/lib/shared/types";
 import type { Profile } from "../pipeline";
 import { mockEvaluate } from "./mock";
 
@@ -14,7 +14,30 @@ export interface EvaluationInput {
   learningRules: LearningRule[]; // only approved rules are applied
   overlap: OverlapCheck | null;
   now: string;
+  /** P-B: evidence a permitted person logged through the review workflow. Never derived from founder documents. */
+  reviewedEvidence?: ReviewedEvidence[];
 }
+
+/** One evidence record logged by a person (source, reviewer, time, criteria, linked claims). */
+export interface ReviewedEvidence {
+  id: string;
+  sourceType: SourceType;
+  title: string;
+  publisher: string;
+  direction: "supports" | "contradicts" | "context";
+  independent: boolean;
+  addedBy: Role;
+  loggedAt: string;
+  criteria: CriterionId[];
+  claimIds: string[];
+}
+
+/**
+ * P-B (strict): evidence that can support a thesis exception. It must be independent (not the applicant's own
+ * documents or a directory listing), support a claim, and name at least one claim and one criterion. Repeating an
+ * applicant claim in the form and the deck never qualifies: both are the applicant's own documents.
+ */
+export const qualifiesForThesisException = (e: ReviewedEvidence) => e.independent && e.direction === "supports" && e.claimIds.length > 0 && e.criteria.length > 0;
 
 export interface ProviderStatus {
   id: string;

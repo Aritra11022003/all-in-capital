@@ -46,6 +46,7 @@ import { buildApplicantClaims, buildEvidence, identityWarning, IDENTITY_WARNING_
 import { extractCounts, extractMoney } from "@/lib/engine/evidence/metrics";
 import { factsFromFields } from "@/lib/engine/evidence/facts";
 import type { ProcessResult } from "@/lib/engine/process";
+import type { ReviewedEvidence } from "@/lib/engine/evaluation/provider";
 import { checkOverlap } from "@/lib/engine/overlap/overlap";
 
 export const WORKSPACE_VERSION = 3;
@@ -783,6 +784,15 @@ export function revokeDocumentAccess(d: WorkspaceData, role: Role, opts: { appli
   if (!(app.accessGrants ?? []).some((g) => g.role === opts.grantee)) return;
   app.accessGrants = (app.accessGrants ?? []).filter((g) => g.role !== opts.grantee);
   audit(d, role, "access.revoked", "application", app.id, `Document access withdrawn from ${ROLE_INFO[opts.grantee].name}.${opts.note.trim() ? ` Reason: ${opts.note.trim()}` : ""}`, app.id);
+}
+
+// ---------------------------------------------------------------- P4 · P-B reviewed evidence
+
+/** Evidence a permitted person logged for this application (never system-generated ledger entries). */
+export function reviewedEvidenceFor(d: WorkspaceData, appId: string): ReviewedEvidence[] {
+  return d.evidence
+    .filter((e) => e.applicationId === appId && e.addedBy !== "system" && can(e.addedBy, "evidence.add"))
+    .map((e) => ({ id: e.id, sourceType: e.sourceType, title: e.title, publisher: e.publisher, direction: e.direction, independent: e.independent, addedBy: e.addedBy as Role, loggedAt: e.retrievedAt, criteria: e.criteria, claimIds: e.claimIds }));
 }
 
 // ---------------------------------------------------------------- P3 integrity re-check
