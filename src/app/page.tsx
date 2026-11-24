@@ -197,7 +197,7 @@ export default function Overview() {
         <KpiTile delay={160} href="/applications" tone="evergreen" icon={<Layers size={20} />} label="Applications" value={apps.length} sub={`${ready} ready for review · ${new Set(apps.map((a) => a.batchId)).size} batch(es)`} fraction={apps.length ? ready / apps.length : 0} />
         <KpiTile delay={200} href="/decisions" tone="jade" icon={<PhoneCall size={19} />} label="Suggested calls" value={calls} sub={`of ${evaluated} evaluated · simulated`} fraction={evaluated ? calls / evaluated : 0} />
         <KpiTile delay={240} href="/decisions" tone="plum" icon={<Hourglass size={19} />} label="Awaiting partner" value={awaiting} sub="sent to Kushal for a decision" />
-        <KpiTile delay={280} tone="terracotta" icon={<ArrowLeftRight size={19} />} label="Open conflicts" value={q.conflictsOpen} sub={`${q.conflictsDetected} deck-vs-form conflicts detected`} fraction={q.conflictsDetected ? q.conflictsOpen / q.conflictsDetected : 0} />
+        <KpiTile delay={280} tone="terracotta" icon={<ArrowLeftRight size={19} />} label="Open conflicts" value={q.conflictsOpen} sub={`${q.conflictsDetected} conflicts detected across documents`} fraction={q.conflictsDetected ? q.conflictsOpen / q.conflictsDetected : 0} />
         <KpiTile delay={320} href="/research" tone="brass" icon={<Search size={19} />} label="Research open" value={openResearch} sub="no research provider configured" />
         <KpiTile delay={360} href="/admin#jobs" tone={problems ? "terracotta" : "slate"} icon={<AlertTriangle size={19} />} label="Failed / attention" value={problems} sub={problems ? "open the application to see why" : "every file processed"} />
       </div>
@@ -307,7 +307,7 @@ export default function Overview() {
                   <StatusChip rec={r.rec} />
                   <span className="flex items-center gap-2 text-[11.5px]">
                     {r.conflicts > 0 && (
-                      <span className="flex items-center gap-1 text-risk-700" title="Open deck-vs-form conflicts">
+                      <span className="flex items-center gap-1 text-risk-700" title="Open conflicts between documents">
                         <ArrowLeftRight size={12} />
                         {r.conflicts}
                       </span>

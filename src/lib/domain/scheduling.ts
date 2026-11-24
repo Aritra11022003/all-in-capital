@@ -14,7 +14,6 @@ export const DEFAULT_AVAILABILITY: AvailabilityRule[] = [
   { id: "av-r-thu", person: "riya", weekday: 4, start: "14:00", end: "18:00", active: true },
 ];
 
-/** Attendees per Meeting 3/5: Aditya joins deeptech calls only. */
 /** Aditya joins only when Kushal has explicitly shared the application with him (P-C), never from tags. */
 export function attendeesFor(includeAditya: boolean): Role[] {
   return includeAditya ? ["kushal", "aditya", "riya"] : ["kushal", "riya"];

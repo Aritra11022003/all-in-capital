@@ -25,6 +25,21 @@ Last updated after P4 (code commit `8468737`). Evaluation suite results hash `66
 
 The evaluator is simulated (rule-based `MockAIProvider`; no AI model is called). No external research is performed. The portfolio dataset has seven unverified companies. Supabase has never been run against a live project. Plain-text percentages are not extracted as claims, so the P3 cross-checks cannot see them. Pattern screening can still be evaded by rewording. Full list: [Known limitations](KNOWN_LIMITATIONS.md). Evaluation details: [EVALS §4c–4d](EVALS.md).
 
+## Demo journey (checked in the running app)
+
+Run `npm run dev` and open http://localhost:3000. The full journey was walked through in the browser on the seeded case batch, at desktop and phone widths, with no console or server errors:
+
+1. Executive dashboard (batch map, recommendation mix, triage table, quality indicators).
+2. Select an application from the dashboard or the Applications list (search and filters work).
+3. Overview: extracted profile with page sources, and conflicting claims side by side.
+4. Research & evidence: research tasks are *not started* (no research provider), and nothing is verified until a reviewer logs a source.
+5. Evaluation: nine criterion scores with evidence state, confidence and cited signals; stated vs revealed thesis.
+6. Portfolio overlap against the 7-company dataset, labelled incomplete.
+7. Riya sends the application to partner review (a status change, not a decision).
+8. Kushal records a decision. A rationale is required, the decision is attributed with name and time, and "approve call" only proposes meeting slots (no calendar booking).
+9. Investment report (labelled simulated; print or Markdown) and the per-application audit trail.
+10. Historical backtesting (in-sample warning, n = 12) and Learning & Feedback (corrections keep the original and need approval to become rules).
+
 ## What "demo-ready" means here
 
 The app can be run and demonstrated end to end with the case material: intake, extraction, conflicts, scoring with cited evidence, reviewer controls and reports. Every output is labelled simulated. It must not be used to make real investment decisions.

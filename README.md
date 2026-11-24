@@ -34,6 +34,8 @@ npm run build      # production build
 
 Node ≥ 20.9. Nothing else is needed: no Python, no local model, no background worker.
 
+**Before presenting:** demo data lives in the browser. **Administration → Reset to case batch** restores the 10 seeded applications (it clears decisions, slots and corrections made in that browser). Switch roles from the top bar.
+
 ## Running a new test case
 
 1. Open **Applications → New intake**, or click **New intake** on the overview.

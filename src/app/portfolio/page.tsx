@@ -25,7 +25,7 @@ export default function PortfolioPage() {
     <div>
       <PageHeader
         title="Portfolio"
-        subtitle="Every application is checked against the whole portfolio list, not memory (Meeting 4). False alarms are preferred to misses, but a possible conflict is never shown as confirmed until Kushal reviews it."
+        subtitle="Every application is checked against every company in the portfolio dataset, not memory (Meeting 4). The dataset holds only the 7 companies named in the case, so “no overlap” is not a clearance. False alarms are preferred to misses, but a possible conflict is never shown as confirmed until Kushal reviews it."
         actions={<Button onClick={rerunAll}>Re-run overlap for all applications</Button>}
       />
       {!ds.verified && <div className="mb-3"><Callout tone="warn" title={INCOMPLETE_PORTFOLIO_WARNING}>{ds.note}</Callout></div>}

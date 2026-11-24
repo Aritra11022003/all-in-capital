@@ -63,7 +63,7 @@ export default function AdminPage() {
                 {(Object.keys(MATRIX) as Action[]).map((a) => (
                   <tr key={a}>
                     <td className="font-mono text-[11.5px]">{a}</td>
-                    {(Object.keys(ROLE_INFO) as Role[]).map((r) => <td key={r}>{MATRIX[a].includes(r) ? <Badge tone="ok">{a === "document.view" && r === "aditya" ? "deeptech only" : "allowed"}</Badge> : <span className="text-faint">—</span>}</td>)}
+                    {(Object.keys(ROLE_INFO) as Role[]).map((r) => <td key={r}>{MATRIX[a].includes(r) ? <Badge tone="ok">{a === "document.view" && r === "aditya" ? "if shared by Kushal" : "allowed"}</Badge> : <span className="text-faint">—</span>}</td>)}
                   </tr>
                 ))}
               </tbody>

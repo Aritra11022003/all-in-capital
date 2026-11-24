@@ -22,7 +22,7 @@ export default function SchedulingPage() {
     <div>
       <PageHeader
         title="Scheduling"
-        subtitle="30-minute calls on Tuesday and Thursday afternoons (IST). Aditya joins deeptech calls only. Slots are proposed from manually kept availability. No calendar is connected, so nothing is ever shown as booked in a calendar."
+        subtitle="30-minute calls on Tuesday and Thursday afternoons (IST). Aditya joins a call only when Kushal has shared that application with him (deeptech review). Slots are proposed from manually kept availability. No calendar is connected, so nothing is ever shown as booked in a calendar."
       />
       <div className="mb-3"><Callout tone="gold" title="No calendar connected">Confirmed means the team confirmed it by hand. Download the .ics to add it to a calendar. Google Calendar sync can be added later with explicit permission. Approving a call is not approving an investment.</Callout></div>
       <div className="grid grid-cols-1 gap-4 xl:grid-cols-[minmax(0,1fr)_400px]">

@@ -163,10 +163,10 @@ export function Shell({ children }: { children: ReactNode }) {
             <span className="rounded bg-navy-800 px-2 py-0.5 text-gold-100">Fund II · Batch review</span>
             <span>Decision support only — every outcome is recorded by Kushal.</span>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex min-w-0 items-center gap-3">
             <QueueIndicator />
             <RoleSwitcher />
-            <div title={ROLE_INFO[role].summary} className="flex h-7 w-7 items-center justify-center rounded-full bg-gold-600 text-[11px] font-bold text-navy-950">
+            <div title={ROLE_INFO[role].summary} className="hidden h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gold-600 text-[11px] font-bold text-navy-950 sm:flex">
               {ROLE_INFO[role].initials}
             </div>
           </div>

@@ -3,6 +3,7 @@ import { ShieldAlert, ArrowLeftRight, Cpu } from "lucide-react";
 import { useData } from "@/lib/store";
 import { effectiveOverall, latestEvaluation, latestOverlap, type AppRec } from "@/lib/domain/workspace";
 import { SECTOR_LABEL } from "@/lib/shared/labels";
+import { hasDocumentGrant } from "@/lib/domain/permissions";
 import { formatInr } from "@/lib/engine/evidence/metrics";
 import { AppLink, DecisionBadge, ProcessingBadge, RecBadge, ScorePill } from "./domain";
 import { Badge } from "./ui";
@@ -62,8 +63,9 @@ export function ApplicationsTable({ apps, compact }: { apps: AppRec[]; compact?:
                     </Badge>
                   )}
                   {(a.tags.includes("deeptech") || a.sectorKey === "deeptech") && (
-                    <Badge tone="navy" title="Deeptech — Aditya reviews">
-                      <Cpu size={11} /> Aditya
+                    // P-C: Aditya is involved only once Kushal has shared this application with him.
+                    <Badge tone="navy" title={hasDocumentGrant(a, "aditya") ? "Deeptech — shared with Aditya by Kushal" : "Deeptech — Kushal may share it with Aditya for technical review"}>
+                      <Cpu size={11} /> {hasDocumentGrant(a, "aditya") ? "Aditya" : "Deeptech"}
                     </Badge>
                   )}
                   {a.errors.length > 0 && <Badge tone="warn">{a.errors.length} error</Badge>}

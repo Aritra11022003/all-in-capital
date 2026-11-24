@@ -82,14 +82,14 @@ export function Stat({ label, value, hint, tone }: { label: string; value: React
 
 export function Tabs<T extends string>({ tabs, value, onChange }: { tabs: { id: T; label: ReactNode }[]; value: T; onChange: (t: T) => void }) {
   return (
-    <div role="tablist" className="mb-3 flex gap-1 border-b border-line">
+    <div role="tablist" className="mb-3 flex gap-1 overflow-x-auto border-b border-line">
       {tabs.map((t) => (
         <button
           key={t.id}
           role="tab"
           aria-selected={value === t.id}
           onClick={() => onChange(t.id)}
-          className={cx("-mb-px border-b-2 px-3 py-1.5 text-[13px] font-medium", value === t.id ? "border-gold-600 text-navy-900" : "border-transparent text-muted hover:text-navy-700")}
+          className={cx("-mb-px shrink-0 whitespace-nowrap border-b-2 px-3 py-1.5 text-[13px] font-medium", value === t.id ? "border-gold-600 text-navy-900" : "border-transparent text-muted hover:text-navy-700")}
         >
           {t.label}
         </button>

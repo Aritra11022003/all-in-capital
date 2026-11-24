@@ -67,6 +67,14 @@ body {
   border-collapse: separate;
   border-spacing: 0;
 }
+/* Phones: a wide table scrolls inside itself instead of widening the whole page. */
+@media (max-width: 767px) {
+  .dt {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+}
 .dt th {
   position: sticky;
   top: 0;
