@@ -205,6 +205,8 @@ export interface Signal {
   kind: "support" | "oppose" | "note" | "unknown";
   claimId?: string;
   ref?: string; // citation such as "Form p1" or "Memo 6"
+  /** The exact source sentence that triggered this signal (P2 C4); always taken from the cited page. */
+  excerpt?: string;
 }
 
 export interface CriterionAssessment {
@@ -319,6 +321,14 @@ export type SectorKey =
   | "other"
   | "unknown";
 
+/** Explicit, human-granted access to one application's documents (P-C). Never derived from founder text. */
+export interface AccessGrant {
+  role: Role;
+  grantedBy: Role;
+  at: string;
+  note: string;
+}
+
 export interface Application {
   id: string;
   companyId: string;
@@ -340,6 +350,8 @@ export interface Application {
   errors: string[];
   warnings: string[];
   isSeed?: boolean;
+  /** P-C: explicit document-access grants (e.g. Kushal shares a deeptech file with Aditya). */
+  accessGrants?: AccessGrant[];
 }
 
 export interface FeedbackCorrection {

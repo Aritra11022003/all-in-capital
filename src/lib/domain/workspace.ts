@@ -36,7 +36,8 @@ import type {
   SourceType,
   ThesisVersion,
 } from "@/lib/shared/types";
-import { assertCan, canViewDocuments } from "./permissions";
+import { assertCan, canViewDocuments, hasDocumentGrant, ROLE_INFO } from "./permissions";
+import { screenDocuments, spanLocation, type ScreenedSpan } from "@/lib/engine/safety/untrusted";
 import { DECISION_TO_STATUS } from "@/lib/shared/labels";
 import { attendeesFor, DEFAULT_AVAILABILITY, proposeSlots } from "./scheduling";
 import { CRITERIA_V1, THESIS_V1 } from "@/config/thesis";
@@ -72,6 +73,18 @@ export interface WorkspaceData {
   slots: MeetingSlot[];
   audit: AuditEvent[];
   jobs: Job[];
+  /** P2 C8: reviewer decisions to restore screened (set-aside) founder text. Optional for older workspaces. */
+  screeningRestorations?: ScreeningRestoration[];
+}
+
+export interface ScreeningRestoration {
+  applicationId: string;
+  spanId: string;
+  restoredBy: Role;
+  at: string;
+  note: string;
+  revokedBy?: Role;
+  revokedAt?: string;
 }
 
 export type AppRec = WorkspaceData["applications"][number];
@@ -511,7 +524,7 @@ export function recordDecision(
   audit(d, role, "decision.recorded", "partner_decision", id, `${opts.decision}${opts.passReason ? ` (${opts.passReason})` : ""}: ${opts.rationale.trim()}`, app.id);
   if (opts.decision === "approve_call") {
     const now = opts.now ?? new Date();
-    const att = attendeesFor(app.tags.includes("deeptech") || app.sectorKey === "deeptech");
+    const att = attendeesFor(hasDocumentGrant(app, "aditya"));
     const props = proposeSlots({ now, attendees: att, rules: d.availability, existing: d.slots });
     for (const p of props) d.slots.push({ id: uid("slot"), applicationId: app.id, start: p.start, end: p.end, attendees: att, status: "proposed", calendarSynced: false, notes: "", createdBy: role });
     audit(d, "system", "slots.proposed", "application", app.id, `${props.length} slot(s) proposed for a 30-minute call (not booked in any calendar).`, app.id);
@@ -557,7 +570,7 @@ export function proposeMoreSlots(d: WorkspaceData, role: Role, appId: string, no
   assertCan(role, "schedule.propose");
   const app = getApp(d, appId);
   if (app.decisionStatus !== "call_approved") throw new Error("Kushal must approve a call before slots are proposed.");
-  const att = attendeesFor(app.tags.includes("deeptech") || app.sectorKey === "deeptech");
+  const att = attendeesFor(hasDocumentGrant(app, "aditya"));
   const props = proposeSlots({ now, attendees: att, rules: d.availability, existing: d.slots });
   if (!props.length) throw new Error("No common availability in the next 4 weeks. Update availability rules.");
   for (const p of props) d.slots.push({ id: uid("slot"), applicationId: appId, start: p.start, end: p.end, attendees: att, status: "proposed", calendarSynced: false, notes: "", createdBy: role });
@@ -691,4 +704,64 @@ export function qualityIndicators(d: WorkspaceData) {
     avgProcessingMs: jobs.length ? jobs.reduce((n, j) => n + (j.durationMs ?? 0), 0) / jobs.length : null,
     failureRate: jobs.length ? jobs.filter((j) => j.status === "failed").length / jobs.length : null,
   };
+}
+
+// ---------------------------------------------------------------- P2 review controls (C8) and access grants (P-C)
+
+/** Span IDs a reviewer has restored and not since revoked, for one application. */
+export function activeRestorationIds(d: WorkspaceData, appId: string): string[] {
+  return (d.screeningRestorations ?? []).filter((r) => r.applicationId === appId && !r.revokedAt).map((r) => r.spanId);
+}
+
+/** Current screening of an application's stored documents (recomputed deterministically; originals untouched). */
+export function screeningFor(d: WorkspaceData, appId: string): ScreenedSpan[] {
+  const docs = d.documents.filter((x) => x.applicationId === appId && x.status === "extracted");
+  return screenDocuments(docs.map((x) => ({ id: x.id, kind: x.kind, pages: x.pages })), activeRestorationIds(d, appId)).spans;
+}
+
+/**
+ * Explicit reviewer action: include a set-aside passage in scoring. Requires permission and a reason, and is audited.
+ * The restored text is treated as an ordinary, UNVERIFIED founder claim — restoring never verifies anything.
+ * The caller re-evaluates afterwards (re-evaluation applies the same screening with this span restored).
+ */
+export function restoreScreenedSpan(d: WorkspaceData, role: Role, opts: { applicationId: string; spanId: string; note: string }): void {
+  assertCan(role, "screening.restore");
+  const note = opts.note.trim();
+  if (!note) throw new Error("Give a reason for restoring this passage (it is recorded in the audit trail).");
+  const span = screeningFor(d, opts.applicationId).find((s) => s.id === opts.spanId);
+  if (!span) throw new Error("Passage not found for this application.");
+  if (span.restored) throw new Error("This passage is already restored.");
+  (d.screeningRestorations ??= []).push({ applicationId: opts.applicationId, spanId: span.id, restoredBy: role, at: nowIso(), note });
+  audit(d, role, "screening.restored", "screened_span", span.id, `Restored ${span.kind.replace("_", " ")} passage [${span.id}] on ${spanLocation(span)} for scoring as an unverified founder claim. Reason: ${note}`, opts.applicationId);
+}
+
+export function revokeScreenedSpanRestoration(d: WorkspaceData, role: Role, opts: { applicationId: string; spanId: string; note: string }): void {
+  assertCan(role, "screening.restore");
+  const note = opts.note.trim();
+  if (!note) throw new Error("Give a reason for setting this passage aside again.");
+  const r = (d.screeningRestorations ?? []).find((x) => x.applicationId === opts.applicationId && x.spanId === opts.spanId && !x.revokedAt);
+  if (!r) throw new Error("This passage is not currently restored.");
+  r.revokedBy = role;
+  r.revokedAt = nowIso();
+  audit(d, role, "screening.restoration_revoked", "screened_span", opts.spanId, `Passage [${opts.spanId}] set aside again. Reason: ${note}`, opts.applicationId);
+}
+
+/** P-C: only an authenticated partner action can widen access; founder text, sector and tags never do. */
+export function grantDocumentAccess(d: WorkspaceData, role: Role, opts: { applicationId: string; grantee: Role; note: string }): void {
+  assertCan(role, "access.grant");
+  const note = opts.note.trim();
+  if (!note) throw new Error("Record why access is being shared.");
+  if (opts.grantee !== "aditya") throw new Error(`${ROLE_INFO[opts.grantee].name} already has document access by role.`);
+  const app = getApp(d, opts.applicationId);
+  if ((app.accessGrants ?? []).some((g) => g.role === opts.grantee)) return;
+  app.accessGrants = [...(app.accessGrants ?? []), { role: opts.grantee, grantedBy: role, at: nowIso(), note }];
+  audit(d, role, "access.granted", "application", app.id, `Document access shared with ${ROLE_INFO[opts.grantee].name}. Reason: ${note}`, app.id);
+}
+
+export function revokeDocumentAccess(d: WorkspaceData, role: Role, opts: { applicationId: string; grantee: Role; note: string }): void {
+  assertCan(role, "access.grant");
+  const app = getApp(d, opts.applicationId);
+  if (!(app.accessGrants ?? []).some((g) => g.role === opts.grantee)) return;
+  app.accessGrants = (app.accessGrants ?? []).filter((g) => g.role !== opts.grantee);
+  audit(d, role, "access.revoked", "application", app.id, `Document access withdrawn from ${ROLE_INFO[opts.grantee].name}.${opts.note.trim() ? ` Reason: ${opts.note.trim()}` : ""}`, app.id);
 }

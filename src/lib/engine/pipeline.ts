@@ -14,10 +14,11 @@ import type {
   Role,
   SectorKey,
 } from "@/lib/shared/types";
-import { FORM_LABELS, foundersFromDeck, looksLikeForm, parseForm, parseFounder } from "./extraction/form";
+import { FORM_LABELS, foundersFromDeck, looksLikeForm, parseFormWithProvenance, parseFounder } from "./extraction/form";
 import { flat } from "./extraction/text";
 import { extractCounts, extractMoney, parseInr, type MetricHit } from "./evidence/metrics";
 import { detectConflicts } from "./evidence/conflicts";
+import { screenDocuments, spanLocation, type ScreeningSummary } from "./safety/untrusted";
 
 export const uid = (p: string) => `${p}_${(globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)).replace(/-/g, "").slice(0, 12)}`;
 
@@ -57,6 +58,8 @@ export interface Profile {
   hasDeck: boolean;
   hasForm: boolean;
   bundle: DocBundle;
+  /** P2 C1/C2: founder text set aside as possible instructions or hypotheticals (not scored unless restored). */
+  screening?: ScreeningSummary;
 }
 
 export interface Analysis {
@@ -69,6 +72,7 @@ export interface Analysis {
   profile: Profile;
   appPatch: Partial<Application>;
   warnings: string[];
+  screening?: ScreeningSummary;
 }
 
 export function classifyDoc(d: DocInput): DocKind {
@@ -175,6 +179,20 @@ function firstMoney(text: string | undefined | null): number | null {
   return m ? parseInr(m[1], m[2]) : null;
 }
 
+/** Reviewer-facing warnings for the current screening state (shared by first processing and re-evaluation). */
+export const SCREENING_WARNING_RE = /passage\(s\) that read like instructions|hypothetical figure\(s\) were set aside|look-alike characters were normalised/;
+export function screeningWarnings(screening: ScreeningSummary): string[] {
+  const out: string[] = [];
+  const setAside = screening.spans.filter((s) => !s.restored);
+  const where = (xs: typeof setAside) => [...new Set(xs.map(spanLocation))].join(", ");
+  const inst = setAside.filter((s) => s.kind === "suspected_instruction");
+  const hyp = setAside.filter((s) => s.kind === "hypothetical");
+  if (inst.length) out.push(`${inst.length} passage(s) that read like instructions to the evaluator were set aside and not scored (${where(inst)}). Review them in the Documents tab; a flag is a prompt for review, not proof of intent.`);
+  if (hyp.length) out.push(`${hyp.length} hypothetical figure(s) were set aside and not scored as reported results (${where(hyp)}).`);
+  if (screening.normalisedPages?.length) out.push(`Hidden or look-alike characters were normalised on ${[...new Set(screening.normalisedPages.map(spanLocation))].join(", ")}.`);
+  return out;
+}
+
 export function analyseDocuments(opts: {
   applicationId: string;
   cycleId: string;
@@ -182,6 +200,8 @@ export function analyseDocuments(opts: {
   now: string;
   docs: DocInput[];
   nameHint?: string;
+  /** Span IDs a reviewer has explicitly restored (re-processing only; empty on first intake). */
+  restoredSpanIds?: Iterable<string>;
 }): Analysis {
   const { applicationId: appId, cycleId, actor, now } = opts;
   const warnings: string[] = [];
@@ -201,6 +221,9 @@ export function analyseDocuments(opts: {
     status: "extracted",
     warnings: d.warnings ?? [],
   }));
+  // P2 C1/C2: screen founder text ONCE, before anything reads it. Stored document pages stay original.
+  const screening = screenDocuments(documents.map((d) => ({ id: d.id, kind: d.kind, pages: d.pages })), opts.restoredSpanIds);
+  const screened = (d: DocumentRec) => screening.pagesByDoc[d.id] ?? d.pages;
   const decks = documents.filter((d) => d.kind === "deck");
   const forms = documents.filter((d) => d.kind === "form");
   if (decks.length > 1) warnings.push(`${decks.length} documents look like decks; all are used, the first is primary.`);
@@ -208,8 +231,9 @@ export function analyseDocuments(opts: {
   if (!decks.length) warnings.push("No pitch deck supplied — deck-only evidence is unavailable and deck/form cross-checks were skipped.");
   if (!forms.length) warnings.push("No application form supplied — structured fields were inferred from the deck where possible.");
 
-  const deckPages = decks.flatMap((d) => d.pages);
-  const formPages = forms[0]?.pages ?? [];
+  const deckPages = decks.flatMap((d) => screened(d));
+  const formPages = forms[0] ? screened(forms[0]) : [];
+  warnings.push(...screeningWarnings(screening));
   const deckText = deckPages.map((p) => p.text).join("\n");
   const formText = formPages.map((p) => p.text).join("\n");
 
@@ -217,7 +241,9 @@ export function analyseDocuments(opts: {
   const fields: ExtractedField[] = [];
   const fieldMap: Record<string, string> = {};
   if (forms[0]) {
-    for (const f of parseForm(forms[0].pages)) {
+    const parsed = parseFormWithProvenance(formPages);
+    for (const u of parsed.unattached) warnings.push(`Unlabelled text on Form p${u.page} after the last answer was not attached to any answer: "${u.text.slice(0, 80)}${u.text.length > 80 ? "…" : ""}"`);
+    for (const f of parsed.fields) {
       fields.push({
         id: uid("fld"),
         applicationId: appId,
@@ -237,7 +263,7 @@ export function analyseDocuments(opts: {
   }
   // deck fallbacks for core identity fields
   const deck0 = decks[0];
-  const cover = deck0?.pages[0]?.text.split("\n").map((l) => l.trim()).filter(Boolean) ?? [];
+  const cover = (deck0 ? screened(deck0) : [])[0]?.text.split("\n").map((l) => l.trim()).filter(Boolean) ?? [];
   const coverLine = cover.find((l) => /raising|pre-?seed|seed|series/i.test(l)) ?? "";
   const derive = (field: string, value: string | null, page: number, original: string) => {
     if (!value || fieldMap[field] || !deck0) return;
@@ -329,7 +355,7 @@ export function analyseDocuments(opts: {
     });
   }
   for (const d of documents) {
-    for (const p of d.pages) {
+    for (const p of screened(d)) {
       const hits: MetricHit[] = [...extractMoney(p.text), ...extractCounts(p.text)];
       const seen = new Set<string>();
       for (const h of hits) {
@@ -414,6 +440,7 @@ export function analyseDocuments(opts: {
     hasDeck: decks.length > 0,
     hasForm: forms.length > 0,
     bundle,
+    screening: { spans: screening.spans, normalisedPages: screening.normalisedPages },
   };
   const appPatch: Partial<Application> = {
     name: company.name,
@@ -426,5 +453,5 @@ export function analyseDocuments(opts: {
     valuationInr: profile.valuationInr,
     source: /introduc|referr|warm/i.test(profile.source ?? "") ? "Warm introduction" : profile.source ? "Public application form" : null,
   };
-  return { company, founders, documents, fields, claims, conflicts, profile, appPatch, warnings };
+  return { company, founders, documents, fields, claims, conflicts, profile, appPatch, warnings, screening: { spans: screening.spans, normalisedPages: screening.normalisedPages } };
 }

@@ -3,6 +3,8 @@
 import type { Application, Role } from "@/lib/shared/types";
 
 export type Action =
+  | "screening.restore"
+  | "access.grant"
   | "application.view"
   | "application.create"
   | "document.upload"
@@ -32,7 +34,7 @@ export const MATRIX: Record<Action, Role[]> = {
   "application.view": ["kushal", "aditya", "riya"],
   "application.create": ["riya", "kushal"],
   "document.upload": ["riya", "kushal"],
-  "document.view": ["kushal", "riya", "aditya"], // Aditya: deeptech only, see canViewDocuments
+  "document.view": ["kushal", "riya", "aditya"], // Aditya: only applications Kushal has shared with him (P-C)
   "extraction.edit": ["riya", "kushal"],
   "research.update": ["riya", "kushal", "aditya"],
   "evidence.add": ["riya", "kushal", "aditya"],
@@ -53,6 +55,8 @@ export const MATRIX: Record<Action, Role[]> = {
   "backtest.review": ["kushal", "aditya"],
   "admin.export": ["kushal", "riya"],
   "admin.reset": ["kushal"],
+  "screening.restore": ["riya", "kushal"],
+  "access.grant": ["kushal"],
 };
 
 export class PermissionError extends Error {
@@ -70,11 +74,21 @@ export function assertCan(role: Role, action: Action): void {
   if (!can(role, action)) throw new PermissionError(role, action);
 }
 
-/** Aditya reviews deeptech: he can open documents for deeptech/hardware applications only. */
-export function canViewDocuments(role: Role, app: Pick<Application, "tags" | "sectorKey">): boolean {
+/** P-C: an explicit, human-granted access entry for this application (never derived from founder text). */
+export function hasDocumentGrant(app: Pick<Application, "accessGrants">, role: Role): boolean {
+  return (app.accessGrants ?? []).some((g) => g.role === role);
+}
+
+/**
+ * Document access is decided by the signed-in user's role and explicit per-application grants ONLY.
+ * Sector, tags and anything else extracted from a founder's documents never widen access (P-C).
+ * Kushal and Riya see every application's documents by role; Aditya sees an application's documents only
+ * after Kushal shares it with him (audited).
+ */
+export function canViewDocuments(role: Role, app: Pick<Application, "accessGrants">): boolean {
   if (!can(role, "document.view")) return false;
   if (role !== "aditya") return true;
-  return app.sectorKey === "deeptech" || app.tags.includes("deeptech") || app.tags.includes("hardware");
+  return hasDocumentGrant(app, "aditya");
 }
 
 export const ROLE_INFO: Record<Role, { name: string; title: string; initials: string; summary: string }> = {

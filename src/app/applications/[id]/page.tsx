@@ -5,7 +5,8 @@ import { useEffect, useState } from "react";
 import { ChevronDown, ChevronRight, FileText, Lock, Pencil, RefreshCw, Send, ShieldAlert, Users, BookMarked, Plus, Check, RotateCcw } from "lucide-react";
 import { useData, useRole, useStore } from "@/lib/store";
 import { can, canViewDocuments, ROLE_INFO } from "@/lib/domain/permissions";
-import { comment, confirmField, editField, effectiveAssessment, effectiveOverall, latestEvaluation, latestOverlap, markViewed, reviewOverlap, submitForReview } from "@/lib/domain/workspace";
+import { comment, confirmField, editField, effectiveAssessment, effectiveOverall, grantDocumentAccess, latestEvaluation, latestOverlap, markViewed, reviewOverlap, revokeDocumentAccess, screeningFor, submitForReview } from "@/lib/domain/workspace";
+import { spanLocation, type ScreenedSpan } from "@/lib/engine/safety/untrusted";
 import type { Conflict, CriterionId, Evaluation, ResearchTask } from "@/lib/shared/types";
 import { CRITERION_SHORT, DECISION_TYPE_LABEL, PASS_REASON_LABEL, RECOMMENDATION_LABEL, RELATIONSHIP_LABEL, SECTOR_LABEL } from "@/lib/shared/labels";
 import { formatInr } from "@/lib/engine/evidence/metrics";
@@ -551,13 +552,16 @@ function DocumentsTab({ appId }: { appId: string }) {
   if (!canViewDocuments(role, app))
     return (
       <Callout tone="warn" title="Access restricted">
-        {ROLE_INFO[role].name} can open documents for deeptech applications only. Scores, evidence and the report remain visible. (Access is enforced in the permission layer and in Supabase RLS in production mode.)
+        {ROLE_INFO[role].name} can open an application&apos;s documents only after Kushal shares it with him. Access follows the signed-in user and explicit grants — never sector tags or anything written in the founder&apos;s documents. Scores, evidence and the report remain visible. (Enforced in the permission layer, and in Supabase RLS in production mode.)
       </Callout>
     );
   const docs = d.documents.filter((x) => x.applicationId === appId);
   const fields = d.fields.filter((f) => f.applicationId === appId);
+  const spans = screeningFor(d, appId);
   return (
     <div className="space-y-4">
+      <ScreeningPanel appId={appId} spans={spans} />
+      <AccessPanel appId={appId} />
       <Panel title="Documents" dense>
         <table className="dt">
           <thead><tr><th>File</th><th>Kind</th><th>Status</th><th>Pages</th><th>Method</th><th>SHA-256</th><th>Uploaded</th><th /></tr></thead>
@@ -580,7 +584,9 @@ function DocumentsTab({ appId }: { appId: string }) {
                       {x.pages.map((p) => (
                         <div key={p.index} className="rounded border border-line bg-surface">
                           <div className="border-b border-line px-2 py-0.5 font-mono text-[11px] text-navy-600">{x.kind === "deck" ? "Deck" : "Form"} p{p.index}</div>
-                          <pre className="whitespace-pre-wrap px-2 py-1 font-mono text-[11.5px]">{p.text}</pre>
+                          <pre className="whitespace-pre-wrap px-2 py-1 font-mono text-[11.5px]">
+                            <HighlightedPage text={p.text} spans={spans.filter((s) => s.docId === x.id && s.page === p.index)} />
+                          </pre>
                         </div>
                       ))}
                     </div>
@@ -679,5 +685,118 @@ function ActivityTab({ appId }: { appId: string }) {
         </Panel>
       </div>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------- P2 · C8: screened passages, reviewer restore, and P-C access
+
+function HighlightedPage({ text, spans }: { text: string; spans: ScreenedSpan[] }) {
+  if (!spans.length) return <>{text}</>;
+  const out: React.ReactNode[] = [];
+  let at = 0;
+  for (const s of [...spans].sort((a, b) => a.start - b.start)) {
+    if (s.start > at) out.push(text.slice(at, s.start));
+    out.push(
+      <mark key={s.id} title={`${s.kind === "hypothetical" ? "Hypothetical figure" : "Possible instruction to the evaluator"} — ${s.restored ? "restored by a reviewer" : "set aside, not scored"} [${s.id}]`} className={cx("rounded px-0.5", s.restored ? "bg-teal-50 text-teal-700" : s.kind === "hypothetical" ? "bg-warn-50 text-warn-700" : "bg-risk-50 text-risk-700")}>
+        {text.slice(s.start, s.end)}
+      </mark>,
+    );
+    at = s.end;
+  }
+  out.push(text.slice(at));
+  return <>{out}</>;
+}
+
+function ScreeningPanel({ appId, spans }: { appId: string; spans: ScreenedSpan[] }) {
+  const d = useData();
+  const role = useRole();
+  const setScreenedSpan = useStore((s) => s.setScreenedSpan);
+  const [open, setOpen] = useState<string | null>(null);
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+  const restorations = d.screeningRestorations?.filter((r) => r.applicationId === appId) ?? [];
+  const mayRestore = can(role, "screening.restore");
+  return (
+    <Panel title={<span className="flex items-center gap-1.5"><ShieldAlert size={13} /> Passages set aside for review ({spans.filter((s) => !s.restored).length})</span>} dense>
+      {spans.length === 0 ? (
+        <p className="px-3 py-2.5 text-[12.5px] text-muted">Nothing in these documents read like an instruction to the evaluator or a hypothetical figure. All founder text was screened as data before scoring.</p>
+      ) : (
+        <>
+          <div className="overflow-x-auto">
+          <table className="dt">
+            <thead><tr><th>Where</th><th>Type</th><th>Original wording (exactly as extracted)</th><th>Status</th><th /></tr></thead>
+            <tbody>
+              {spans.map((s) => {
+                const rec = restorations.filter((r) => r.spanId === s.id).at(-1);
+                return [
+                  <tr key={s.id}>
+                    <td className="whitespace-nowrap font-mono text-[11.5px]">{spanLocation(s)}<div className="text-[10.5px] text-faint">{s.id}</div></td>
+                    <td>
+                      <Badge tone={s.kind === "hypothetical" ? "warn" : "risk"}>{s.kind === "hypothetical" ? "Hypothetical figure" : "Possible instruction"}</Badge>
+                      <div className="mt-0.5 text-[11px] text-muted">{s.reasons.map((r) => r.replace(/_/g, " ")).join(", ")}</div>
+                    </td>
+                    <td className="max-w-[460px]"><blockquote className="border-l-2 border-line-strong pl-2 font-mono text-[11.5px] text-ink">{s.text}</blockquote></td>
+                    <td className="text-[12px]">
+                      {s.restored ? <Badge tone="teal">Restored — scored as unverified claim</Badge> : <Badge tone="neutral">Set aside — not scored</Badge>}
+                      {rec && <div className="mt-0.5 text-[11px] text-muted">{rec.revokedAt ? `Restored by ${ROLE_INFO[rec.restoredBy].name}, set aside again by ${ROLE_INFO[rec.revokedBy!].name}` : `By ${ROLE_INFO[rec.restoredBy].name}: “${rec.note}”`}</div>}
+                    </td>
+                    <td className="text-right">{mayRestore && <Button size="sm" variant="ghost" onClick={() => { setOpen(open === s.id ? null : s.id); setNote(""); }}>{s.restored ? "Set aside again" : "Restore…"}</Button>}</td>
+                  </tr>,
+                  open === s.id && (
+                    <tr key={s.id + "-form"}>
+                      <td colSpan={5} className="bg-paper">
+                        <div className="flex flex-wrap items-center gap-2 py-1">
+                          <input className={`${inputCls} max-w-[520px]`} value={note} onChange={(e) => setNote(e.target.value)} placeholder={s.restored ? "Why set this aside again? (recorded in the audit trail)" : "Why restore this passage? (required; recorded in the audit trail)"} />
+                          <Button size="sm" variant="primary" disabled={!note.trim() || busy} onClick={async () => { setBusy(true); const err = await setScreenedSpan(appId, s.id, !s.restored, note); setBusy(false); if (!err) setOpen(null); }}>
+                            {s.restored ? "Set aside and re-evaluate" : "Restore and re-evaluate"}
+                          </Button>
+                        </div>
+                        {!s.restored && <p className="text-[11px] text-muted">Restoring includes this text in scoring as an ordinary, unverified founder claim. It never becomes verified evidence.</p>}
+                      </td>
+                    </tr>
+                  ),
+                ];
+              })}
+            </tbody>
+          </table>
+          </div>
+          <p className="px-3 py-2 text-[11px] text-faint">Founder documents are treated as data. A passage is set aside when it reads like an instruction to the evaluating system, or presents figures hypothetically. A flag is a prompt for human review — it is not proof that the founder acted in bad faith. Original text and page numbers are kept unchanged.</p>
+        </>
+      )}
+    </Panel>
+  );
+}
+
+function AccessPanel({ appId }: { appId: string }) {
+  const d = useData();
+  const role = useRole();
+  const act = useStore((s) => s.act);
+  const [note, setNote] = useState("");
+  const app = d.applications.find((a) => a.id === appId)!;
+  const grants = app.accessGrants ?? [];
+  const aditya = grants.find((g) => g.role === "aditya");
+  const suggested = app.sectorKey === "deeptech" || app.tags.includes("deeptech") || app.tags.includes("hardware");
+  if (role !== "kushal" && !aditya) return null;
+  return (
+    <Panel title={<span className="flex items-center gap-1.5"><Lock size={13} /> Document access</span>}>
+      <div className="space-y-2 text-[12.5px]">
+        <p className="text-muted">Kushal and Riya see every application by role. Aditya sees an application&apos;s documents — and joins its calls — only when Kushal shares it here. Nothing in a founder&apos;s documents can change access.</p>
+        {aditya ? (
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="teal">Shared with Aditya</Badge>
+            <span className="text-[11.5px] text-muted">by {ROLE_INFO[aditya.grantedBy].name}, {aditya.at.slice(0, 10)} — “{aditya.note}”</span>
+            {role === "kushal" && <Button size="sm" variant="ghost" onClick={() => act((w, r) => revokeDocumentAccess(w, r, { applicationId: appId, grantee: "aditya", note: "Withdrawn from the Documents tab" }), "Access withdrawn.")}>Withdraw</Button>}
+          </div>
+        ) : (
+          role === "kushal" && (
+            <div className="flex flex-wrap items-center gap-2">
+              {suggested && <Badge tone="navy">Suggested: deeptech review</Badge>}
+              <input className={`${inputCls} max-w-[360px]`} value={note} onChange={(e) => setNote(e.target.value)} placeholder="Why share with Aditya? (recorded)" />
+              <Button size="sm" variant="primary" disabled={!note.trim()} onClick={() => { if (!act((w, r) => grantDocumentAccess(w, r, { applicationId: appId, grantee: "aditya", note }), "Shared with Aditya.")) setNote(""); }}>Share with Aditya</Button>
+            </div>
+          )
+        )}
+      </div>
+    </Panel>
   );
 }

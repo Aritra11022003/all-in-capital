@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { can, canViewDocuments, MATRIX, PermissionError } from "@/lib/domain/permissions";
-import { comment, correctScore, recordDecision, reopen, visibleDocuments, markViewed, decideLearningRule, approveCriteriaVersion, proposeCriteriaVersion, latestEvaluation } from "@/lib/domain/workspace";
+import { comment, correctScore, grantDocumentAccess, recordDecision, reopen, visibleDocuments, markViewed, decideLearningRule, approveCriteriaVersion, proposeCriteriaVersion, latestEvaluation } from "@/lib/domain/workspace";
 import { MockAIProvider } from "@/lib/engine/evaluation/provider";
 import { appByName, loadCaseBatch } from "../helpers";
 
@@ -48,13 +48,19 @@ describe("Test 12 — Kushal sees every application", () => {
 });
 
 describe("Test 13 — users cannot access unauthorised documents", () => {
-  it("Aditya can open deeptech documents only", async () => {
+  // P2 / P-C: access follows the user's role and explicit grants by Kushal — never sector tags from founder documents.
+  it("Aditya can open only applications Kushal has explicitly shared with him", async () => {
     const h = await loadCaseBatch();
-    expect(visibleDocuments(h.d, "aditya", appByName(h.d, "Pumpwise").id).allowed).toBe(true);
+    const pw = appByName(h.d, "Pumpwise").id;
+    expect(visibleDocuments(h.d, "aditya", pw).allowed).toBe(false); // deeptech sector alone grants nothing
+    expect(() => h.mutate((d) => grantDocumentAccess(d, "riya", { applicationId: pw, grantee: "aditya", note: "x" }))).toThrow(PermissionError);
+    h.mutate((d) => grantDocumentAccess(d, "kushal", { applicationId: pw, grantee: "aditya", note: "Technical diligence" }));
+    expect(visibleDocuments(h.d, "aditya", pw).allowed).toBe(true);
+    expect(h.d.audit.some((a) => a.action === "access.granted" && a.actor === "kushal")).toBe(true);
     const cap = visibleDocuments(h.d, "aditya", appByName(h.d, "CAPilot").id);
     expect(cap.allowed).toBe(false);
     expect(cap.docs).toHaveLength(0);
-    expect(canViewDocuments("riya", { tags: [], sectorKey: "fintech" })).toBe(true);
+    expect(canViewDocuments("riya", { accessGrants: [] })).toBe(true);
   });
   it("role-restricted actions are refused server-side in the domain layer", async () => {
     const h = await loadCaseBatch();

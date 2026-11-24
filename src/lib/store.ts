@@ -6,7 +6,7 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import type { Role } from "@/lib/shared/types";
 import type { DocInput } from "@/lib/engine/pipeline";
 import { normaliseText } from "@/lib/engine/extraction/text";
-import { emptyWorkspace, WORKSPACE_VERSION, type WorkspaceData } from "@/lib/domain/workspace";
+import { emptyWorkspace, restoreScreenedSpan, revokeScreenedSpanRestoration, WORKSPACE_VERSION, type WorkspaceData } from "@/lib/domain/workspace";
 import { drain, enqueueGroups, reevaluate, runJob } from "@/lib/domain/runner";
 import type { IntakeGroup } from "@/lib/domain/intake";
 import seed from "@/data/seed/applications.json";
@@ -30,6 +30,8 @@ interface StoreState {
   act: (fn: (d: WorkspaceData, role: Role) => void, success?: string) => string | null;
   submitGroups: (groups: IntakeGroup[]) => Promise<string[]>;
   reevaluate: (appId: string) => Promise<string | null>;
+  /** P2 C8: explicit reviewer action (audited), then re-evaluation with identical screening. */
+  setScreenedSpan: (appId: string, spanId: string, restore: boolean, note: string) => Promise<string | null>;
   ensureSeed: () => Promise<void>;
   failureDrill: () => Promise<string | null>;
   resetWorkspace: (withSeed: boolean) => Promise<void>;
@@ -98,6 +100,19 @@ export const useStore = create<StoreState>()(
           try {
             await reevaluate(mutate, read, appId, get().role);
             get().toast("success", "Re-evaluated. Previous evaluation retained in history.");
+            return null;
+          } catch (e) {
+            const msg = e instanceof Error ? e.message : String(e);
+            get().toast("error", msg);
+            return msg;
+          }
+        },
+        setScreenedSpan: async (appId, spanId, restore, note) => {
+          const err = get().act((d, role) => (restore ? restoreScreenedSpan : revokeScreenedSpanRestoration)(d, role, { applicationId: appId, spanId, note }));
+          if (err) return err;
+          try {
+            await reevaluate(mutate, read, appId, get().role);
+            get().toast("success", restore ? "Passage restored and re-evaluated. It counts as an unverified founder claim." : "Passage set aside again and re-evaluated.");
             return null;
           } catch (e) {
             const msg = e instanceof Error ? e.message : String(e);

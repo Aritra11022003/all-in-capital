@@ -1,14 +1,17 @@
 // Rebuilds an evaluation Profile from stored records, so re-evaluation uses human-edited extraction values.
 import type { Profile } from "@/lib/engine/pipeline";
 import { stageKey } from "@/lib/engine/pipeline";
-import { getApp, type WorkspaceData } from "./workspace";
+import { screenDocuments } from "@/lib/engine/safety/untrusted";
+import { activeRestorationIds, getApp, type WorkspaceData } from "./workspace";
 
 export function profileFromStore(d: WorkspaceData, appId: string): Profile {
   const app = getApp(d, appId);
   const docs = d.documents.filter((x) => x.applicationId === appId && x.status === "extracted");
-  const deckPages = docs.filter((x) => x.kind === "deck").flatMap((x) => x.pages);
+  // P2 C2: identical screening to first-time processing, including any audited reviewer restorations.
+  const screening = screenDocuments(docs.map((x) => ({ id: x.id, kind: x.kind, pages: x.pages })), activeRestorationIds(d, appId));
+  const deckPages = docs.filter((x) => x.kind === "deck").flatMap((x) => screening.pagesByDoc[x.id] ?? x.pages);
   const formDoc = docs.find((x) => x.kind === "form");
-  const formPages = formDoc?.pages ?? [];
+  const formPages = formDoc ? (screening.pagesByDoc[formDoc.id] ?? formDoc.pages) : [];
   const fields: Record<string, string> = {};
   for (const f of d.fields.filter((x) => x.applicationId === appId)) if (f.value && !(f.field in fields)) fields[f.field] = f.value;
   const company = d.companies.find((c) => c.id === app.companyId);
@@ -39,5 +42,6 @@ export function profileFromStore(d: WorkspaceData, appId: string): Profile {
       formFounderText: Object.entries(fields).filter(([k]) => /^founder/.test(k)).map(([, v]) => v).join("\n"),
       allText: `${deckText}\n${formText}`,
     },
+    screening: { spans: screening.spans, normalisedPages: screening.normalisedPages },
   };
 }

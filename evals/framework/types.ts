@@ -1,7 +1,7 @@
 // Evaluation framework types (L7 "Evals" pattern): a fixed scenario, a stated standard, and a checklist
 // of assertions. Each assertion is a test row with its own ID, kind (hard/soft), judge and severity.
 
-export const SUITE_VERSION = "1.2.0";
+export const SUITE_VERSION = "1.3.0";
 
 export type Severity = "critical" | "high" | "low";
 export type AssertionKind = "hard" | "soft";

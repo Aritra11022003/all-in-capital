@@ -2,6 +2,7 @@
 // No research is performed in demo mode: every task starts "not_started" and says why.
 import type { Conflict, ResearchTask, Workstream } from "@/lib/shared/types";
 import type { Profile } from "../pipeline";
+import { redactContactDetails } from "../safety/untrusted";
 
 export const SOURCE_TIERS: { tier: number; name: string }[] = [
   { tier: 1, name: "Government and regulatory sources" },
@@ -126,6 +127,7 @@ export function planResearch(appId: string, p: Profile, conflicts: Conflict[]): 
 
   return tasks.map((x, i) => ({
     ...x,
+    question: redactContactDetails(x.question), // P2 · C7: no contact details or links in generated text
     id: `rt_${appId}_${i + 1}`,
     applicationId: appId,
     status: "not_started",

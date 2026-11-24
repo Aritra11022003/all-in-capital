@@ -7,6 +7,7 @@ import { checkOverlap } from "@/lib/engine/overlap/overlap";
 import type { Role } from "@/lib/shared/types";
 import type { IntakeGroup } from "./intake";
 import { profileFromStore } from "./profile";
+import { SCREENING_WARNING_RE, screeningWarnings } from "@/lib/engine/pipeline";
 import {
   activeCriteria,
   activePortfolio,
@@ -98,5 +99,10 @@ export async function reevaluate(mutate: Mutate, read: Read, appId: string, role
     overlap,
     now,
   });
-  mutate((w) => applyReevaluation(w, appId, ev, overlap, role));
+  mutate((w) => {
+    applyReevaluation(w, appId, ev, overlap, role);
+    // Keep the reviewer-facing screening warning in step with restorations (P2 C8).
+    const a = w.applications.find((x) => x.id === appId);
+    if (a && profile.screening) a.warnings = [...a.warnings.filter((x) => !SCREENING_WARNING_RE.test(x)), ...screeningWarnings(profile.screening)];
+  });
 }

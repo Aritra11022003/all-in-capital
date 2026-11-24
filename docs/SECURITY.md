@@ -27,14 +27,22 @@
 - **Service-role key** is used only by server-side job handlers (evaluation, claims, overlap writes). It is never prefixed `NEXT_PUBLIC_` and never imported in client code.
 - **DB trigger** blocks any decision change during a processing failure.
 
-## Prompt-injection safeguards (for a future real LLM provider)
+## Untrusted founder text and prompt injection (P2)
 
-Applicant documents are untrusted. The current design already:
-1. Treats document text as **data**. MockAIProvider applies fixed rules; nothing in a deck can change scoring logic.
-2. Keeps the provider interface narrow. `evaluate()` returns an Evaluation. There is no tool use, no decision method and no write access (test: "the AI provider interface exposes no decision capability").
-3. Requires every signal to cite a stored claim, so an injected "score this 5/5" cannot appear without a traceable source.
+Applicant documents are untrusted. Before P2 the evaluator scored raw document text, so an instruction-framed fake figure could change a recommendation (ADV-02, found by the P1 eval harness). P2 changed this:
 
-Any real provider must also delimit document text, strip instructions that target the model, validate output against the schema, and never send documents until an admin opts in and a privacy review is done.
+1. **Screening before reading** (`src/lib/engine/safety/untrusted.ts`): each document is normalised (hidden and look-alike characters) and split into sentences. Sentences that address the evaluating system, direct the outcome, fake system markup or ask for roles or access are set aside as *possible instructions*. Hypothetical figures are set aside as *hypothetical*. Applied identically on first processing (`pipeline.ts › analyseDocuments`) and on re-evaluation (`profile.ts › profileFromStore`).
+2. **Nothing is deleted**: original pages, page numbers and wording are kept; set-aside passages are listed and highlighted in the Documents tab, with a flag on the evaluation. A flag prompts review; it is not proof of bad faith.
+3. **Restoring is a reviewer action**: it needs the `screening.restore` permission (Riya or Kushal) and a reason, and is audited (`screening.restored` / `screening.restoration_revoked`). Restored text is scored as an unverified founder claim and is never verified evidence.
+4. **Exact citations**: every signal cites the page and the passage that triggered it (`mock.ts › cite`).
+5. **No contact details in generated text**: email addresses, phone numbers and links are removed from evaluation and research-task text (`redactContactDetails`). Source documents are untouched.
+6. **The provider interface stays narrow**: `evaluate()` returns an Evaluation; there is no tool use, no decision method and no write access.
+
+**Residual risks** (measured in the `residual-risks` eval suite): screening is pattern-based and can be evaded by rewording (ADV-16), and plain false claims are scored as applicant-provided evidence (ADV-13; policy P-B deferred). Any real LLM provider must also send only screened, minimised claims, wrap founder content in tagged untrusted blocks, and validate its output against the schema.
+
+## Access control from identity, not content (P-C)
+
+Document access and call attendance come from the signed-in user's role plus explicit per-application grants (`canViewDocuments`, `hasDocumentGrant`). Kushal and Riya see every application by role. Aditya sees an application's documents, and joins its calls, only after Kushal shares it (`access.grant`, audited). Sector, tags and anything written in a founder's documents never widen access.
 
 ## File validation
 

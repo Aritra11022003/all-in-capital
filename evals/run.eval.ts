@@ -10,6 +10,7 @@ import { SUITE_VERSION, type HumanVerdict, type Suite } from "./framework/types"
 import { adversarialSuite, appSuite } from "./suites/app";
 import { buildLoopSuites } from "./suites/loops";
 import { existingTestsSuite } from "./suites/existing";
+import { p2AdversarialCases, regressionSuite, residualRiskSuite } from "./suites/p2";
 import { datasetFingerprints, OFFLINE_DIR, writeOfflineDatasets } from "./datasets/loops";
 
 const VERDICTS = "evals/judgements/verdicts.json";
@@ -24,7 +25,8 @@ const sh = (cmd: string) => {
 function build(): { suites: Suite[]; loops: ReturnType<typeof buildLoopSuites>; existingSummary: string } {
   const existing = existingTestsSuite();
   const loops = buildLoopSuites();
-  return { suites: [existing.suite, appSuite, adversarialSuite, ...loops.suites], loops, existingSummary: existing.summary };
+  const adversarial = { ...adversarialSuite, cases: [...adversarialSuite.cases, ...p2AdversarialCases] } as typeof adversarialSuite;
+  return { suites: [existing.suite, appSuite, adversarial, regressionSuite, residualRiskSuite, ...loops.suites], loops, existingSummary: existing.summary };
 }
 
 describe("All In Capital evaluation suite", () => {

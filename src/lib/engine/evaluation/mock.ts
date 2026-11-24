@@ -1,7 +1,6 @@
 // MockAIProvider: a deterministic, rule-based evaluator. It reads only the submitted documents,
 // cites the claim behind every signal, and never claims to have verified anything externally.
 import type {
-  Claim,
   Confidence,
   CriterionAssessment,
   CriterionId,
@@ -15,6 +14,7 @@ import type {
 import type { EvaluationInput } from "./provider";
 import { flat } from "../extraction/text";
 import { formatInr } from "../evidence/metrics";
+import { redactContactDetails, spanLocation } from "../safety/untrusted";
 
 interface Acc {
   support: Signal[];
@@ -54,25 +54,44 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
   const form = flat(p.bundle.formText);
   const founderText = p.founders.map((f) => `${f.role}. ${f.background}`).join(" ");
 
-  // Find the claim that supports a signal so every signal is cited.
+  // P2 · C4: cite the exact passage that triggered a signal. The same regex that decided the signal is run
+  // page by page over the screened text (founder pages in preference order); the citation is that page and
+  // the sentence containing the match. A citation is never taken from a different, merely similar passage.
+  // The quoted passage is the line(s) the match sits on (forms are one answer per line), narrowed to the
+  // sentence when a line is long. `t` is the page flattened line by line, identical to flat(page.text).
+  const passageAt = (lines: string[], starts: number[], idx: number, len: number) => {
+    let first = 0;
+    while (first + 1 < lines.length && starts[first + 1] <= idx) first++;
+    let last = first;
+    while (last + 1 < lines.length && starts[last + 1] < idx + len) last++;
+    const text = lines.slice(first, last + 1).join(" ");
+    if (text.length <= 320) return text;
+    const rel = idx - starts[first];
+    const from = Math.max(...[". ", "? ", "! "].map((sep) => text.lastIndexOf(sep, rel - 1)).filter((x) => x >= 0).map((x) => x + 2), 0);
+    const ends = [". ", "? ", "! "].map((sep) => text.indexOf(sep, rel + len)).filter((x) => x >= 0);
+    const to = ends.length ? Math.min(...ends) + 1 : text.length;
+    const sentence = text.slice(from, to).trim();
+    return sentence.length <= 320 ? sentence : text.slice(Math.max(0, rel - 150), Math.min(text.length, rel + len + 150)).trim();
+  };
   const cite = (re: RegExp, prefer: "form" | "deck" | "any" = "any"): { claimId?: string; ref: string; excerpt: string } | null => {
-    const ordered = [...claims].sort((a, b) => {
-      const w = (c: Claim) => (prefer !== "any" && c.sourceKind === prefer ? 0 : 1) + (c.metric ? 0.5 : 0);
-      return w(a) - w(b);
-    });
-    for (const c of ordered) {
-      const m = re.exec(c.text) ?? re.exec(c.excerpt);
-      if (m) return { claimId: c.id, ref: c.sourceLabel, excerpt: c.excerpt };
-    }
-    for (const pg of [...p.bundle.formPages.map((x) => ({ ...x, k: "Form" })), ...p.bundle.deckPages.map((x) => ({ ...x, k: "Deck" }))]) {
-      const m = re.exec(flat(pg.text));
-      if (m) return { ref: `${pg.k} p${pg.index}`, excerpt: flat(pg.text).slice(Math.max(0, m.index - 60), m.index + 100) };
+    const rx = new RegExp(re.source, re.flags.replace("g", ""));
+    const form = p.bundle.formPages.map((x) => ({ ...x, k: "Form" as const, kind: "form" as const }));
+    const deck = p.bundle.deckPages.map((x) => ({ ...x, k: "Deck" as const, kind: "deck" as const }));
+    for (const pg of prefer === "deck" ? [...deck, ...form] : [...form, ...deck]) {
+      const lines = pg.text.split("\n").map(flat).filter(Boolean);
+      const starts: number[] = [];
+      lines.reduce((off, l) => (starts.push(off), off + l.length + 1), 0);
+      const t = lines.join(" ");
+      const m = rx.exec(t);
+      if (!m) continue;
+      const claim = claims.find((c) => c.sourceKind === pg.kind && c.page === pg.index && (flat(c.excerpt).includes(m[0]) || flat(c.text).includes(m[0])));
+      return { claimId: claim?.id, ref: `${pg.k} p${pg.index}`, excerpt: passageAt(lines, starts, m.index, m[0].length) };
     }
     return null;
   };
   const sig = (a: Acc, kind: Signal["kind"], text: string, effect: number, re?: RegExp, prefer: "form" | "deck" | "any" = "any") => {
     const c = re ? cite(re, prefer) : null;
-    const s: Signal = { text, effect, kind, claimId: c?.claimId, ref: c?.ref };
+    const s: Signal = { text, effect, kind, claimId: c?.claimId, ref: c?.ref, excerpt: c?.excerpt };
     a.hasEvidence = a.hasEvidence || kind === "support" || kind === "oppose";
     if (kind === "support") a.support.push(s);
     else if (kind === "oppose") a.oppose.push(s);
@@ -199,11 +218,11 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
       const growing = nums.length >= 3 && nums.slice(0, 5).every((n, i, arr) => i === 0 || n >= arr[i - 1]);
       if (growing) sig(a, "support", `Month-on-month series shows consistent growth (${nums.slice(0, 5).join(" → ")}).`, 0.5, /Traction/i, "deck");
     }
-    const repeatRe = /repeat|retention|reorder|cohort|net revenue retention|second trip|ordered more than once/i;
-    const repeatHasNumber = /(\d+%[^.]{0,40}(repeat|cohort|second trip|retention))|((repeat|retention|cohort)[^.]{0,40}\d+%)|net revenue retention \d+|\d+ of \d+ have ordered more than once|\d+ of whom have ordered more than once/i.test(all);
+    const repeatNumRe = /(\d+%[^.]{0,40}(repeat|cohort|second trip|retention))|((repeat|retention|cohort)[^.]{0,40}\d+%)|net revenue retention \d+|\d+ of \d+ have ordered more than once|\d+ of whom have ordered more than once/i;
+    const repeatHasNumber = repeatNumRe.test(all);
     if (repeatHasNumber) {
       const cohort = /cohort/i.test(all) && (all.match(/\d+%\s*\((?:\w+ )?cohort\)|\(\w+\)/g) ?? []).length >= 2;
-      sig(a, "support", cohort ? "Repeat behaviour reported by cohort — the test the fund applies to every brand (Memo 7)." : "A repeat / retention figure is reported.", cohort ? 1 : 0.75, repeatRe);
+      sig(a, "support", cohort ? "Repeat behaviour reported by cohort — the test the fund applies to every brand (Memo 7)." : "A repeat / retention figure is reported.", cohort ? 1 : 0.75, repeatNumRe); // cite the figure, not any mention of "retention"
     } else {
       const pol = criteria.criteria.find((c) => c.id === "traction")?.missingMetricPolicy.find((x) => x.sector === p.sectorKey && x.metric === "repeat");
       if (pol) {
@@ -227,8 +246,9 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
   // ---------------- Business model & economics
   {
     const a = A.business_model;
-    const gm = /gross margin[^.\d]{0,30}(\d+)%|(\d+)% gross margin|about (\d+)% gross margin/i.exec(all);
-    if (gm) sig(a, "support", `Gross margin stated (${gm[1] ?? gm[2] ?? gm[3]}%).`, 0.5, /gross margin/i);
+    const gmRe = /gross margin[^.\d]{0,30}(\d+)%|(\d+)% gross margin|about (\d+)% gross margin/i;
+    const gm = gmRe.exec(all);
+    if (gm) sig(a, "support", `Gross margin stated (${gm[1] ?? gm[2] ?? gm[3]}%).`, 0.5, gmRe);
     const cac = metric("cac");
     if (cac.length) sig(a, "support", `CAC stated: ${cac.map((c) => `${c.text} (${c.sourceLabel})`).slice(0, 2).join("; ")}.`, 0.25, /CAC|cost per|acquisition/i);
     else if (/not measured|have not measured/i.test(all)) a.unknowns.push("CAC not yet measured (founders say so).");
@@ -474,10 +494,18 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
     if (overlap.results.length) flags.push({ level: "critical", text: `Possible portfolio conflict: ${overlap.results.map((r) => `${r.portfolioName} (${r.relationship.replace(/_/g, " ")})`).join(", ")}. Not confirmed — requires review.` });
     if (!overlap.datasetVerified) flags.push({ level: "warning", text: overlap.statusText });
   } else flags.push({ level: "warning", text: "Portfolio overlap check has not run." });
-  if (isDeeptech) flags.push({ level: "info", text: "Deeptech: Aditya joins the call and reviews technical feasibility (Meeting 3)." });
+  if (isDeeptech) flags.push({ level: "info", text: "Deeptech: Kushal may share this application with Aditya for technical review (Meeting 3). Access is granted explicitly, never from document content." });
   if (isLending) flags.push({ level: "info", text: "Lending model: risk-ownership check applied (RP-1)." });
   if (!p.hasDeck) flags.push({ level: "warning", text: "No deck supplied — deck/form cross-checks not possible." });
   if (!p.hasForm) flags.push({ level: "warning", text: "No application form supplied — fields inferred from the deck." });
+  // P2 · C6: every passage set aside by screening is visible to the reviewer. A flag is a prompt for review,
+  // not a judgement about the founder.
+  for (const s of p.screening?.spans ?? []) {
+    const loc = spanLocation(s);
+    if (s.restored) flags.push({ level: "info", text: `Reviewer restored the set-aside passage [${s.id}] on ${loc}; it is scored as an unverified founder claim.` });
+    else if (s.kind === "suspected_instruction") flags.push({ level: "critical", text: `Possible instruction to the evaluator on ${loc} [${s.id}] (${s.reasons.map((r) => r.replace(/_/g, " ")).join(", ")}) was set aside and not scored. This prompts human review; it is not proof of bad faith.` });
+    else flags.push({ level: "warning", text: `Hypothetical figures on ${loc} [${s.id}] were set aside and not scored as reported results.` });
+  }
   flags.push({ level: "info", text: "No external research performed. All evidence is applicant-provided (MockAIProvider does not research)." });
 
   // ---------------- Recommendation (never a decision)
@@ -517,6 +545,8 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
     reasons.push("Possible direct overlap with a portfolio company — Kushal to speak to the portfolio founder before any call (RP-8, Meeting 4).");
   }
   if (rec !== "pass_for_consideration" && highConf.length) reasons.push(`Ask about: ${highConf.map((c) => c.label).join("; ")}.`);
+  // P2 · C5 (wording only): name a thesis exception explicitly. Thresholds and rules are unchanged.
+  if (rec === "take_call" && stated.fit === "out_of_scope") reasons.push(`Thesis exception: ${p.sectorSelected ?? p.sectorKey} is outside the stated thesis. This call rests on applicant-provided figures that have not been independently verified.`);
 
   const criticalUnknowns = [
     ...assessments.filter((a) => a.score === null).map((a) => `${criteria.criteria.find((c) => c.id === a.criterion)?.name}: insufficient evidence`),
@@ -525,6 +555,16 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
     ...A.traction.unknowns.filter((u) => /Repeat/i.test(u) && p.sectorKey === "consumer_brand"),
   ];
 
+  // P2 · C7: generated result text never carries phone numbers, email addresses or links from founder text.
+  const R = redactContactDetails;
+  const redactSignal = (s: Signal): Signal => ({ ...s, text: R(s.text), excerpt: s.excerpt === undefined ? undefined : R(s.excerpt) });
+  for (const a of assessments) {
+    a.supporting = a.supporting.map(redactSignal);
+    a.opposing = a.opposing.map(redactSignal);
+    a.notes = a.notes.map(redactSignal);
+    a.unknowns = a.unknowns.map(R);
+    a.rationale = R(a.rationale);
+  }
   return {
     id: `ev_${input.applicationId}_${Date.now().toString(36)}`,
     applicationId: input.applicationId,
@@ -540,11 +580,11 @@ export async function mockEvaluate(input: EvaluationInput, providerId: string, p
     overall,
     coverage,
     recommendation: rec,
-    recommendationReasons: reasons,
-    flags,
+    recommendationReasons: reasons.map(R),
+    flags: flags.map((f) => ({ ...f, text: R(f.text) })),
     statedThesis: stated,
     revealedThesis: revealed,
     appliedLearningRules: appliedLearning,
-    criticalUnknowns,
+    criticalUnknowns: criticalUnknowns.map(R),
   };
 }

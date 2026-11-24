@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { applyProcessResult, correctScore, confirmSlot, effectiveAssessment, latestEvaluation, markViewed, recordDecision, reopen, submitForReview } from "@/lib/domain/workspace";
+import { applyProcessResult, correctScore, confirmSlot, grantDocumentAccess, effectiveAssessment, latestEvaluation, markViewed, recordDecision, reopen, submitForReview } from "@/lib/domain/workspace";
 import { runJob, reevaluate } from "@/lib/domain/runner";
 import { enqueueGroups } from "@/lib/domain/runner";
 import { buildIcs } from "@/lib/domain/scheduling";
@@ -114,6 +114,8 @@ describe("Test 20 — scheduling does not claim unconfirmed calendar bookings", 
     const h = await loadCaseBatch();
     const id = appByName(h.d, "Pumpwise").id;
     h.mutate((d) => markViewed(d, id, "kushal"));
+    // P2 / P-C: Aditya joins because Kushal explicitly shared the application, not because of its sector tags.
+    h.mutate((d) => grantDocumentAccess(d, "kushal", { applicationId: id, grantee: "aditya", note: "Technical diligence" }));
     h.mutate((d) => recordDecision(d, "kushal", { applicationId: id, decision: "approve_call", rationale: "Deeptech with paying customers", now: new Date("2026-11-18T06:00:00Z") }));
     const slots = h.d.slots.filter((s) => s.applicationId === id);
     for (const s of slots) {
@@ -123,7 +125,7 @@ describe("Test 20 — scheduling does not claim unconfirmed calendar bookings", 
       expect(Date.parse(s.end) - Date.parse(s.start)).toBe(30 * 60000);
       expect(s.calendarSynced).toBe(false);
       expect(s.status).toBe("proposed");
-      expect(s.attendees).toContain("aditya"); // deeptech
+      expect(s.attendees).toContain("aditya"); // shared with Aditya by Kushal
     }
     h.mutate((d) => confirmSlot(d, "riya", slots[0].id));
     const confirmed = h.d.slots.find((s) => s.id === slots[0].id)!;

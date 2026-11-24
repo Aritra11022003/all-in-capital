@@ -10,7 +10,8 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "seed": "node scripts/build-seed.mjs",
-    "eval": "node scripts/run-evals.mjs"
+    "eval": "node scripts/run-evals.mjs",
+    "eval:baseline": "CAPTURE_BASELINE=1 vitest run --config vitest.evals.config.mts evals/baseline/capture.eval.ts"
   },
   "dependencies": {
     "@svg-maps/india": "^2.0.0",

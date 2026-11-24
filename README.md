@@ -66,7 +66,7 @@ There is also a stateless API: `POST /api/process` with `{ "deckText": "...", "f
 
 | Company | Overall | Suggested action | Why (abridged) |
 |---|---|---|---|
-| Pumpwise | 4.44 | Take a call (Aditya joins) | Paying customers, field discovery; certification has no milestone plan |
+| Pumpwise | 4.44 | Take a call (Aditya joins only if Kushal grants him access) | Paying customers, field discovery; certification has no milestone plan |
 | GrainKind | 4.33 | Take a call | Cohort repeat 31→34→38%; inventory-heavy raise flagged |
 | Talkbook | 4.06 | Request info | MRR conflict (2.1 L vs 1.9 L vs seats × price 1.7 L); **possible MeetRecord overlap** |
 | StockSathi | 3.89 | Request info | 3 conflicts (38 vs 42 retailers, CAC, who funds credit); owns credit risk |

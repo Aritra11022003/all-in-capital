@@ -90,6 +90,16 @@ export function looksLikeForm(pages: DocPage[]): boolean {
 }
 
 export function parseForm(pages: DocPage[]): ParsedField[] {
+  return parseFormWithProvenance(pages).fields;
+}
+
+/**
+ * Like parseForm, plus page-boundary provenance (P2 · C3): the LAST answer no longer absorbs text that starts
+ * on a later page when the answer is already complete on its own page. Such trailing text is returned as
+ * `unattached` (with its page) so it can be shown to the reviewer instead of being merged into an answer.
+ */
+export function parseFormWithProvenance(pages: DocPage[]): { fields: ParsedField[]; unattached: { page: number; text: string }[] } {
+  const unattached: { page: number; text: string }[] = [];
   // Concatenate pages, remembering offsets for provenance.
   let full = "";
   const offsets: { start: number; page: number }[] = [];
@@ -135,6 +145,17 @@ export function parseForm(pages: DocPage[]): ParsedField[] {
     const h = hits[i];
     const next = hits[i + 1]?.start ?? full.length;
     let raw = full.slice(h.end, next);
+    if (i === hits.length - 1) {
+      const boundary = offsets.find((o) => o.start > h.end && o.start < next);
+      if (boundary) {
+        const before = full.slice(h.end, boundary.start);
+        const after = full.slice(boundary.start, next).trim();
+        if (before.trim() && /[.!?)"\u201d]\s*$/.test(before.trim())) {
+          raw = before;
+          if (after) unattached.push({ page: boundary.page, text: after.replace(/\s+/g, " ") });
+        }
+      }
+    }
     // drop trailing section headers
     const lines = raw.split("\n").map((l) => l.trim());
     while (lines.length && (SECTION_HEADERS.includes(lines[lines.length - 1]) || lines[lines.length - 1] === "")) lines.pop();
@@ -154,7 +175,7 @@ export function parseForm(pages: DocPage[]): ParsedField[] {
       originalText: `${h.label} ${value}`.slice(0, 400),
     });
   }
-  return out;
+  return { fields: out, unattached };
 }
 
 function lineBoundaryOk(full: string, start: number): boolean {
