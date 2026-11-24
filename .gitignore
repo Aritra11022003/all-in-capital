@@ -50,3 +50,6 @@ yarn-error.log*
 .pnpm-debug.log*
 .vercel
 coverage/
+
+# evaluation run artefacts (regenerate with npm run eval)
+/evals/reports/

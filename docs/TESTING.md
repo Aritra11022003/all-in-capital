@@ -2,6 +2,8 @@
 
 `npm test` runs 60 tests (Vitest, Node). `npm run typecheck`, `npm run lint` and `npm run build` must also pass.
 
+`npm run eval` runs the evaluation harness: severities, kill criteria, adversarial cases, Loop 1/Loop 2 offline evals, and a reproducible report. See [EVALS.md](EVALS.md).
+
 ## Required scenarios → tests
 
 | # | Requirement | Test |
