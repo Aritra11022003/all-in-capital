@@ -1,6 +1,6 @@
 # P2 — Security Remediation Plan: untrusted founder text (ADV-02 root cause)
 
-Status: **C1–C8 and P-C IMPLEMENTED (uncommitted, awaiting review). P-A, P-B and P-D deferred and NOT implemented.** The investigation below was written at commit `03a3c4b`; see §11 for what was built and the results.
+Status: **C1–C8 and P-C IMPLEMENTED and committed locally as `5f98bdb`; not pushed to GitHub. P-A, P-B and P-D deferred and NOT implemented.** The investigation below was written at commit `03a3c4b`; see §11 for what was built and the results.
 
 **Evidence labels**: **[SRC]** verified in source code · **[TEST]** verified by an executed probe or eval · **[INF]** inferred or proposed · **[NV]** not yet verified.
 
@@ -242,7 +242,7 @@ The weak links are signal-to-source and multi-page fields.
 
 ---
 
-## 11. Implementation record (P2 remediation, uncommitted)
+## 11. Implementation record (P2 remediation, committed locally as `5f98bdb`; not pushed)
 
 **Scope built**: C1–C8 and P-C. **Not built (deferred)**: P-A (cap on recommendations when something is set aside), P-B (two-source rule for out-of-thesis calls), P-D (wider lending check).
 
