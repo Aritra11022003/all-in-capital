@@ -125,7 +125,7 @@ Soft assertions run on a deterministic 10% sample (every 10th unique row), follo
 | app | **29/29** — APP-ID-02 now passes (identity is compared across documents) |
 | adversarial | 30/30 |
 | regression | **18/18** — REG-01 against baseline v2; REG-06 checks v2 differs from v1 only by approved changes |
-| data-integrity | All decided assertions pass; **1 item pending human review** (DI-16 review list). No verdict is recorded in `evals/judgements/verdicts.json`, so it stays `needs_review` and is not counted as passed. (Separately, you approved the two findings for the v2 baseline; that approval is not a recorded DI-16 verdict.) |
+| data-integrity | All decided assertions pass; **1 item pending human review** (DI-16 review list). No verdict is recorded in `evals/judgements/verdicts.json`, so it stays `needs_review` and is not counted as passed. Approving the two findings for the v2 baseline is not a recorded DI-16 verdict. See §4d. |
 
 **Baselines (versioned, frozen):**
 - `evals/baseline/seed-baseline.json` — **v1**, captured at `aec236a` before P2. Unchanged; used by REG-06 (lineage) and DI-16 (pre-P3 comparison).
@@ -143,7 +143,24 @@ Soft assertions run on a deterministic 10% sample (every 10th unique row), follo
 - **PB-01 to PB-03**: form + deck repetition is not corroboration; only independent evidence logged by a permitted reviewer (source, reviewer, date, criterion, `evidence.added` audit) allows reconsideration; the 10 seed recommendations are unchanged.
 - **ADV-17**: outcome statements are set aside, flagged, not scored, and restorable only by a permitted reviewer with a reason (audited).
 - **REG-08**: 11 benign outcome-style sentences are not flagged. They were written by the same author as the detector, so this is a precision check, not an independent estimate.
-- **ADV-16**: now 6/6, but **optimistic**: the outcome-statement detector was written after its miss was seen. Kept as measurement only.
+- **ADV-16**: now 6/6, but **exploratory and optimistic, not independent evidence**: the outcome-statement detector was written after the set's one miss was seen. The missed sentence stays in the set unchanged (`HELD_OUT_EVASIONS`), and the case stays measurement only. A genuinely independent held-out set remains future validation work (§4d).
+
+## 4d. Validation status: what is and is not established
+
+| Category | Status |
+|---|---|
+| **Automated checks** | Pass: unit tests, typecheck, lint, build, and every gating and calibration suite. No kill criterion fires and results are deterministic. These show the code behaves as specified on the committed fixtures. |
+| **Simulated case-study roles** | Riya (Associate), Kushal (Principal) and Aditya (Partner) are **fictional roles from the All In Capital case study**, not real people. Role-based permissions and audit trails are exercised with these roles in tests. Nothing a role "does" in a test is a human decision. |
+| **Independent human validation** | **Not done.** See the two items below. |
+
+**DI-16, pending human review.** This is an unresolved human-review limitation, **not a failed automated check**: DI-16's two automated assertions pass (scores and decisions identical to v1; every new seed conflict is flag-only). Its soft assertion `DI-16/review-list` (review hash `6031e5654d5ddda4`) asks a human to confirm two flag-only findings:
+
+- **EarnWise**: the form gives team size 5 (including 2 outsourced developers) and the deck gives 12. Classified as a **possible definition discrepancy** (medium).
+- **Yatrika**: the form states a ₹1.2 Cr raise and the deck gives no amount. Classified as **one-sided information** (low).
+
+Both are **flag-only**: neither affects any score or recommendation. The roles who would sign this off in the case (Riya or Kushal) are fictional, so no genuine sign-off can be obtained from them. No verdict has been invented: `evals/judgements/verdicts.json` does not exist, and `DI-16/review-list` stays `needs_review` (never counted as passed) until a real, named reviewer records a decision.
+
+**ADV-16, independent detection rate not measured.** The current 6/6 is exploratory (see §4c). A fair rate needs a new set written by someone who has not seen the detectors, evaluated blind against a frozen detector version, with no tuning on it afterwards. Not done.
 
 ## 5. Adding a case
 

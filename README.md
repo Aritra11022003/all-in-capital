@@ -19,6 +19,7 @@ A private decision-support platform for **All In Capital**, a Mumbai pre-seed fu
 > - **No external research is performed.** Research tasks list where to look; they stay *not started* until a person logs findings. Nothing is verified against outside sources.
 > - **Portfolio data is incomplete.** Only the seven companies named in the case are known, and they are unverified.
 > - **Supabase has not been tested against a live project.** The schema and policies are written but have never been run.
+> - **Not independently validated.** Automated checks pass, but no independent human has reviewed the results. The reviewer roles (Riya, Kushal, Aditya) are fictional case-study roles. Status: **demo-ready with disclosed limitations, not production-ready**. See [Release status](docs/RELEASE_STATUS.md).
 
 ---
 
@@ -83,6 +84,7 @@ There is also a stateless API: `POST /api/process` with `{ "deckText": "...", "f
 - [Architecture](docs/ARCHITECTURE.md) · [Implementation plan](docs/IMPLEMENTATION_PLAN.md) · [Assumptions & decisions](docs/ASSUMPTIONS_AND_DECISIONS.md)
 - [Data dictionary](docs/data-dictionary/DATA_DICTIONARY.md) · [Security](docs/SECURITY.md) · [Deployment](docs/DEPLOYMENT.md)
 - [User guide](docs/user-guide/USER_GUIDE.md) · [Testing](docs/TESTING.md) · [Known limitations](docs/KNOWN_LIMITATIONS.md) · [Demo script](docs/DEMO_SCRIPT.md)
+- [Release status](docs/RELEASE_STATUS.md) · [Evaluation harness](docs/EVALS.md)
 
 ## Data notice
 

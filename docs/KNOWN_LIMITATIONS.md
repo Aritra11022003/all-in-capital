@@ -23,5 +23,7 @@ Status key: **Implemented & tested** · **Implemented, manually verified** · **
 | Scheduling | Implemented & tested | No calendar integration. Slots are confirmed by hand and exported as `.ics`. Time zone is fixed to IST. |
 | Original files | Not stored in demo | Only extracted text with page provenance is kept. Production mode stores originals in a private bucket. |
 | Concurrency | By design | Jobs run one at a time. A page reload during processing marks the in-flight job *Failed* (documents were in memory) and asks for a re-upload. |
+| Human review sign-off (DI-16) | Pending | Two flag-only seed findings await human confirmation: EarnWise team size 5 vs 12 (possible definition discrepancy) and Yatrika ₹1.2 Cr raise stated only in the form (one-sided information). Neither affects scores. The case-study reviewers (Riya, Kushal) are fictional roles, so no genuine sign-off exists; the check stays `needs_review`. This is a review limitation, not a failed automated check. See [EVALS §4d](EVALS.md). |
+| Independent validation | Not done | No independent human has validated the system. The ADV-16 6/6 detection result is exploratory: the detector was tuned after its known miss. Benign-sentence precision sets were written by the detector's author. A blind, independently authored test set is future work. |
 | Accessibility | Partial | Keyboard-focusable controls, labelled inputs and accessible contrast. No full WCAG audit. |
 | Mobile | Partial | Desktop-first, works on tablet. On phones the sidebar becomes a dropdown and tables scroll horizontally. |
