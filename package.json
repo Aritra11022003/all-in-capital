@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "seed": "node scripts/build-seed.mjs",
     "eval": "node scripts/run-evals.mjs",
+    "eval:review-queue": "EVAL_WRITE_PRIVATE=1 node scripts/run-evals.mjs",
     "eval:baseline": "CAPTURE_BASELINE=1 vitest run --config vitest.evals.config.mts evals/baseline/capture.eval.ts"
   },
   "dependencies": {

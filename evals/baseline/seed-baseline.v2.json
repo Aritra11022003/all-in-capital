@@ -1,0 +1,1556 @@
+{
+  "version": 2,
+  "supersedes": "evals/baseline/seed-baseline.json (v1, captured at aec236a before P2; kept unchanged)",
+  "supersedesSha256": "6fc862ff6834d0f3e52e79183373b8ea1dda9acda9e46bd7499705c79a730d82",
+  "approvedChanges": [
+    "EarnWise: new flag-only conflict \"fact|fact:team_size|Team size may be counted differently: 5 vs 12\"",
+    "Yatrika: new flag-only conflict \"coverage|raise|Amount raising stated only in the form\"",
+    "Pumpwise: approved P-C flag wording (\"info:Deeptech: Kushal may share this application with Aditya for technical review (Meeting 3). Access is granted explicitly, never from document content.\")"
+  ],
+  "capturedAt": "2026-11-24T11:07:36.112Z",
+  "source": {
+    "headCommit": "783c5e9",
+    "workingTreeClean": false,
+    "diffSha256": "c3704a24675debd53a58ca2e2757c36fbac6fe7ce4435ad720a0e627f710f88f",
+    "diffScope": "git diff --binary HEAD plus untracked files, excluding: docs, evals/baseline/seed-baseline.v2.json",
+    "trackedChanged": 16,
+    "untracked": 4,
+    "note": "Captured from an uncommitted working tree based on 783c5e9 (not a commit). The checksum was computed after capture but before any further change outside docs/ (only docs/EVALS.md and docs/P3_DATA_INTEGRITY_PLAN.md changed between capture and computation), so it pins the code the snapshot was captured from. Recorded in place of the earlier \"783c5e9+uncommitted\" label; snapshot content unchanged."
+  },
+  "note": "v2: captured after P3 data-integrity remediation, with explicit approval of the two new flag-only seed findings. Scores and recommendations identical to v1. Frozen: never overwritten.",
+  "thresholds": [
+    1.5,
+    0.5,
+    3.8,
+    2.75,
+    3,
+    3.4,
+    1
+  ],
+  "scoringConfigHash": "d3b3e8e85e4750fe",
+  "apps": {
+    "StockSathi": {
+      "name": "StockSathi",
+      "recommendation": "request_info",
+      "overall": 3.89,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 4,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 4,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.75"
+          ]
+        },
+        "business_model": {
+          "score": 3,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "support:0.25",
+            "support:0.25",
+            "support:0.25"
+          ]
+        },
+        "product_tech": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "path_to_market": {
+          "score": 2.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "support:0.25",
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.25",
+            "oppose:-0.5",
+            "support:0.25",
+            "support:0.5",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "numeric|cac|Customer acquisition cost: deck and form disagree",
+        "numeric|count:retailer|onboarded|onboarded retailers: deck and form disagree",
+        "qualitative|credit_funding|Who funds the credit book: deck and form disagree"
+      ],
+      "overlap": {
+        "status": "possible_conflicts",
+        "results": [
+          "SuperK:direct_competitor"
+        ]
+      },
+      "tags": [
+        "b2b",
+        "lending",
+        "regulated"
+      ],
+      "sectorKey": "consumer_tech",
+      "stage": "Pre-seed",
+      "raiseInr": 20000000,
+      "fields": {
+        "company_name": "StockSathi (StockSathi Technologies Pvt. Ltd.)",
+        "website": "www.stocksathi.example",
+        "location": "Hyderabad, Telangana",
+        "incorporated": "March 2026",
+        "one_liner": "B2B restocking app with short-term credit for small-town kirana stores.",
+        "sector": "Consumer tech",
+        "stage": "Pre-seed",
+        "team_size": "4 (2 founders, 2 field agents)",
+        "founder_1": "Aarav Deshmukh, CEO LinkedIn: linkedin.com/in/aarav-deshmukh-example Background: FMCG distribution and field operations, 8 years. Ran a regional sales team at a large distributor.",
+        "founder_2": "Pooja Nair, CTO LinkedIn: linkedin.com/in/pooja-nair-example Background: Software engineer at a payments company, 5 years. Built the ordering app and our credit-scoring rules.",
+        "time_commitment": "Both full-time since April 2026.",
+        "prior_startup": "None for either founder.",
+        "equity": "Founders 85%, angels 15%. ESOP pool to be created.",
+        "built": "A vernacular Android app for store owners to order from partner distributors, with next-morning delivery and 7 to 14 days credit for repeat customers. Live in Karimnagar only.",
+        "customers": "42 retailers onboarded, 22 of whom have ordered more than once.",
+        "revenue": "GMV of about INR 9 lakh in the last three months. Revenue is trade margin of about 4% plus a credit fee on credit orders.",
+        "growth": "GMV has grown every month since the July launch.",
+        "repeat": "Repeat customers reorder about once a week.",
+        "acquisition": "Two field agents visit stores and onboard them. Word of mouth between neighbouring stores has helped. Our CAC is under INR 2,000 per store.",
+        "unit_economics": "Positive contribution on delivered orders once a store has ordered twice.",
+        "credit_funding": "Credit is provided through our NBFC partner. We take the first-loss risk.",
+        "credit_book": "About INR 85,000 outstanding across 12 retailers.",
+        "defaults": "None so far. We follow up personally on late payments.",
+        "regulatory_status": "Not registered as an NBFC.",
+        "competition": "Large B2B marketplaces and local wholesale markets.",
+        "why_win": "We focus only on small towns and speak the owner's language, literally and in how we assess credit.",
+        "raise": "INR 2 Cr",
+        "valuation": "INR 12 Cr post-money",
+        "existing_investors": "Three angels from the FMCG and logistics industry, INR 25 lakh in total.",
+        "use_of_funds": "Credit book, hiring, expansion to two more towns.",
+        "other_investors": "One pre-seed fund. No term sheet yet.",
+        "heard_from": "Introduction through a founder in your Fund I portfolio.",
+        "anything_else": "We have been told our credit-scoring approach is an edge. Happy to walk you through it on a call. We would also welcome your help with introductions to NBFCs."
+      },
+      "warnings": [],
+      "flags": [
+        "critical:3 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "critical:Possible portfolio conflict: SuperK (direct competitor). Not confirmed — requires review.",
+        "info:Lending model: risk-ownership check applied (RP-1).",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 possible overlap(s) found against 7 portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 3.89/5; 3 high-severity conflict(s) and 3 open unknowns.",
+        "Ask about: onboarded retailers: deck and form disagree; Customer acquisition cost: deck and form disagree; Who funds the credit book: deck and form disagree."
+      ]
+    },
+    "CAPilot": {
+      "name": "CAPilot",
+      "recommendation": "take_call",
+      "overall": 3.5,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "note:0",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 4,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 2,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-1"
+          ]
+        },
+        "traction": {
+          "score": 3.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 3,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "note:0"
+          ]
+        },
+        "product_tech": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "path_to_market": {
+          "score": 2.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5"
+          ]
+        },
+        "capital_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "numeric|count:firm|paying|paying firms: deck and form disagree"
+      ],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "ai",
+        "b2b"
+      ],
+      "sectorKey": "fintech",
+      "stage": "Pre-seed",
+      "raiseInr": 15000000,
+      "fields": {
+        "company_name": "CAPilot (CAPilot Labs Pvt. Ltd.)",
+        "website": "www.capilot.example",
+        "location": "Ahmedabad, Gujarat",
+        "incorporated": "December 2025",
+        "one_liner": "AI assistant for CA firms to reconcile GST data and draft notice replies.",
+        "sector": "Fintech",
+        "stage": "Pre-seed",
+        "team_size": "6",
+        "founder_1": "Dhruv Shah, CEO. Qualified Chartered Accountant, 4 years in practice handling GST for about 60 clients. linkedin.com/in/dhruv-shah-example",
+        "founder_2": "Isha Merchant, CTO. 3 years at a SaaS company. Built the matching engine. linkedin.com/in/isha-merchant-example",
+        "time_commitment": "Both full-time since February 2026.",
+        "prior_startup": "None.",
+        "equity": "Founders 90%, one angel 10%.",
+        "built": "A web app where CA firms upload books and GST portal data. It matches invoices, flags mismatches and drafts notice replies for the CA to review.",
+        "customers": "24 paying CA firms, 7 on free trial. 2 firms have churned.",
+        "revenue": "Monthly recurring revenue INR 78,000 (INR 9.4 L annualised).",
+        "acquisition": "Mostly the founders' network and referrals from other CAs. We have not measured acquisition cost yet.",
+        "liability": "Every drafted reply is reviewed by the CA before filing. Responsibility sits with the CA.",
+        "key_risks": "Model errors on unusual notices and dependence on GST portal data formats.",
+        "raise": "INR 1.5 Cr",
+        "valuation": "INR 10 Cr post-money",
+        "existing_investors": "One angel, INR 15 L.",
+        "use_of_funds": "Engineering and AI, sales, compliance and security.",
+        "other_investors": "None yet.",
+        "heard_from": "Public application form.",
+        "anything_else": "We believe CA firms are underserved by existing tools. We would welcome a call."
+      },
+      "warnings": [],
+      "flags": [
+        "critical:1 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 3.5/5 with 100% criteria coverage.",
+        "Use the call to resolve: paying firms: deck and form disagree.",
+        "Ask about: paying firms: deck and form disagree."
+      ]
+    },
+    "CareCorner": {
+      "name": "CareCorner",
+      "recommendation": "pass_for_consideration",
+      "overall": 3.72,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "note:0",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 3,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.25"
+          ]
+        },
+        "product_tech": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 1.5,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "oppose:-1.5",
+            "support:0.25"
+          ]
+        }
+      },
+      "conflicts": [],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "capital_intensive",
+        "regulated"
+      ],
+      "sectorKey": "healthcare",
+      "stage": "Pre-seed",
+      "raiseInr": 30000000,
+      "fields": {
+        "company_name": "CareCorner (CareCorner Health Pvt. Ltd.)",
+        "website": "www.carecorner.example",
+        "location": "Hyderabad, Telangana",
+        "incorporated": "August 2025",
+        "one_liner": "Neighbourhood primary-care clinics with in-house diagnostics for Tier-2 cities.",
+        "sector": "Other (Healthcare)",
+        "stage": "Pre-seed",
+        "team_size": "14, including 3 doctors",
+        "founder_1": "Dr. Lakshmi Reddy, CEO. MBBS, 8 years in family medicine. linkedin.com/in/lakshmi-reddy-example",
+        "founder_2": "Vikram Rao, COO. 6 years in operations at a hospital chain. linkedin.com/in/vikram-rao-example",
+        "time_commitment": "Both full-time since August 2025.",
+        "prior_startup": "None.",
+        "equity": "Founders 75%, angels 25%.",
+        "built": "Three 1,200 sq ft neighbourhood clinics in Hyderabad suburbs, each with a family doctor, in-house diagnostics and a pharmacy.",
+        "revenue": "INR 9.8 L across the three clinics in October 2026. The first clinic reached monthly breakeven in month 8.",
+        "acquisition": "About INR 210 per new patient. Local doctor referrals 45%, WhatsApp and Google listings 35%, health camps 20%.",
+        "capex": "INR 28 L per clinic, funded by angels and a INR 40 L bank loan.",
+        "key_risks": "Capital intensity, doctor retention, and slower ramp in new locations.",
+        "raise": "INR 3 Cr",
+        "valuation": "INR 18 Cr post-money",
+        "existing_investors": "Angels INR 60 L, bank loan INR 40 L.",
+        "use_of_funds": "Five new clinics, working capital, team and systems.",
+        "other_investors": "Two healthcare-focused funds.",
+        "heard_from": "Public application form.",
+        "anything_else": "We can share clinic-level P&Ls.",
+        "customers": null
+      },
+      "warnings": [],
+      "flags": [
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Outside the stated thesis (Other (Healthcare)) and overall 3.72 is not strong enough to argue for an exception."
+      ]
+    },
+    "EarnWise": {
+      "name": "EarnWise",
+      "recommendation": "pass_for_consideration",
+      "overall": 2.89,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 1,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.25",
+            "oppose:-0.25",
+            "oppose:-0.5",
+            "oppose:-0.75",
+            "oppose:-0.75",
+            "oppose:-1"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 4,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 2.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5"
+          ]
+        },
+        "traction": {
+          "score": 3.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 2.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.5"
+          ]
+        },
+        "product_tech": {
+          "score": 3.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 2,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.5"
+          ]
+        },
+        "capital_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 3,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "oppose:-0.75",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "credential|founder_credentials|Deck credentials not supported by the form: Goldman Sachs, Google, IIM Ahmedabad",
+        "fact|fact:team_size|Team size may be counted differently: 5 vs 12",
+        "numeric|count:client|live|live clients: deck and form disagree"
+      ],
+      "overlap": {
+        "status": "possible_conflicts",
+        "results": [
+          "Jai Kisan:adjacent_competitor"
+        ]
+      },
+      "tags": [
+        "b2b",
+        "lending",
+        "regulated"
+      ],
+      "sectorKey": "fintech",
+      "stage": "Pre-seed",
+      "raiseInr": 20000000,
+      "fields": {
+        "company_name": "EarnWise (EarnWise Financial Technologies Pvt. Ltd.)",
+        "website": "www.earnwise.example",
+        "location": "Gurugram, Haryana",
+        "incorporated": "January 2026",
+        "one_liner": "Earned wage access for gig and shift workers.",
+        "sector": "Fintech",
+        "stage": "Pre-seed",
+        "team_size": "5 (founder, 2 outsourced developers, 1 operations, 1 sales)",
+        "founder": "Rohit Arora, Founder and CEO. Summer analyst internship (10 weeks) at an investment bank. 5-month contract role through a vendor at a large technology company. MBA at a tier-2 business school (2022 to 2024). 18 months at a payments startup. linkedin.com/in/rohit-arora-example",
+        "time_commitment": "Full-time since January 2026.",
+        "prior_startup": "18 months as an employee at a payments startup.",
+        "earlier_cofounder": "A co-founder left in July 2026 and has moved on.",
+        "equity": "Founder 85%, one angel 15%.",
+        "built": "A web and mobile app that lets workers withdraw up to 50% of earned wages. The employer deducts the advance at payroll.",
+        "customers": "1 enterprise client live and 2 in pilot.",
+        "workers": "1,600 workers enabled.",
+        "advances": "INR 38 L disbursed since July 2026.",
+        "advances_funding": "Advances are funded by our partner NBFC's balance sheet under an agreement in principle, and partly by the founder's savings.",
+        "acquisition": "Direct outreach by the founder to HR heads.",
+        "key_risks": "Regulation of digital lending and employer payroll integration.",
+        "raise": "INR 2 Cr",
+        "valuation": "INR 12 Cr post-money",
+        "existing_investors": "One angel, INR 25 L.",
+        "use_of_funds": "Advances book, sales, team.",
+        "other_investors": "None.",
+        "heard_from": "Public application form.",
+        "anything_else": "We have a strong market and we are moving fast.",
+        "revenue": null
+      },
+      "warnings": [],
+      "flags": [
+        "critical:2 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "critical:Possible portfolio conflict: Jai Kisan (adjacent competitor). Not confirmed — requires review.",
+        "info:Lending model: risk-ownership check applied (RP-1).",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 possible overlap(s) found against 7 portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "The deck and form present the company or founder inconsistently; resolve before spending partner time."
+      ]
+    },
+    "GrainKind": {
+      "name": "GrainKind",
+      "recommendation": "take_call",
+      "overall": 4.33,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.5",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "business_model": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:-0.25",
+            "note:0",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "product_tech": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4.5,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "support:0.25",
+            "support:0.5",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "capital_intensive"
+      ],
+      "sectorKey": "consumer_brand",
+      "stage": "Pre-seed",
+      "raiseInr": 25000000,
+      "fields": {
+        "company_name": "GrainKind (GrainKind Foods Pvt. Ltd.)",
+        "website": "www.grainkind.example",
+        "location": "Bengaluru, Karnataka",
+        "incorporated": "July 2025",
+        "one_liner": "Millet-based breakfast and snacks for urban families.",
+        "sector": "Consumer brands",
+        "stage": "Pre-seed",
+        "team_size": "9",
+        "founder_1": "Ritu Hegde, CEO. 6 years in category and brand roles at a large packaged-food company. Food science degree. linkedin.com/in/ritu-hegde-example",
+        "founder_2": "Sanjay Kulkarni, COO. 5 years in supply chain at a quick-commerce company. linkedin.com/in/sanjay-kulkarni-example",
+        "time_commitment": "Both full-time since July 2025.",
+        "prior_startup": "None. First-time founders.",
+        "equity": "Founders 82%, angels 18%.",
+        "built": "Seven millet-based products. Three hero SKUs account for 87% of orders. All made by one co-packer in Hosur.",
+        "revenue": "INR 16.5 L in October 2026. INR 72 L since launch in November 2025.",
+        "channel_mix": "Own site 55%, Amazon 25%, quick commerce 20%.",
+        "repeat": "90-day repeat rate was 31% (June cohort), 34% (July) and 38% (August). Cohort data covers 3,100 customers.",
+        "unit_economics": "Gross margin 48% after COGS and packaging. Blended CAC INR 340. Contribution after CAC and logistics is 11%. 12-month LTV to CAC is about 1.8x on current data.",
+        "acquisition": "Paid social 45% of new customers (CAC INR 410), quick commerce 25% (INR 290 after promos), nutritionist referrals 20% (INR 210), gyms and sampling 10% (INR 380).",
+        "key_risks": "Single co-packer, rising paid social costs, and slower repeat on Jowar puffs.",
+        "raise": "INR 2.5 Cr",
+        "valuation": "INR 14 Cr post-money",
+        "existing_investors": "Three angels from the food and retail industry, INR 45 L in total.",
+        "use_of_funds": "Inventory and working capital, growth channel tests, team and R&D.",
+        "other_investors": "One consumer fund.",
+        "heard_from": "Public application form.",
+        "anything_else": "We can share our cohort sheet and co-packer agreement on request.",
+        "customers": null
+      },
+      "warnings": [],
+      "flags": [
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 4.33/5 with 100% criteria coverage."
+      ]
+    },
+    "Pumpwise": {
+      "name": "Pumpwise",
+      "recommendation": "take_call",
+      "overall": 4.44,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "note:0",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.25",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:-0.25",
+            "note:0",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "product_tech": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "path_to_market": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "support:0.25",
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0",
+            "support:0.25",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "ai",
+        "b2b",
+        "deeptech",
+        "hardware"
+      ],
+      "sectorKey": "deeptech",
+      "stage": "Pre-seed",
+      "raiseInr": 22000000,
+      "fields": {
+        "company_name": "Pumpwise (Pumpwise Technologies Pvt. Ltd.)",
+        "website": "www.pumpwise.example",
+        "location": "Pune, Maharashtra",
+        "incorporated": "October 2025",
+        "one_liner": "Plug-on vibration and heat sensors with anomaly alerts for motors and pumps in small factories.",
+        "sector": "Deeptech",
+        "stage": "Pre-seed",
+        "team_size": "7 (2 founders, 3 engineers, 2 field staff)",
+        "founder_1": "Karthik Subramanian, CEO. IIT Madras, mechanical engineering. 5 years as a reliability engineer at an engine maker. linkedin.com/in/karthik-subramanian-example",
+        "founder_2": "Neeraj Pillai, CTO. 4 years in embedded systems at an auto-components supplier. Designed the sensor board and firmware. linkedin.com/in/neeraj-pillai-example",
+        "time_commitment": "Both full-time since October 2025.",
+        "prior_startup": "None for either founder.",
+        "equity": "Founders 80%, angels 12%, ESOP 8%.",
+        "built": "A clip-on sensor measuring vibration and temperature, a gateway, and a model that learns each motor's normal pattern in 14 days. Alerts go to WhatsApp.",
+        "customers": "11 pilots started since March 2026. 6 converted to paid, across 140 sensors (average 23 per customer).",
+        "revenue": "INR 14.2 L cumulative, of which hardware INR 13.3 L. Monthly recurring subscription INR 1.05 L.",
+        "acquisition": "3 of 6 paid customers came through a cluster association, 2 through a pump distributor, 1 direct. Cost per paid customer is about INR 73,000 (11 pilots at INR 4.4 L / 6). This excludes founder time.",
+        "evidence_of_value": "Customers report 9 unplanned stoppages caught early during pilots, estimated by them at INR 1.8 L average downtime cost each. These figures are customer-reported, not audited.",
+        "key_risks": "Sensor accuracy across motor types, hardware supply, and longer sales cycles in larger plants.",
+        "raise": "INR 2.2 Cr",
+        "valuation": "INR 11 Cr post-money",
+        "existing_investors": "INR 30 L: a INR 10 L incubator grant and two angels (INR 20 L).",
+        "use_of_funds": "Team, sensor inventory and pilots, certification and operations.",
+        "other_investors": "Two pre-seed funds.",
+        "heard_from": "Public application form. Our incubator mentor also suggested we apply.",
+        "anything_else": "We would value a conversation about manufacturing scale-up and calibration. Happy to share pilot data."
+      },
+      "warnings": [],
+      "flags": [
+        "info:Deeptech: Kushal may share this application with Aditya for technical review (Meeting 3). Access is granted explicitly, never from document content.",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 4.44/5 with 100% criteria coverage."
+      ]
+    },
+    "RentRoute": {
+      "name": "RentRoute",
+      "recommendation": "request_info",
+      "overall": 3.11,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 3,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 4,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 1.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-1"
+          ]
+        },
+        "traction": {
+          "score": 4,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 2.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:-0.25",
+            "oppose:-0.25",
+            "oppose:-0.5",
+            "support:0.25"
+          ]
+        },
+        "product_tech": {
+          "score": 3.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 1.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.25",
+            "oppose:-0.25",
+            "oppose:-0.5",
+            "oppose:-0.5"
+          ]
+        },
+        "capital_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 3.5,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.5",
+            "support:0",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "definition|revenue|Revenue definition: deck shows gross as revenue"
+      ],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "regulated"
+      ],
+      "sectorKey": "fintech",
+      "stage": "Pre-seed",
+      "raiseInr": 18000000,
+      "fields": {
+        "company_name": "RentRoute (RentRoute Technologies Pvt. Ltd.)",
+        "website": "www.rentroute.example",
+        "location": "Bengaluru, Karnataka",
+        "incorporated": "May 2026",
+        "one_liner": "App to pay rent by credit card.",
+        "sector": "Fintech",
+        "stage": "Pre-seed",
+        "team_size": "4 (2 founders, 2 contract developers)",
+        "founder_1": "Sameer Qureshi, CEO. Product manager at a fintech for 4 years; launched two payments features. linkedin.com/in/sameer-qureshi-example",
+        "founder_2": "Divya Menon, Growth. 5 years in consumer marketing. linkedin.com/in/divya-menon-example",
+        "time_commitment": "Sameer full-time since June 2026. Divya full-time since August 2026.",
+        "prior_startup": "None.",
+        "equity": "Founders 100%.",
+        "built": "A mobile app that lets users pay rent by credit card. We pay the landlord's bank account through a payment aggregator partner.",
+        "users": "1,900 registered. 1,100 have paid at least once.",
+        "volume": "INR 6.1 Cr paid since July 2026 across 2,400 payments.",
+        "revenue": "Users pay a 1.8% fee: INR 11 L gross. After the 0.9% we pay the payment partner, net revenue is INR 5.5 L.",
+        "acquisition": "Mostly organic and word of mouth. In small paid tests we saw about INR 120 per registered user. We have not measured cost per paying user.",
+        "dependencies": "We rely on a single payment aggregator partner. Banks and card networks have changed rules on rent payments before, and a change would hit us directly.",
+        "raise": "INR 1.8 Cr",
+        "valuation": "INR 12 Cr post-money",
+        "existing_investors": "None. Founders have put in INR 18 L of savings.",
+        "use_of_funds": "Marketing, engineering, operations.",
+        "other_investors": "None.",
+        "heard_from": "Public application form.",
+        "anything_else": "We believe rent is a large, underserved payment category."
+      },
+      "warnings": [],
+      "flags": [
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 3.11/5; 0 high-severity conflict(s) and 4 open unknowns."
+      ]
+    },
+    "Settlr": {
+      "name": "Settlr",
+      "recommendation": "pass_for_consideration",
+      "overall": 3.83,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.5",
+            "support:0.5",
+            "support:0.5",
+            "support:0.75"
+          ]
+        },
+        "business_model": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "product_tech": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.25",
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 1,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "oppose:-1",
+            "oppose:-2"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [],
+      "overlap": {
+        "status": "possible_conflicts",
+        "results": [
+          "Jai Kisan:adjacent_competitor"
+        ]
+      },
+      "tags": [
+        "b2b",
+        "lending",
+        "regulated"
+      ],
+      "sectorKey": "fintech",
+      "stage": "Series A",
+      "raiseInr": 300000000,
+      "fields": {
+        "company_name": "Settlr (Settlr Fintech Pvt. Ltd.)",
+        "website": "www.settlr.example",
+        "location": "Mumbai, Maharashtra",
+        "incorporated": "April 2023",
+        "one_liner": "Payments and invoice financing for Indian SMEs.",
+        "sector": "Fintech",
+        "stage": "Series A",
+        "team_size": "31",
+        "founder_1": "Rahul Mehta, CEO. 10 years in transaction banking; led SME product at a private bank. linkedin.com/in/rahul-mehta-example",
+        "founder_2": "Sonal Iyer, CTO. 8 years in payments engineering at a large fintech. linkedin.com/in/sonal-iyer-example",
+        "time_commitment": "Both full-time since 2023.",
+        "prior_startup": "None.",
+        "equity": "Founders 58%, seed investors 30%, ESOP 12%.",
+        "built": "A payments platform for SMEs with payment links, collections reconciliation and invoice financing funded by NBFC partners.",
+        "customers": "1,150 SMEs.",
+        "revenue": "INR 86 Cr payment volume in October 2026. Net revenue INR 78 L.",
+        "unit_economics": "CAC INR 14,500 per SME, payback 7 months, gross margin 58%, net revenue retention 112%.",
+        "acquisition": "CA and accountant partners 40%, direct sales 35%, inbound and referrals 25%.",
+        "key_risks": "Credit losses on financed invoices, dependence on NBFC partners, regulation of digital lending.",
+        "raise": "INR 30 Cr",
+        "valuation": "INR 180 Cr post-money",
+        "existing_investors": "INR 9 Cr seed round in 2024, led by two institutional funds.",
+        "use_of_funds": "Financing book, sales and distribution, product, risk and compliance.",
+        "other_investors": "Four Series A funds.",
+        "heard_from": "Public application form.",
+        "anything_else": "We are looking for a lead investor for our Series A."
+      },
+      "warnings": [],
+      "flags": [
+        "critical:Possible portfolio conflict: Jai Kisan (adjacent competitor). Not confirmed — requires review.",
+        "info:Lending model: risk-ownership check applied (RP-1).",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 possible overlap(s) found against 7 portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Stage or round size is outside the pre-seed mandate (capital fit ≤ 1.5)."
+      ]
+    },
+    "Talkbook": {
+      "name": "Talkbook",
+      "recommendation": "request_info",
+      "overall": 4.06,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:1"
+          ]
+        },
+        "traction": {
+          "score": 3,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.5",
+            "support:0.5",
+            "support:0.5"
+          ]
+        },
+        "business_model": {
+          "score": 4,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.25",
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "product_tech": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.25",
+            "support:0.5"
+          ]
+        },
+        "path_to_market": {
+          "score": 4,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.5",
+            "support:0.25",
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "capital_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 3.5,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "oppose:-0.5",
+            "support:0",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "arithmetic|mrr|MRR does not reconcile with seats × price",
+        "numeric|mrr|Monthly recurring revenue: deck and form disagree"
+      ],
+      "overlap": {
+        "status": "possible_conflicts",
+        "results": [
+          "MeetRecord:direct_competitor"
+        ]
+      },
+      "tags": [
+        "ai",
+        "b2b",
+        "regulated"
+      ],
+      "sectorKey": "consumer_tech",
+      "stage": "Pre-seed",
+      "raiseInr": 20000000,
+      "fields": {
+        "company_name": "Talkbook (Talkbook AI Pvt. Ltd.)",
+        "website": "www.talkbook.example",
+        "location": "Chennai, Tamil Nadu",
+        "incorporated": "February 2026",
+        "one_liner": "AI call summaries and automatic CRM updates for Indian sales teams, including code-mixed languages.",
+        "sector": "Consumer tech",
+        "stage": "Pre-seed",
+        "team_size": "8",
+        "founder_1": "Arun Kumar, CEO. 6 years as a product lead at a CRM software company. linkedin.com/in/arun-kumar-example",
+        "founder_2": "Meenakshi S, CTO. 4 years in speech ML at a speech-technology company. linkedin.com/in/meenakshi-s-example",
+        "time_commitment": "Both full-time since March 2026.",
+        "prior_startup": "None.",
+        "equity": "Founders 95%, ESOP 5%.",
+        "built": "A call-recording and transcription layer for sales teams, with summaries and CRM field updates. Handles Hindi-English, Tamil-English and Telugu- English calls.",
+        "customers": "16 paying teams, 340 paid seats.",
+        "revenue": "MRR INR 1.9 L (INR 500 per seat per month).",
+        "unit_economics": "CAC about INR 48,000 per team, including founder time at a nominal salary. Gross margin 70%. Payback about 5 months.",
+        "acquisition": "Founder-led outbound brought 9 teams, referrals 5 and CRM consultants 2.",
+        "competition": "Gong and similar global tools, and meeting note-takers like Otter and Fireflies. We do not know of an India-first player.",
+        "key_risks": "Telecom call-recording restrictions, accuracy on noisy calls, and customer concentration in BFSI.",
+        "raise": "INR 2 Cr",
+        "valuation": "INR 12 Cr post-money",
+        "existing_investors": "None.",
+        "use_of_funds": "Engineering and language models, sales, security and operations.",
+        "other_investors": "One pre-seed fund.",
+        "heard_from": "Public application form.",
+        "anything_else": "We would value introductions to sales leaders at Indian BFSI and edtech companies."
+      },
+      "warnings": [],
+      "flags": [
+        "critical:2 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "critical:Possible portfolio conflict: MeetRecord (direct competitor). Not confirmed — requires review.",
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 possible overlap(s) found against 7 portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "Overall 4.06/5 with 100% criteria coverage.",
+        "Use the call to resolve: Monthly recurring revenue: deck and form disagree.",
+        "Possible direct overlap with a portfolio company — Kushal to speak to the portfolio founder before any call (RP-8, Meeting 4).",
+        "Ask about: Monthly recurring revenue: deck and form disagree."
+      ]
+    },
+    "Yatrika": {
+      "name": "Yatrika",
+      "recommendation": "request_info",
+      "overall": 3.39,
+      "coverage": 1,
+      "criteria": {
+        "founder_quality": {
+          "score": 2.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "note:0",
+            "oppose:-0.25",
+            "oppose:-0.5"
+          ]
+        },
+        "founder_market_fit": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0.25",
+            "support:0.75"
+          ]
+        },
+        "market": {
+          "score": 2.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5"
+          ]
+        },
+        "traction": {
+          "score": 3.5,
+          "state": "conflicting",
+          "confidence": "low",
+          "effects": [
+            "oppose:-0.5",
+            "oppose:-0.75",
+            "support:0.5",
+            "support:0.5",
+            "support:0.75"
+          ]
+        },
+        "business_model": {
+          "score": 3.5,
+          "state": "weak",
+          "confidence": "low",
+          "effects": [
+            "support:0.25"
+          ]
+        },
+        "product_tech": {
+          "score": 3,
+          "state": "mixed",
+          "confidence": "medium",
+          "effects": [
+            "oppose:-0.25",
+            "support:0.25"
+          ]
+        },
+        "path_to_market": {
+          "score": 3,
+          "state": "weak",
+          "confidence": "low",
+          "effects": []
+        },
+        "capital_fit": {
+          "score": 4.5,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "note:0",
+            "support:0.5",
+            "support:1"
+          ]
+        },
+        "thesis_fit": {
+          "score": 4,
+          "state": "strong",
+          "confidence": "medium",
+          "effects": [
+            "support:0",
+            "support:1"
+          ]
+        }
+      },
+      "conflicts": [
+        "coverage|raise|Amount raising stated only in the form",
+        "magnitude|count:traveller|Deck says \"thousands of travellers\"; form gives 1,300"
+      ],
+      "overlap": {
+        "status": "no_match_incomplete",
+        "results": []
+      },
+      "tags": [
+        "ai"
+      ],
+      "sectorKey": "consumer_tech",
+      "stage": "Pre-seed",
+      "raiseInr": 12000000,
+      "fields": {
+        "company_name": "Yatrika (Yatrika Travel Pvt. Ltd.)",
+        "website": "www.yatrika.example",
+        "location": "Jaipur, Rajasthan",
+        "incorporated": "March 2026",
+        "one_liner": "AI-planned family trips with local guides, taxis and stays.",
+        "sector": "Consumer tech",
+        "stage": "Pre-seed",
+        "team_size": "4",
+        "founder_1": "Manish Joshi. 10 years running his family's travel agency in Jaipur, which has served over 3,000 families. linkedin.com/in/manish-joshi-example",
+        "founder_2": "Kavya Nair. 3 years as a web developer. linkedin.com/in/kavya-nair-example",
+        "time_commitment": "Both full-time since March 2026.",
+        "prior_startup": "Manish has run a family business. Kavya has none.",
+        "equity": "Founders 100%.",
+        "built": "A web app where families answer 6 questions and receive an AI-drafted itinerary. The itinerary uses a language model and 40 hand-built route templates. Bookings are confirmed manually on WhatsApp.",
+        "customers": "410 bookings since launch, covering about 1,300 travellers.",
+        "revenue": "Total booking value INR 38.6 L. We earn a 12% commission, so revenue is INR 4.6 L.",
+        "repeat": "14% of families have booked a second trip.",
+        "acquisition": "Referrals from Manish's earlier agency customers and Instagram. Paid acquisition is about INR 640 per booking.",
+        "key_risks": "Quality of local partners, seasonality and manual operations that do not yet scale.",
+        "raise": "INR 1.2 Cr",
+        "valuation": "INR 8 Cr post-money",
+        "existing_investors": "None.",
+        "use_of_funds": "Marketing, technology, hiring, expansion.",
+        "other_investors": "None.",
+        "heard_from": "Public application form.",
+        "anything_else": "We are passionate about travel and would love to tell you more on a call."
+      },
+      "warnings": [],
+      "flags": [
+        "info:No external research performed. All evidence is applicant-provided (MockAIProvider does not research).",
+        "warning:1 conflicting claim(s) between documents — shown side by side, none resolved automatically.",
+        "warning:No overlap found against the 7 known portfolio companies. Portfolio overlap check incomplete — portfolio dataset not fully verified."
+      ],
+      "reasons": [
+        "The deck and form present the company or founder inconsistently; resolve before spending partner time."
+      ]
+    }
+  }
+}

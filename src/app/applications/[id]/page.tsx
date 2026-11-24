@@ -7,6 +7,7 @@ import { useData, useRole, useStore } from "@/lib/store";
 import { can, canViewDocuments, ROLE_INFO } from "@/lib/domain/permissions";
 import { comment, confirmField, editField, effectiveAssessment, effectiveOverall, grantDocumentAccess, latestEvaluation, latestOverlap, markViewed, reviewOverlap, revokeDocumentAccess, screeningFor, submitForReview } from "@/lib/domain/workspace";
 import { spanLocation, type ScreenedSpan } from "@/lib/engine/safety/untrusted";
+import { IDENTITY_WARNING_RE } from "@/lib/engine/pipeline";
 import type { Conflict, CriterionId, Evaluation, ResearchTask } from "@/lib/shared/types";
 import { CRITERION_SHORT, DECISION_TYPE_LABEL, PASS_REASON_LABEL, RECOMMENDATION_LABEL, RELATIONSHIP_LABEL, SECTOR_LABEL } from "@/lib/shared/labels";
 import { formatInr } from "@/lib/engine/evidence/metrics";
@@ -40,6 +41,7 @@ export default function ApplicationDetail() {
 
   const ev = latestEvaluation(d, app.id);
   const conflicts = d.conflicts.filter((c) => c.applicationId === app.id);
+  const identityWarnings = app.warnings.filter((w) => IDENTITY_WARNING_RE.test(w) || /NOT linked because the company's identity is disputed/.test(w));
   const overall = ev ? effectiveOverall(d, ev) : null;
   const cycle = d.cycles.find((c) => c.id === app.currentCycleId);
 
@@ -100,6 +102,14 @@ export default function ApplicationDetail() {
           </Callout>
         </div>
       )}
+      {identityWarnings.length > 0 && (
+        <div className="mb-3">
+          <Callout tone="risk" title="Company identity disputed — human review required">
+            <ul className="list-disc pl-4">{identityWarnings.map((w, i) => <li key={i}>{w}</li>)}</ul>
+            <div className="mt-1">This application is not linked to any existing company record. Review the identity conflict under Overview before relying on either document.</div>
+          </Callout>
+        </div>
+      )}
       {ev && <div className="mb-3"><SimulatedBanner label={ev.providerLabel} /></div>}
 
       <Tabs<Tab>
@@ -131,6 +141,8 @@ function OverviewTab({ appId, ev }: { appId: string; ev?: Evaluation }) {
   const founders = d.founders.filter((f) => f.companyId === app.companyId);
   const fv = (k: string) => d.fields.find((f) => f.applicationId === appId && f.field === k && f.value)?.value;
   const conflicts = d.conflicts.filter((c) => c.applicationId === appId);
+  const activeConflicts = conflicts.filter((c) => c.status !== "superseded");
+  const supersededConflicts = conflicts.filter((c) => c.status === "superseded");
   const research = d.research.filter((r) => r.applicationId === appId);
   const claims = d.claims.filter((c) => c.applicationId === appId && !c.text.startsWith("Deck slide"));
   const ov = latestOverlap(d, appId);
@@ -203,12 +215,22 @@ function OverviewTab({ appId, ev }: { appId: string; ev?: Evaluation }) {
             ]}
           />
         </Panel>
-        <Panel title={`Conflicting claims (${conflicts.length})`}>
+        <Panel title={`Conflicting claims (${activeConflicts.length})`}>
           {conflicts.length ? (
             <div className="space-y-2.5">
-              {conflicts.map((c) => (
+              {activeConflicts.map((c) => (
                 <ConflictCard key={c.id} c={c} onResolve={can(role, "conflict.resolve") ? () => setConf(c) : undefined} />
               ))}
+              {supersededConflicts.length > 0 && (
+                <details className="rounded-md border border-line px-3 py-1.5">
+                  <summary className="cursor-pointer text-[12.5px] font-medium text-muted">Superseded history ({supersededConflicts.length}) — kept for audit, no longer counted</summary>
+                  <div className="mt-2 space-y-2.5">
+                    {supersededConflicts.map((c) => (
+                      <ConflictCard key={c.id} c={c} />
+                    ))}
+                  </div>
+                </details>
+              )}
             </div>
           ) : (
             <div className="text-[12.5px] text-muted">No conflicts detected between the submitted documents{app.tags.length || ev ? "" : ""}. {ev && !ev.flags.some((f) => /deck\/form cross-checks/.test(f.text)) ? "" : "Cross-checks need both a deck and a form."}</div>

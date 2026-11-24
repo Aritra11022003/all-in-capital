@@ -152,7 +152,7 @@ add({
   title: "Deck and form belong to different companies",
   input: "Constructed mismatch: Pumpwise deck + CAPilot form submitted as one application.",
   expected: "The reviewer is warned that the documents name different companies (or founders).",
-  knownIssue: "Not implemented: the pipeline does not compare company or founder identity across documents (audit gap; candidate fix after P2).",
+  // Was a known issue until P3: identity is now compared across documents (flag-only identity conflict + D2 warning; see DI-01).
   run: () => evaluate([...seedDocs("Pumpwise", (f) => /deck/i.test(f.filename)), ...seedDocs("CAPilot", (f) => !/deck/i.test(f.filename))]),
   assertions: [
     {

@@ -13,7 +13,10 @@ import { reevaluate } from "@/lib/domain/runner";
 import { flat } from "@/lib/engine/extraction/text";
 import { redactContactDetails, screenDocuments } from "@/lib/engine/safety/untrusted";
 import { harness, SEED, seedDocs } from "../../tests/helpers";
-import { loadBaseline, recommendationThresholds, scoringConfigHash, seedSnapshot, type AppSnapshot } from "../baseline/snapshot";
+import { copyFileSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { APPROVED_V2_CONFLICT_ADDITIONS, BASELINE_FILE, BASELINE_V1_FILE, CURRENT_RELEASE, checkBaselineFile, loadBaseline, recommendationThresholds, releaseMetadata, scoringConfigHash, seedSnapshot, sha256File, writeNewBaseline, type AppSnapshot, type Baseline } from "../baseline/snapshot";
 import type { EvalCase, Suite } from "../framework/types";
 
 const NOW = "2026-11-24T10:00:00.000Z";
@@ -319,11 +322,11 @@ export const INTENDED_FLAG_CHANGE = {
 const CORE = (a: AppSnapshot) => JSON.stringify({ r: a.recommendation, o: a.overall, c: a.coverage, k: a.criteria, x: a.conflicts, v: a.overlap, t: a.tags, s: a.sectorKey, st: a.stage, rs: a.raiseInr });
 addReg({
   id: "REG-01",
-  version: 1,
+  version: 2,
   suite: "regression",
   category: "seed-regression",
   title: "No change on the 10 real seed applications",
-  input: "All 10 seed applications vs the frozen pre-P2 snapshot (evals/baseline/seed-baseline.json).",
+  input: `All 10 seed applications vs the current frozen baseline (${BASELINE_FILE}; v2 since P3, lineage checked by REG-06).`,
   expected: "Recommendations, overall, coverage, every criterion's score/state/confidence/signal effects, conflicts, overlap, tags, sector, stage and raise identical; zero passages set aside.",
   run: async () => ({ now: await seedSnapshot(), base: loadBaseline().apps, spans: (await Promise.all(SEED.map((s) => run(seedDocs(s.key), s.key)))).map((r, i) => [SEED[i].key, spansOf(r).length] as const) }),
   assertions: [
@@ -341,7 +344,7 @@ addReg({
         const intended = (flags: string[]) => flags.map((f) => (f === INTENDED_FLAG_CHANGE.before ? INTENDED_FLAG_CHANGE.after : f)).sort();
         const diff = Object.keys(o.base).filter((k) => JSON.stringify([o.now[k]?.warnings, o.now[k]?.flags, o.now[k]?.reasons]) !== JSON.stringify([o.base[k].warnings, intended(o.base[k].flags), o.base[k].reasons]));
         const applied = Object.keys(o.base).filter((k) => o.base[k].flags.includes(INTENDED_FLAG_CHANGE.before));
-        return { pass: diff.length === 0, actual: diff.length ? `changed: ${diff.join(", ")}` : `identical apart from the intended P-C flag wording (${applied.join(", ") || "none"})` };
+        return { pass: diff.length === 0, actual: diff.length ? `changed: ${diff.join(", ")}` : applied.length ? `identical apart from the intended P-C flag wording (${applied.join(", ")})` : "identical (the baseline already records the approved P-C flag wording)" };
       },
     },
   ],
@@ -406,6 +409,70 @@ addReg({
   assertions: [{ id: "unchanged", description: "Config hash and recommendation thresholds identical to the baseline", kind: "hard", judge: "code", severity: "critical", check: (o) => ({ pass: o.cfg === o.base.scoringConfigHash && JSON.stringify(o.thresholds) === JSON.stringify(o.base.thresholds), actual: `config ${o.cfg === o.base.scoringConfigHash ? "same" : "CHANGED"}; thresholds ${JSON.stringify(o.thresholds)}` }) }],
 });
 
+type Lineage = { v2: Baseline; chk: { ok: boolean; reason: string }; v1: Baseline | null };
+/** REG-06 compares content only after v1's exact bytes match the checksum recorded in v2. */
+const afterChecksum = (fn: (o: { v1: Baseline; v2: Baseline }) => { pass: boolean; actual: string }) => (o: Lineage) => (o.v1 ? fn({ v1: o.v1, v2: o.v2 }) : { pass: false, actual: `not compared: ${o.chk.reason}` });
+addReg<Lineage>({
+  id: "REG-06",
+  version: 2,
+  suite: "regression",
+  category: "baseline-lineage",
+  title: "The current baseline differs from the frozen v1 baseline only by approved changes",
+  input: `${BASELINE_FILE} vs ${BASELINE_V1_FILE} (v1, pre-P2), after verifying v1 against the checksum recorded in v2.`,
+  expected: "v1 present and byte-identical to its recorded checksum; version metadata matches the release record; scores, recommendations, criteria, coverage, overlap, tags, sector, stage, raise, fields, warnings and reasons identical; flags identical apart from the approved P-C wording; conflicts identical apart from exactly the approved additions; thresholds and scoring config unchanged.",
+  run: () => {
+    const v2 = loadBaseline();
+    const chk = checkBaselineFile(BASELINE_V1_FILE, v2.supersedesSha256);
+    return { v2, chk, v1: chk.ok ? loadBaseline(BASELINE_V1_FILE) : null };
+  },
+  assertions: [
+    { id: "v1-checksum", description: "v1 exists and matches the SHA-256 recorded in v2 (checked before any comparison)", kind: "hard", judge: "code", severity: "critical", check: (o) => ({ pass: o.chk.ok, actual: o.chk.reason }) },
+    { id: "metadata-consistent", description: "v2's version, predecessor and approved-change list match the release record", kind: "hard", judge: "code", severity: "high", check: (o) => { const r = CURRENT_RELEASE; const ok = o.v2.version === r.version && o.v2.supersedes === `${r.supersedes.file} (${r.supersedes.description})` && JSON.stringify(o.v2.approvedChanges) === JSON.stringify(r.approvedChanges) && r.file === BASELINE_FILE && r.supersedes.file === BASELINE_V1_FILE; return { pass: ok, actual: ok ? `v${o.v2.version} supersedes v${r.supersedes.version}; ${r.approvedChanges.length} approved change(s)` : "metadata differs from the release record" }; } },
+    { id: "scores-identical", description: "Every seed's recommendation, overall, coverage and criteria identical in v1 and v2", kind: "hard", judge: "code", severity: "critical", check: afterChecksum((o) => { const k = (a: AppSnapshot) => JSON.stringify([a.recommendation, a.overall, a.coverage, a.criteria]); const diff = Object.keys(o.v1.apps).filter((x) => !o.v2.apps[x] || k(o.v2.apps[x]) !== k(o.v1.apps[x])); return { pass: diff.length === 0 && Object.keys(o.v2.apps).length === Object.keys(o.v1.apps).length, actual: diff.length ? `changed: ${diff.join(", ")}` : `${Object.keys(o.v1.apps).length}/${Object.keys(o.v1.apps).length} identical` }; }) },
+    { id: "conflicts-only-approved", description: "Conflict lists differ only by the approved additions (nothing removed, nothing else added)", kind: "hard", judge: "code", severity: "critical", check: afterChecksum((o) => { const bad: string[] = []; for (const k of Object.keys(o.v1.apps)) { const a = o.v1.apps[k].conflicts, b = o.v2.apps[k]?.conflicts ?? []; const removed = a.filter((x) => !b.includes(x)); const added = b.filter((x) => !a.includes(x)); const approved = APPROVED_V2_CONFLICT_ADDITIONS[k] ?? []; if (removed.length) bad.push(`${k} removed ${removed.join("; ")}`); const extra = added.filter((x) => !approved.includes(x)); const missing = approved.filter((x) => !added.includes(x)); if (extra.length) bad.push(`${k} unapproved ${extra.join("; ")}`); if (missing.length) bad.push(`${k} approved-but-absent ${missing.join("; ")}`); } return { pass: bad.length === 0, actual: bad.length ? bad.join(" | ") : Object.entries(APPROVED_V2_CONFLICT_ADDITIONS).map(([k, c]) => `${k}: +${c.length}`).join(", ") + "; nothing else" }; }) },
+    { id: "rest-identical", description: "Overlap, tags, sector, stage, raise, fields, warnings, reasons identical; flags identical apart from the approved P-C wording", kind: "hard", judge: "code", severity: "high", check: afterChecksum((o) => { const intended = (f: string[]) => f.map((x) => (x === INTENDED_FLAG_CHANGE.before ? INTENDED_FLAG_CHANGE.after : x)).sort(); const k = (a: AppSnapshot, flags: string[]) => JSON.stringify([a.name, a.overlap, a.tags, a.sectorKey, a.stage, a.raiseInr, a.fields, a.warnings, a.reasons, flags]); const diff = Object.keys(o.v1.apps).filter((x) => k(o.v2.apps[x], [...o.v2.apps[x].flags].sort()) !== k(o.v1.apps[x], intended(o.v1.apps[x].flags))); return { pass: diff.length === 0, actual: diff.length ? `changed: ${diff.join(", ")}` : "identical (Pumpwise P-C flag wording as approved in P2)" }; }) },
+    { id: "constants-identical", description: "Recommendation thresholds and scoring config identical in v1 and v2", kind: "hard", judge: "code", severity: "critical", check: afterChecksum((o) => ({ pass: JSON.stringify(o.v1.thresholds) === JSON.stringify(o.v2.thresholds) && o.v1.scoringConfigHash === o.v2.scoringConfigHash, actual: `thresholds ${JSON.stringify(o.v2.thresholds)}; config ${o.v2.scoringConfigHash}` })) },
+  ],
+});
+// REG-07: the guards themselves, exercised on TEMPORARY copies only (the real baseline files are never written).
+addReg({
+  id: "REG-07",
+  version: 1,
+  suite: "regression",
+  category: "baseline-integrity",
+  title: "Baselines cannot be overwritten, and a missing or modified v1 is detected",
+  input: "Temporary copies of v1 and v2 in a fresh temp directory: atomic create on an existing and a new file; checksum check on an intact, a one-byte-modified and a missing v1 copy; a release that reuses v1's file name.",
+  expected: "Writing over an existing file fails with a clear error and leaves its bytes unchanged; creating a new file works once and the second write fails; intact copy passes, modified and missing copies fail with clear reasons; reusing a baseline file name is refused.",
+  run: () => {
+    const dir = mkdtempSync(join(tmpdir(), "aic-baseline-"));
+    try {
+      const v1 = join(dir, "v1.json"), v2 = join(dir, "v2.json"), fresh = join(dir, "v3.json"), modified = join(dir, "v1-modified.json");
+      copyFileSync(BASELINE_V1_FILE, v1);
+      copyFileSync(BASELINE_FILE, v2);
+      const v2Before = sha256File(v2);
+      const attempt = (f: string, b: Baseline) => { try { writeNewBaseline(f, b); return "written"; } catch (e) { return (e as Error).message; } };
+      const overwrite = attempt(v2, { capturedAt: "x", note: "temporary test file", thresholds: [], scoringConfigHash: "x", apps: {} });
+      const first = attempt(fresh, { capturedAt: "first", note: "temporary test file", thresholds: [], scoringConfigHash: "x", apps: {} });
+      const second = attempt(fresh, { capturedAt: "second", note: "temporary test file", thresholds: [], scoringConfigHash: "x", apps: {} });
+      const freshKept = JSON.parse(readFileSync(fresh, "utf8")).capturedAt;
+      const bytes = readFileSync(v1);
+      bytes[bytes.length - 2] ^= 1;
+      writeFileSync(modified, bytes);
+      const expected = sha256File(v1);
+      let reuse = "allowed";
+      try { releaseMetadata({ ...CURRENT_RELEASE, file: BASELINE_V1_FILE }); } catch (e) { reuse = (e as Error).message; }
+      return { overwrite, v2Unchanged: sha256File(v2) === v2Before, first, second, freshKept, intact: checkBaselineFile(v1, expected), changed: checkBaselineFile(modified, expected), missing: checkBaselineFile(join(dir, "absent.json"), expected), reuse };
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
+  },
+  assertions: [
+    { id: "no-overwrite", description: "Writing over an existing baseline fails clearly and leaves its bytes unchanged", kind: "hard", judge: "code", severity: "critical", check: (o) => ({ pass: /already exists and is frozen/.test(o.overwrite) && o.v2Unchanged, actual: `${/already exists and is frozen/.test(o.overwrite) ? "refused: already exists and is frozen" : o.overwrite === "written" ? "OVERWRITTEN" : "other error"}; bytes ${o.v2Unchanged ? "unchanged" : "CHANGED"}` }) },
+    { id: "create-once", description: "A new baseline file is created once; a second write fails and the first content is kept", kind: "hard", judge: "code", severity: "high", check: (o) => ({ pass: o.first === "written" && /already exists/.test(o.second) && o.freshKept === "first", actual: `first ${o.first}; second ${/already exists/.test(o.second) ? "refused" : o.second}; kept "${o.freshKept}"` }) },
+    { id: "checksum-detects", description: "Intact v1 passes; a one-byte change and a missing file fail with clear reasons", kind: "hard", judge: "code", severity: "critical", check: (o) => ({ pass: o.intact.ok && !o.changed.ok && /modified/.test(o.changed.reason) && !o.missing.ok && /missing/.test(o.missing.reason), actual: `intact ${o.intact.ok}; modified → ${o.changed.ok ? "PASSED" : "fails (modified)"}; missing → ${o.missing.ok ? "PASSED" : "fails (missing)"}` }) },
+    { id: "no-name-reuse", description: "A release cannot reuse an existing baseline file name", kind: "hard", judge: "code", severity: "high", check: (o) => ({ pass: /must use a new file name/.test(o.reuse), actual: o.reuse.slice(0, 90) }) },
+  ],
+});
 // --- review controls: restoration
 addReg({
   id: "REST-01",

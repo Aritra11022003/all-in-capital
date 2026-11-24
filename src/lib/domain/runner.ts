@@ -2,6 +2,7 @@
 // (in the UI it triggers a re-render, so every processing step is visible).
 import type { DocInput } from "@/lib/engine/pipeline";
 import { processApplication } from "@/lib/engine/process";
+import { scoredConflicts, scoringClaims } from "@/lib/engine/evidence/integrity";
 import { activeProvider } from "@/lib/engine/evaluation/provider";
 import { checkOverlap } from "@/lib/engine/overlap/overlap";
 import type { Role } from "@/lib/shared/types";
@@ -91,8 +92,9 @@ export async function reevaluate(mutate: Mutate, read: Read, appId: string, role
     applicationId: appId,
     cycleId: app.currentCycleId,
     profile,
-    claims: d.claims.filter((c) => c.applicationId === appId),
-    conflicts: d.conflicts.filter((c) => c.applicationId === appId),
+    // P3 / D1: superseded and flag-only conflicts, facts and human corrections never reach scoring.
+    claims: scoringClaims(d.claims.filter((c) => c.applicationId === appId)),
+    conflicts: scoredConflicts(d.conflicts.filter((c) => c.applicationId === appId)),
     thesis: activeThesis(d),
     criteria: activeCriteria(d),
     learningRules: d.learningRules,

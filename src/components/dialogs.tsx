@@ -118,7 +118,7 @@ export function ConflictDialog({ c, onClose }: { c: Conflict | null; onClose: ()
       }
     >
       <p className="mb-2 font-medium">{c.label}</p>
-      <Callout tone="warn">The platform never picks a side. Record what the founder or an independent source said. Both original values stay on file.</Callout>
+      <Callout tone="warn">The platform never picks a side. Record what the founder or an independent source said. Every original value stays on file.{c.scoring === "flag_only" ? " This conflict is flag only: it does not change any score or recommendation." : ""}</Callout>
       <div className="mt-3">
         <Field label="Status">
           <select className={inputCls} value={status} onChange={(e) => setStatus(e.target.value as Conflict["status"])}>

@@ -4,6 +4,7 @@ import { analyseDocuments, type Analysis, type DocInput } from "./pipeline";
 import { checkOverlap } from "./overlap/overlap";
 import { planResearch } from "./research/plan";
 import { activeProvider } from "./evaluation/provider";
+import { scoredConflicts, scoringClaims } from "./evidence/integrity";
 
 export interface ProcessResult {
   analysis: Analysis;
@@ -31,14 +32,15 @@ export async function processApplication(opts: {
   const analysis = analyseDocuments({ applicationId: opts.applicationId, cycleId: opts.cycleId, actor: opts.actor, now, docs: opts.docs, nameHint: opts.nameHint });
   opts.onStep?.("research_in_progress");
   const overlap = checkOverlap(opts.applicationId, analysis.profile, opts.portfolio, now);
-  const research = planResearch(opts.applicationId, analysis.profile, analysis.conflicts);
+  const research = planResearch(opts.applicationId, analysis.profile, scoredConflicts(analysis.conflicts));
   opts.onStep?.("evaluation_in_progress");
   const evaluation = await activeProvider().evaluate({
     applicationId: opts.applicationId,
     cycleId: opts.cycleId,
     profile: analysis.profile,
-    claims: analysis.claims,
-    conflicts: analysis.conflicts,
+    // P3: the evaluator sees founder claims and scored conflicts only; facts and flag-only conflicts never score.
+    claims: scoringClaims(analysis.claims),
+    conflicts: scoredConflicts(analysis.conflicts),
     thesis: opts.thesis,
     criteria: opts.criteria,
     learningRules: opts.learningRules,

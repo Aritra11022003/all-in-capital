@@ -18,6 +18,8 @@ import { FORM_LABELS, foundersFromDeck, looksLikeForm, parseFormWithProvenance, 
 import { flat } from "./extraction/text";
 import { extractCounts, extractMoney, parseInr, type MetricHit } from "./evidence/metrics";
 import { detectConflicts } from "./evidence/conflicts";
+import { finaliseConflicts } from "./evidence/integrity";
+import { factsFromDeck, factsFromFields } from "./evidence/facts";
 import { screenDocuments, spanLocation, type ScreeningSummary } from "./safety/untrusted";
 
 export const uid = (p: string) => `${p}_${(globalThis.crypto?.randomUUID?.() ?? Math.random().toString(36).slice(2)).replace(/-/g, "").slice(0, 12)}`;
@@ -235,7 +237,6 @@ export function analyseDocuments(opts: {
   const formPages = forms[0] ? screened(forms[0]) : [];
   warnings.push(...screeningWarnings(screening));
   const deckText = deckPages.map((p) => p.text).join("\n");
-  const formText = formPages.map((p) => p.text).join("\n");
 
   // --- fields
   const fields: ExtractedField[] = [];
@@ -334,89 +335,11 @@ export function analyseDocuments(opts: {
   }
   if (!founders.length) warnings.push("No founder information could be extracted.");
 
-  // --- claims
-  const claims: Claim[] = [];
-  const docLabel = (d: DocumentRec, page: number | null) => `${d.kind === "deck" ? "Deck" : d.kind === "form" ? "Form" : "Doc"}${page ? ` p${page}` : ""}`;
-  for (const f of fields) {
-    if (!f.value) continue;
-    const d = documents.find((x) => x.id === f.documentId)!;
-    claims.push({
-      id: uid("clm"),
-      applicationId: appId,
-      cycleId,
-      text: `${f.label.replace(/ \(from deck\)$/, "")}: ${f.value}`,
-      sourceDocId: d.id,
-      sourceKind: d.kind,
-      sourceLabel: docLabel(d, f.page),
-      page: f.page,
-      excerpt: f.originalText.slice(0, 300),
-      classification: "applicant_provided",
-      criteria: FIELD_CRITERIA[f.field.replace(/_\d+$/, "")] ?? [],
-    });
-  }
-  for (const d of documents) {
-    for (const p of screened(d)) {
-      const hits: MetricHit[] = [...extractMoney(p.text), ...extractCounts(p.text)];
-      const seen = new Set<string>();
-      for (const h of hits) {
-        const k = `${h.metric}|${h.value}|${h.projection}`;
-        if (seen.has(k)) continue;
-        seen.add(k);
-        claims.push({
-          id: uid("clm"),
-          applicationId: appId,
-          cycleId,
-          text: `${h.display}${h.projection ? " (projection / market sizing)" : ""}`,
-          metric: h.projection ? `projection:${h.metric}` : h.metric,
-          value: h.value,
-          bound: h.bound,
-          unit: h.unit,
-          period: h.period,
-          sourceDocId: d.id,
-          sourceKind: d.kind,
-          sourceLabel: docLabel(d, p.index),
-          page: p.index,
-          excerpt: h.excerpt,
-          classification: "applicant_provided",
-          criteria: h.projection ? ["market"] : metricCriteria(h.metric.split(":")[0] === "count" ? "count" : h.metric),
-        });
-      }
-      if (d.kind === "deck") {
-        const title = p.text.split("\n")[0]?.trim();
-        if (title && title.length > 6 && p.index > 1) {
-          claims.push({
-            id: uid("clm"),
-            applicationId: appId,
-            cycleId,
-            text: `Deck slide headline: "${title}"`,
-            sourceDocId: d.id,
-            sourceKind: "deck",
-            sourceLabel: docLabel(d, p.index),
-            page: p.index,
-            excerpt: flat(p.text).slice(0, 300),
-            classification: "applicant_provided",
-            criteria: [],
-          });
-        }
-      }
-    }
-  }
-
-  const bundle: DocBundle = {
-    deckPages,
-    formPages,
-    deckText,
-    formText,
-    formFounderText: founderFields.map((f) => f.value).join("\n") + "\n" + (fieldMap.prior_startup ?? ""),
-    allText: `${deckText}\n${formText}`,
-  };
-  const conflicts = detectConflicts(appId, claims, bundle);
-  for (const c of conflicts) {
-    for (const s of [c.a, c.b]) {
-      const cl = claims.find((x) => x.id === s.claimId);
-      if (cl) cl.classification = "conflicting";
-    }
-  }
+  // --- claims and conflicts (shared with the P3 re-check, so intake and re-checks can never diverge)
+  const { claims, conflicts, bundle } = buildEvidence({ appId, cycleId, documents, pagesOf: screened, fields });
+  // P3 / D2: a disputed company identity is never linked automatically; a reviewer must look first.
+  const idWarning = identityWarning(conflicts);
+  if (idWarning) warnings.push(idWarning);
 
   const sectorSelected = fieldMap.sector ?? null;
   const sectorKey = sectorKeyFrom(sectorSelected, bundle.allText);
@@ -454,4 +377,128 @@ export function analyseDocuments(opts: {
     source: /introduc|referr|warm/i.test(profile.source ?? "") ? "Warm introduction" : profile.source ? "Public application form" : null,
   };
   return { company, founders, documents, fields, claims, conflicts, profile, appPatch, warnings, screening: { spans: screening.spans, normalisedPages: screening.normalisedPages } };
+}
+
+const docLabelOf = (d: DocumentRec, page: number | null) => `${d.kind === "deck" ? "Deck" : d.kind === "form" ? "Form" : "Doc"}${page ? ` p${page}` : ""}`;
+
+/** Applicant claims from documents: form answers, money/count figures, deck slide headlines, then (P3) facts. */
+export function buildApplicantClaims(o: { appId: string; cycleId: string; documents: DocumentRec[]; pagesOf: (d: DocumentRec) => DocPage[]; fields: ExtractedField[] }): Claim[] {
+  const { appId, cycleId, documents, pagesOf, fields } = o;
+  const claims: Claim[] = [];
+  for (const f of fields) {
+    if (!f.value) continue;
+    const d = documents.find((x) => x.id === f.documentId);
+    if (!d) continue;
+    claims.push({
+      id: uid("clm"),
+      applicationId: appId,
+      cycleId,
+      text: `${f.label.replace(/ \(from deck\)$/, "")}: ${f.value}`,
+      sourceDocId: d.id,
+      sourceKind: d.kind,
+      sourceLabel: docLabelOf(d, f.page),
+      page: f.page,
+      excerpt: f.originalText.slice(0, 300),
+      classification: "applicant_provided",
+      criteria: FIELD_CRITERIA[f.field.replace(/_\d+$/, "")] ?? [],
+      fieldId: f.id,
+    });
+  }
+  for (const d of documents) {
+    for (const p of pagesOf(d)) {
+      const hits: MetricHit[] = [...extractMoney(p.text), ...extractCounts(p.text)];
+      const seen = new Set<string>();
+      for (const h of hits) {
+        const k = `${h.metric}|${h.value}|${h.projection}`;
+        if (seen.has(k)) continue;
+        seen.add(k);
+        claims.push({
+          id: uid("clm"),
+          applicationId: appId,
+          cycleId,
+          text: `${h.display}${h.projection ? " (projection / market sizing)" : ""}`,
+          metric: h.projection ? `projection:${h.metric}` : h.metric,
+          value: h.value,
+          bound: h.bound,
+          unit: h.unit,
+          period: h.period,
+          sourceDocId: d.id,
+          sourceKind: d.kind,
+          sourceLabel: docLabelOf(d, p.index),
+          page: p.index,
+          excerpt: h.excerpt,
+          classification: "applicant_provided",
+          criteria: h.projection ? ["market"] : metricCriteria(h.metric.split(":")[0] === "count" ? "count" : h.metric),
+          ...(h.asOf ? { asOf: h.asOf } : {}),
+        });
+      }
+      if (d.kind === "deck") {
+        const title = p.text.split("\n")[0]?.trim();
+        if (title && title.length > 6 && p.index > 1) {
+          claims.push({
+            id: uid("clm"),
+            applicationId: appId,
+            cycleId,
+            text: `Deck slide headline: "${title}"`,
+            sourceDocId: d.id,
+            sourceKind: "deck",
+            sourceLabel: docLabelOf(d, p.index),
+            page: p.index,
+            excerpt: flat(p.text).slice(0, 300),
+            classification: "applicant_provided",
+            criteria: [],
+          });
+        }
+      }
+    }
+  }
+  // P3: facts are appended last so the order (and every citation) of the claims above is unchanged.
+  claims.push(...factsFromFields(uid, appId, cycleId, fields, documents));
+  claims.push(...factsFromDeck(uid, appId, cycleId, documents.filter((d) => d.kind === "deck"), pagesOf));
+  return claims;
+}
+
+/** Claims plus all conflicts. `corrections` (P3) replace the applicant claims they correct for checking only. */
+export function buildEvidence(o: { appId: string; cycleId: string; documents: DocumentRec[]; pagesOf: (d: DocumentRec) => DocPage[]; fields: ExtractedField[]; claims?: Claim[]; corrections?: Claim[] }): { claims: Claim[]; conflicts: Conflict[]; bundle: DocBundle } {
+  const { appId, cycleId, documents, pagesOf, fields } = o;
+  const claims = o.claims ?? buildApplicantClaims(o);
+  const decks = documents.filter((d) => d.kind === "deck");
+  const forms = documents.filter((d) => d.kind === "form");
+  const deckPages = decks.flatMap((d) => pagesOf(d));
+  const formPages = forms[0] ? pagesOf(forms[0]) : [];
+  const deckText = deckPages.map((p) => p.text).join("\n");
+  const formText = formPages.map((p) => p.text).join("\n");
+  const fieldMap: Record<string, string> = {};
+  for (const f of fields) if (f.value && !(f.field in fieldMap)) fieldMap[f.field] = f.value;
+  const founderFields = fields.filter((f) => /^founder(_\d)?$/.test(f.field) && f.value);
+  const bundle: DocBundle = {
+    deckPages,
+    formPages,
+    deckText,
+    formText,
+    formFounderText: founderFields.map((f) => f.value).join("\n") + "\n" + (fieldMap.prior_startup ?? ""),
+    allText: `${deckText}\n${formText}`,
+  };
+  const corrections = (o.corrections ?? []).filter((c) => !c.withdrawn);
+  const corrected = new Set(corrections.flatMap((c) => c.correctsClaimIds ?? []));
+  const effective = [...claims.filter((c) => !c.withdrawn && !corrected.has(c.id)), ...corrections];
+  // The six existing rules, unchanged and still scored (facts are not passed to them).
+  const scored = detectConflicts(appId, effective.filter((c) => !c.fact), bundle);
+  for (const c of scored) {
+    for (const s of [c.a, c.b]) {
+      const cl = claims.find((x) => x.id === s.claimId);
+      if (cl) cl.classification = "conflicting";
+    }
+  }
+  const conflicts = finaliseConflicts(appId, cycleId, scored, effective, { deck: decks.length > 0, form: forms.length > 0 });
+  return { claims, conflicts, bundle };
+}
+
+export const IDENTITY_WARNING_RE = /^Company identity disputed:/;
+/** D2: warning text when company identity is disputed (contradiction or possible match), else null. */
+export function identityWarning(conflicts: Conflict[]): string | null {
+  const c = conflicts.find((x) => x.metric === "fact:company_name" && x.status !== "superseded" && (x.relation === "contradiction" || x.relation === "possible_match"));
+  if (!c) return null;
+  const names = (c.values ?? [c.a, c.b]).map((v) => `"${v.display.replace(/^Company name: /, "")}" (${v.sourceLabel})`).join(" vs ");
+  return `Company identity disputed: ${names}. ${c.relation === "possible_match" ? "Possible match only — " : ""}Not linked to any existing company record; a reviewer must confirm identity before deciding.`;
 }

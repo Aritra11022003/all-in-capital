@@ -11,8 +11,8 @@ Outputs (all git-ignored):
 | File | Contents |
 |---|---|
 | `evals/reports/<runId>/report.md` and `report.json`; `evals/reports/LATEST.md` | Full results: verdict, severity × status, suites, judges, kill list, documented failures, categories, every assertion. Record IDs and aggregates only. |
-| `data/private/evals/loop{1,2}.offline.json` | The offline Loop 1 / Loop 2 datasets built from the B6 exports (private) |
-| `data/private/eval-review/<runId>-review-queue.csv` | Soft assertions waiting for a human verdict, with the material to read (private: contains email text) |
+| `data/private/evals/loop{1,2}.offline.json` | The offline Loop 1 / Loop 2 datasets built from the B6 exports (private). Written **only** by `npm run eval:review-queue` (`EVAL_WRITE_PRIVATE=1`); a normal `npm run eval` reads `data/private` and writes nothing there. |
+| `data/private/eval-review/<runId>-review-queue.csv` | Soft assertions waiting for a human verdict, with the material to read (private: contains email text). Written **only** by `npm run eval:review-queue`. It is a reading list, never a source of verdicts. |
 
 `npm test` is unchanged and still runs only the original 60 tests.
 
@@ -51,7 +51,8 @@ Outputs (all git-ignored):
 | `existing-tests` | gating | The 60 original Vitest tests, **unchanged**. Severity and category are assigned in `evals/suites/existing.ts` (e.g. permission, decision, failure-handling and labelling tests are critical; file-format tests are low). |
 | `app` | gating | Source conflicts (APP-CONF), missing information and "unknown ≠ zero" (APP-MISS), founder identity (APP-ID), incomplete portfolio (APP-PORT), **AI cannot make a partner decision** (APP-DEC), **failed jobs never appear completed** and 20-at-once with lost documents (APP-JOB), labelling (APP-LBL), determinism (APP-DET), **no sending or booking without a human** (APP-SEND) |
 | `adversarial` | gating | Prompt injection in founder documents. ADV-01 to ADV-05 (P1): direct instruction, instruction-framed fake metrics, fake markup, contact-detail request, fake decision. ADV-06 to ADV-15 (P2): citation integrity, hypothetical figures, page-boundary absorption, disguised characters, learning-rule triggering, the same attack on re-evaluation, contact-detail leakage, founder text widening access (P-C), role/access requests. Constructed fixtures appended to seed applications. |
-| `regression` | gating | P2 guards: REG-01 seed batch vs the frozen pre-P2 snapshot (`evals/baseline/seed-baseline.json`) and zero false positives; REG-02 genuine caveats not screened; DIST-01 plain claims not treated as instructions and cited exactly; REG-04 `/api/process` statuses; REG-05 scoring weights and recommendation thresholds unchanged; REST-01 audited reviewer restoration, never verified. |
+| `regression` | gating | P2 guards: REG-01 seed batch vs the current frozen baseline (`evals/baseline/seed-baseline.v2.json`, v2) and zero false positives; REG-06 v1 (`seed-baseline.json`) matches the SHA-256 recorded in v2, then v2 differs from v1 only by approved changes; REG-07 baselines cannot be overwritten and a missing or modified v1 is detected; REG-02 genuine caveats not screened; DIST-01 plain claims not treated as instructions and cited exactly; REG-04 `/api/process` statuses; REG-05 scoring weights and recommendation thresholds unchanged (vs v2); REST-01 audited reviewer restoration, never verified. |
+| `data-integrity` | gating | P3 (`evals/suites/p3.ts`): DI-01 to DI-16 — identity, founders, roles, raise/valuation (all values, within one document), founded vs incorporated, stage, as-of updates, periods and units, location, team size, re-checks after human edits and P2 restorations, resolution carry-over, one-sided facts, no score change on the seeds; EXG-01/EXG-02 extraction guards (GrainKind ₹380, RentRoute market sizing). |
 | `residual-risks` | measurement | Accepted, deferred risks kept visible: ADV-13 plain false claims (P-B deferred); ADV-16 held-out reworded instructions (detection rate). |
 | `harness` | calibration | "Break it on purpose": a deliberately broken email must fail every critical check (HARNESS-L2-01), and a correct one must pass every hard check (HARNESS-L2-02). Both are constructed, fictional fixtures. |
 | `loop2-gold` | calibration | Riya's 55 unique, non-exceptional sent emails. They must never trip a critical check; if they do, the rubric is wrong. |
@@ -114,7 +115,27 @@ Soft assertions run on a deterministic 10% sample (every 10th unique row), follo
 - Set aside on real text: 0 of 10 seed applications; 0 of 40 Loop 1 summaries; 0 of 60 Loop 2 founder fact sets; 0 of 120 Loop 2 emails (drafts and finals).
 - Benign probes: 13/15 clean. The 2 flagged were planning statements with figures ("we assume 3% churn", "imagine 10,000 clinics"), set aside as *hypothetical* by design: visible and restorable.
 
-**Baseline**: `npm run eval:baseline` regenerates the frozen snapshot. Run it only with explicit approval, because it redefines "no change".
+**Baseline** (as of P2): v1 was captured with `npm run eval:baseline`. Since P3, baselines are versioned and that command only writes a new version file; it never overwrites one (see §4b).
+
+## 4b. Results — P3 (results hash `d1cf375b…`, identical on two full runs; `npm run eval` exits 0)
+
+| Suite | Result |
+|---|---|
+| existing-tests | 60/60 (unchanged tests) |
+| app | **29/29** — APP-ID-02 now passes (identity is compared across documents) |
+| adversarial | 30/30 |
+| regression | **18/18** — REG-01 against baseline v2; REG-06 checks v2 differs from v1 only by approved changes |
+| data-integrity | All decided assertions pass; **1 item pending human review** (DI-16 review list). No verdict is recorded in `evals/judgements/verdicts.json`, so it stays `needs_review` and is not counted as passed. (Separately, you approved the two findings for the v2 baseline; that approval is not a recorded DI-16 verdict.) |
+
+**Baselines (versioned, frozen):**
+- `evals/baseline/seed-baseline.json` — **v1**, captured at `aec236a` before P2. Unchanged; used by REG-06 (lineage) and DI-16 (pre-P3 comparison).
+- `evals/baseline/seed-baseline.v2.json` — **v2**, the current baseline (REG-01, REG-05). Captured from an **uncommitted** working tree based on `783c5e9`; `source` records the HEAD commit, `workingTreeClean: false` and a checksum of the changes. Identical to v1 except two approved flag-only seed conflicts and the approved P-C flag wording:
+  - EarnWise: team size 5 vs 12, possible definition discrepancy (the form counts outsourced developers), medium.
+  - Yatrika: raise INR 1.2 Cr stated only in the form, one-sided information, low.
+
+**History rewrite before public release.** Before the first push, the five local commits were rebuilt so that no committed version contains private wording (record IDs, row-level paraphrases or copied phrases from the B6 exports; see the dataset audit). Commit subjects, authorship, dates, code, tests and evaluation behaviour are unchanged, and the frozen baselines are byte-for-byte identical. Old → new commit IDs: `001c7e9` → `74d0c1c` (P0), `aec236a` → `03a3c4b` (P1), `c056e74` → `5f98bdb` (P2), `783c5e9` → `391202d` (P2.1), `7241e23` → the P3 commit that contains this note. The frozen baselines keep their original provenance fields: v1's `gitCommit: aec236a` and v2's `supersedes` and `source.headCommit: 783c5e9` name the pre-rewrite commits, which are not in the published history; their code matches `03a3c4b` and `391202d` except for documentation and evaluation-annotation wording. v2's `source.diffSha256` was computed against the pre-rewrite tree and cannot be recomputed from published commits; the snapshot content it describes is unaffected (REG-01, REG-06).
+
+`npm run eval:baseline` captures the last entry of `BASELINE_RELEASES` (`evals/baseline/snapshot.ts`) and creates the file atomically (exclusive create): it fails if the file already exists, so no version can be overwritten. A new version needs a new release entry with a new file name, and explicit approval. v2 records v1's SHA-256 (`supersedesSha256`), which REG-06 verifies before comparing. Capture also records `source` provenance (HEAD commit, whether the tree was clean, and a checksum of any uncommitted changes) and never labels an uncommitted tree as a commit.
 
 ## 5. Adding a case
 

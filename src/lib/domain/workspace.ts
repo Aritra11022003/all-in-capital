@@ -36,13 +36,15 @@ import type {
   SourceType,
   ThesisVersion,
 } from "@/lib/shared/types";
-import { assertCan, canViewDocuments, hasDocumentGrant, ROLE_INFO } from "./permissions";
+import { assertCan, can, canViewDocuments, hasDocumentGrant, PermissionError, ROLE_INFO } from "./permissions";
 import { screenDocuments, spanLocation, type ScreenedSpan } from "@/lib/engine/safety/untrusted";
 import { DECISION_TO_STATUS } from "@/lib/shared/labels";
 import { attendeesFor, DEFAULT_AVAILABILITY, proposeSlots } from "./scheduling";
 import { CRITERIA_V1, THESIS_V1 } from "@/config/thesis";
 import { PORTFOLIO_V1 } from "@/config/portfolio";
-import { uid } from "@/lib/engine/pipeline";
+import { buildApplicantClaims, buildEvidence, identityWarning, IDENTITY_WARNING_RE, uid } from "@/lib/engine/pipeline";
+import { extractCounts, extractMoney } from "@/lib/engine/evidence/metrics";
+import { factsFromFields } from "@/lib/engine/evidence/facts";
 import type { ProcessResult } from "@/lib/engine/process";
 import { checkOverlap } from "@/lib/engine/overlap/overlap";
 
@@ -273,7 +275,11 @@ export function applyProcessResult(d: WorkspaceData, jobId: string, r: ProcessRe
   const app = getApp(d, j.applicationId);
   const a = r.analysis;
   // one company → many applications: reuse an existing company with the same name
-  const existing = d.companies.find((c) => c.id !== app.companyId && c.name.toLowerCase() === a.company.name.toLowerCase());
+  // D2: never link automatically when the documents dispute the company's identity.
+  const disputed = !!identityWarning(a.conflicts);
+  const sameName = d.companies.find((c) => c.id !== app.companyId && c.name.toLowerCase() === a.company.name.toLowerCase());
+  const existing = disputed ? undefined : sameName;
+  if (disputed && sameName) app.warnings.push(`A company record named "${sameName.name}" already exists; NOT linked because the company's identity is disputed. A reviewer must decide.`);
   const placeholder = d.companies.find((c) => c.id === app.companyId);
   if (existing) {
     d.companies = d.companies.filter((c) => c.id !== app.companyId);
@@ -347,13 +353,22 @@ export function editField(d: WorkspaceData, role: Role, fieldId: string, value: 
   f.value = value && value.trim() ? value.trim() : null;
   f.validation = f.value === f.originalValue ? "human_confirmed" : "human_edited";
   f.editedBy = role;
+  f.editedAt = nowIso();
   audit(d, role, "extraction.edited", "extracted_field", fieldId, `${f.label}: "${before ?? "—"}" → "${f.value ?? "—"}"`, f.applicationId);
+  // P3: a human edit is a separate correction claim; re-run every conflict check.
+  recheckIntegrity(d, role, f.applicationId, `edit of "${f.label}"`);
 }
 
 export function confirmField(d: WorkspaceData, role: Role, fieldId: string) {
   assertCan(role, "extraction.edit");
   const f = d.fields.find((x) => x.id === fieldId);
   if (!f) return;
+  // A field a reviewer has already corrected stays a correction: confirming it must not relabel it, replace the
+  // editor's identity, or let the next re-check drop the correction (the UI offers Confirm on parsed fields only).
+  if (f.originalValue !== undefined && f.value !== f.originalValue) {
+    audit(d, role, "extraction.confirmed", "extracted_field", fieldId, `${f.label}: correction "${f.value ?? "—"}" (by ${f.editedBy ? ROLE_INFO[f.editedBy].name : "a reviewer"}) confirmed; founder's original "${f.originalValue ?? "—"}" kept.`, f.applicationId);
+    return;
+  }
   f.validation = "human_confirmed";
   f.editedBy = role;
   audit(d, role, "extraction.confirmed", "extracted_field", fieldId, `${f.label} confirmed as extracted.`, f.applicationId);
@@ -365,6 +380,8 @@ export function resolveConflict(d: WorkspaceData, role: Role, id: string, status
   if (!note.trim()) throw new Error("A note is required to change a conflict's status.");
   const c = d.conflicts.find((x) => x.id === id);
   if (!c) throw new Error("Conflict not found.");
+  if (status === "superseded") throw new Error("Superseded is set only by a re-check, never by hand.");
+  if (c.status === "superseded") throw new Error("This conflict is superseded and kept as history; it cannot be changed.");
   c.status = status;
   c.resolutionNote = note.trim();
   c.resolvedBy = role;
@@ -685,7 +702,7 @@ export function qualityIndicators(d: WorkspaceData) {
   const evs = apps.map((a) => latestEvaluation(d, a.id)).filter(Boolean) as Evaluation[];
   const signals = evs.flatMap((e) => e.assessments.flatMap((a) => [...a.supporting, ...a.opposing]));
   const coreFields = d.fields.filter((f) => ["company_name", "one_liner", "sector", "stage", "raise", "customers", "revenue", "acquisition", "use_of_funds"].includes(f.field));
-  const appClaims = d.claims.filter((c) => !c.text.startsWith("Deck slide headline"));
+  const appClaims = d.claims.filter((c) => !c.text.startsWith("Deck slide headline") && !c.fact && !c.withdrawn && c.origin !== "human_correction");
   const verified = appClaims.filter((c) => ["independent", "corroborated"].includes(c.classification)).length;
   const jobs = d.jobs.filter((j) => j.status === "succeeded" || j.status === "failed");
   const decided = d.decisions.filter((x) => x.recommendationAtTime);
@@ -695,7 +712,7 @@ export function qualityIndicators(d: WorkspaceData) {
     extractionCoverage: coreFields.length ? coreFields.filter((f) => f.value).length / coreFields.length : null,
     evidenceTraceability: signals.length ? signals.filter((s) => s.ref).length / signals.length : null,
     sourceVerificationRate: appClaims.length ? verified / appClaims.length : null,
-    conflictsDetected: d.conflicts.length,
+    conflictsDetected: d.conflicts.filter((c) => c.status !== "superseded").length,
     conflictsOpen: d.conflicts.filter((c) => c.status === "open").length,
     criticalUnknowns: evs.reduce((n, e) => n + e.criticalUnknowns.length, 0),
     humanCorrectionRate: assessments ? d.corrections.length / assessments : null,
@@ -733,6 +750,7 @@ export function restoreScreenedSpan(d: WorkspaceData, role: Role, opts: { applic
   if (span.restored) throw new Error("This passage is already restored.");
   (d.screeningRestorations ??= []).push({ applicationId: opts.applicationId, spanId: span.id, restoredBy: role, at: nowIso(), note });
   audit(d, role, "screening.restored", "screened_span", span.id, `Restored ${span.kind.replace("_", " ")} passage [${span.id}] on ${spanLocation(span)} for scoring as an unverified founder claim. Reason: ${note}`, opts.applicationId);
+  recheckIntegrity(d, role, opts.applicationId, `restoration of passage [${span.id}]`);
 }
 
 export function revokeScreenedSpanRestoration(d: WorkspaceData, role: Role, opts: { applicationId: string; spanId: string; note: string }): void {
@@ -744,6 +762,7 @@ export function revokeScreenedSpanRestoration(d: WorkspaceData, role: Role, opts
   r.revokedBy = role;
   r.revokedAt = nowIso();
   audit(d, role, "screening.restoration_revoked", "screened_span", opts.spanId, `Passage [${opts.spanId}] set aside again. Reason: ${note}`, opts.applicationId);
+  recheckIntegrity(d, role, opts.applicationId, `passage [${opts.spanId}] set aside again`);
 }
 
 /** P-C: only an authenticated partner action can widen access; founder text, sector and tags never do. */
@@ -764,4 +783,175 @@ export function revokeDocumentAccess(d: WorkspaceData, role: Role, opts: { appli
   if (!(app.accessGrants ?? []).some((g) => g.role === opts.grantee)) return;
   app.accessGrants = (app.accessGrants ?? []).filter((g) => g.role !== opts.grantee);
   audit(d, role, "access.revoked", "application", app.id, `Document access withdrawn from ${ROLE_INFO[opts.grantee].name}.${opts.note.trim() ? ` Reason: ${opts.note.trim()}` : ""}`, app.id);
+}
+
+// ---------------------------------------------------------------- P3 integrity re-check
+
+const claimKey = (c: Claim) => `${c.sourceDocId}|${c.page ?? ""}|${c.metric ?? ""}|${c.value ?? ""}|${c.text}`;
+const conflictStatusOf = (s: Conflict["status"]): "open" | "explained" | "confirmed" => (s === "superseded" ? "open" : s);
+
+/** Human corrections for every human-edited field. Separate claim records; the founder's claims are never changed. */
+function correctionClaims(d: WorkspaceData, appId: string, cycleId: string, docs: DocumentRec[], fields: ExtractedField[], applicant: Claim[]): Claim[] {
+  const out: Claim[] = [];
+  for (const f of fields) {
+    // A correction exists whenever the value differs from the founder's original (independent of the status label).
+    if (f.originalValue === undefined || f.value === f.originalValue) continue;
+    const doc = docs.find((x) => x.id === f.documentId);
+    if (!doc) continue;
+    const orig = f.originalValue ?? "";
+    const origHits = [...extractMoney(orig), ...extractCounts(orig)].map((h) => ({ metric: h.projection ? `projection:${h.metric}` : h.metric, value: h.value }));
+    // What this correction replaces for checking: the field's own claims, and the same figures on the same page.
+    const corrects = applicant.filter((c) => !c.withdrawn && (c.fieldId === f.id || (c.sourceDocId === f.documentId && c.page === f.page && !!c.metric && !c.fact && origHits.some((h) => h.metric === c.metric && h.value === c.value))));
+    const who = f.editedBy ?? "riya";
+    // The correction's time is the time of THIS edit (never an earlier correction's). Older workspaces without
+    // editedAt fall back to the field's last edit in the audit trail.
+    const editedAt = f.editedAt ?? [...d.audit].reverse().find((a) => a.action === "extraction.edited" && a.entityId === f.id)?.at ?? nowIso();
+    const extra: Partial<Claim> = { origin: "human_correction", correctsClaimIds: corrects.map((c) => c.id), correctedBy: who, correctedAt: editedAt, fieldId: f.id };
+    const label = `${doc.kind === "deck" ? "Deck" : doc.kind === "form" ? "Form" : "Doc"}${f.page ? ` p${f.page}` : ""} · human correction`;
+    const excerpt = `Corrected by ${ROLE_INFO[who].name}: "${f.value ?? "(cleared)"}". Founder's original answer: "${orig || "—"}".`;
+    const base = { applicationId: appId, cycleId, sourceDocId: doc.id, sourceKind: doc.kind, sourceLabel: label, page: f.page, excerpt, classification: "unverified" as const, criteria: [] as CriterionId[], ...extra };
+    out.push({ id: uid("clm"), text: `${f.label.replace(/ \(from deck\)$/, "")}: ${f.value ?? "(cleared by reviewer)"}`, ...base });
+    for (const h of [...extractMoney(f.value ?? ""), ...extractCounts(f.value ?? "")]) {
+      out.push({ id: uid("clm"), text: `${h.display}${h.projection ? " (projection / market sizing)" : ""}`, metric: h.projection ? `projection:${h.metric}` : h.metric, value: h.value, bound: h.bound, unit: h.unit, period: h.period, ...base });
+    }
+    if (f.value) out.push(...factsFromFields(uid, appId, cycleId, [f], docs, "human_correction", { ...extra, sourceLabel: label, excerpt }));
+  }
+  return out;
+}
+
+/**
+ * P3: re-run every conflict check after a human edit or a P2 restoration / revocation.
+ * - Founder claims are rebuilt from the stored original pages (current screening) and matched to the stored claims by
+ *   content, so their ids, text and provenance never change. Claims no longer produced are marked withdrawn, never deleted.
+ * - Human corrections are separate claims (who, when, which claims they replace for checking).
+ * - Conflicts merge by stable id: same evidence keeps its status and note; a conflict no longer produced becomes
+ *   `superseded` with a reason and stays in history (D1: superseded conflicts no longer count in scoring).
+ */
+export function recheckIntegrity(d: WorkspaceData, actor: Role, appId: string, trigger: string): void {
+  // Enforced here, not only by callers: a re-check follows a field edit or a passage restoration, so it needs one of
+  // those existing permissions. Nothing is changed or audited when refused.
+  if (!can(actor, "extraction.edit") && !can(actor, "screening.restore")) throw new PermissionError(actor, "conflicts.recheck");
+  const app = d.applications.find((a) => a.id === appId);
+  if (!app) return;
+  const docs = d.documents.filter((x) => x.applicationId === appId && x.status === "extracted");
+  if (!docs.length) return;
+  const cycleId = app.currentCycleId;
+  const restoredIds = activeRestorationIds(d, appId);
+  const screenWith = (ids: string[]) => screenDocuments(docs.map((x) => ({ id: x.id, kind: x.kind, pages: x.pages })), ids);
+  const scr = screenWith(restoredIds);
+  const pagesOf = (x: DocumentRec) => scr.pagesByDoc[x.id] ?? x.pages;
+  const fields = d.fields.filter((f) => f.applicationId === appId);
+  const originalFields = fields.map((f) => (f.originalValue !== undefined ? { ...f, value: f.originalValue } : f));
+
+  // 1. Founder claims (original answers, current screening).
+  const candidates = buildApplicantClaims({ appId, cycleId, documents: docs, pagesOf, fields: originalFields });
+  const unrestored = restoredIds.length ? new Set(buildApplicantClaims({ appId, cycleId, documents: docs, pagesOf: (x) => screenWith([]).pagesByDoc[x.id] ?? x.pages, fields: originalFields }).map(claimKey)) : null;
+  const existing = d.claims.filter((c) => c.applicationId === appId && c.origin !== "human_correction");
+  const pool = new Map<string, Claim[]>();
+  for (const c of existing) pool.set(claimKey(c), [...(pool.get(claimKey(c)) ?? []), c]);
+  const matched = new Set<string>();
+  const applicant: Claim[] = [];
+  const added: Claim[] = [];
+  for (const k of candidates) {
+    const hit = pool.get(claimKey(k))?.shift();
+    if (hit) {
+      matched.add(hit.id);
+      delete hit.withdrawn;
+      applicant.push(hit);
+    } else {
+      const n: Claim = { ...k, ...(unrestored && !unrestored.has(claimKey(k)) ? { restored: true } : {}) };
+      added.push(n);
+      applicant.push(n);
+    }
+  }
+  let withdrawn = 0;
+  for (const c of existing) if (!matched.has(c.id) && !c.withdrawn) { c.withdrawn = true; withdrawn++; }
+  d.claims.push(...added);
+  for (const c of added) {
+    if (c.text.startsWith("Deck slide headline")) continue;
+    const doc = docs.find((x) => x.id === c.sourceDocId);
+    d.evidence.push({ id: uid("evd"), applicationId: appId, claimIds: [c.id], sourceType: "applicant_document", title: doc?.filename ?? "Applicant document", publisher: `${app.name} (applicant${c.restored ? ", restored passage" : ""})`, retrievedAt: doc?.uploadedAt ?? nowIso(), excerpt: c.excerpt, location: c.sourceLabel, direction: "context", verification: c.classification, independent: false, criteria: c.criteria, addedBy: "system" });
+  }
+
+  // 2. Human corrections. A stored correction is reused only for the same field, content, editor and edit time, so
+  //    its id is stable across unrelated re-checks. A new edit creates new records that link the corrections they
+  //    replace (supersedesCorrectionIds); the replaced records are kept as history and not modified.
+  const fresh = correctionClaims(d, appId, cycleId, docs, fields, applicant);
+  const oldCorr = d.claims.filter((c) => c.applicationId === appId && c.origin === "human_correction");
+  const corrKey = (c: Claim) => `${c.fieldId}|${claimKey(c)}|${c.correctedBy}|${c.correctedAt}`;
+  const corrPool = new Map<string, Claim[]>();
+  for (const c of oldCorr) corrPool.set(corrKey(c), [...(corrPool.get(corrKey(c)) ?? []), c]);
+  const replacedEarlier = new Set(oldCorr.flatMap((c) => c.supersedesCorrectionIds ?? []));
+  const corrections: Claim[] = [];
+  const keptCorr = new Set<string>();
+  const hits = fresh.map((n) => corrPool.get(corrKey(n))?.shift());
+  hits.forEach((hit) => hit && keptCorr.add(hit.id));
+  // Corrections currently in force per field that this run does not reuse: a new edit of that field replaces them.
+  const replaced = (fieldId: string | undefined) => oldCorr.filter((c) => c.fieldId === fieldId && !c.withdrawn && !keptCorr.has(c.id) && !replacedEarlier.has(c.id)).map((c) => c.id);
+  const replacedNow = new Set<string>();
+  for (const [i, n] of fresh.entries()) {
+    const hit = hits[i];
+    if (hit) {
+      delete hit.withdrawn;
+      hit.correctsClaimIds = n.correctsClaimIds;
+      corrections.push(hit);
+    } else {
+      const prior = replaced(n.fieldId);
+      if (prior.length) n.supersedesCorrectionIds = prior;
+      prior.forEach((id) => replacedNow.add(id));
+      d.claims.push(n);
+      corrections.push(n);
+      // Ledger record: a reviewer's correction is an internal record — never independent, never verification.
+      d.evidence.push({ id: uid("evd"), applicationId: appId, claimIds: [n.id], sourceType: "internal_record", title: "Human correction", publisher: ROLE_INFO[n.correctedBy ?? "riya"].name, retrievedAt: n.correctedAt ?? nowIso(), excerpt: n.excerpt, location: n.sourceLabel, direction: "context", verification: "unverified", independent: false, criteria: n.criteria, addedBy: n.correctedBy ?? "riya" });
+    }
+  }
+  // A correction with no current successor (e.g. the field was set back to the founder's value) is withdrawn, as
+  // before. A correction replaced by a newer one is history: left exactly as it was.
+  for (const c of oldCorr) if (!keptCorr.has(c.id) && !replacedNow.has(c.id) && !replacedEarlier.has(c.id)) c.withdrawn = true;
+
+  // 3. Re-detect and merge by stable identity.
+  const { conflicts: next } = buildEvidence({ appId, cycleId, documents: docs, pagesOf, fields: originalFields, claims: applicant, corrections });
+  const prev = d.conflicts.filter((c) => c.applicationId === appId);
+  const legacyMatch = (o: Conflict, n: Conflict) => !o.valueSig && o.type === n.type && o.metric === n.metric && [o.a.claimId, o.b.claimId].filter(Boolean).every((id) => (n.values ?? [n.a, n.b]).some((s) => s.claimId === id));
+  const now = nowIso();
+  const seen = new Set<string>();
+  let opened = 0, revived = 0, superseded = 0;
+  for (const n of next) {
+    const old = prev.find((o) => o.id === n.id) ?? prev.find((o) => !seen.has(o.id) && (o.valueSig ? o.key === n.key && o.valueSig === n.valueSig : legacyMatch(o, n)));
+    if (!old) {
+      d.conflicts.push(n);
+      opened++;
+      continue;
+    }
+    seen.add(old.id);
+    const status = old.status === "superseded" ? old.supersededFrom ?? "open" : old.status;
+    if (old.status === "superseded") revived++;
+    const keep = { id: old.id, status, resolutionNote: old.resolutionNote, resolvedBy: old.resolvedBy };
+    Object.assign(old, n, keep);
+    delete old.supersededReason;
+    delete old.supersededAt;
+    delete old.supersededFrom;
+  }
+  const activeCorr = corrections.filter((c) => !c.withdrawn);
+  for (const o of prev) {
+    if (seen.has(o.id) || o.status === "superseded") continue;
+    const ids = new Set((o.values ?? [o.a, o.b]).map((s) => s.claimId).filter(Boolean));
+    const by = activeCorr.find((c) => (c.correctsClaimIds ?? []).some((id) => ids.has(id)));
+    const field = by ? d.fields.find((f) => f.id === by.fieldId) : undefined;
+    const replacement = next.find((n) => n.key === o.key && !prev.some((p) => p.id === n.id));
+    o.supersededFrom = conflictStatusOf(o.status);
+    o.status = "superseded";
+    o.supersededAt = now;
+    o.supersededReason = by
+      ? `Superseded by a human correction of "${field?.label ?? "a field"}" by ${ROLE_INFO[by.correctedBy ?? "riya"].name} at ${by.correctedAt ?? now}. The founder's original claim is kept; the correction is not independent verification.`
+      : replacement
+        ? `Values changed after re-check (${trigger}); replaced by conflict ${replacement.id}.`
+        : `No longer detected after re-check (${trigger}).`;
+    superseded++;
+  }
+  // D2: keep the identity warning in step with the current conflicts.
+  app.warnings = app.warnings.filter((w) => !IDENTITY_WARNING_RE.test(w));
+  const idw = identityWarning(d.conflicts.filter((c) => c.applicationId === appId));
+  if (idw) app.warnings.push(idw);
+  audit(d, actor, "conflicts.rechecked", "application", appId, `Conflict checks re-run after ${trigger}: ${added.length} new founder claim(s)${added.some((c) => c.restored) ? " (from restored passages, unverified)" : ""}, ${withdrawn} withdrawn, ${activeCorr.length} human-correction claim(s); ${opened} conflict(s) opened, ${superseded} superseded, ${revived} re-opened. Original claims are kept.`, appId);
 }

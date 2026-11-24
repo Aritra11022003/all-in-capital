@@ -1,5 +1,5 @@
 // Detects disagreements between documents. Never picks a winner: both sides are kept with provenance.
-import type { Claim, Conflict, CriterionId } from "@/lib/shared/types";
+import type { Claim, Conflict, ConflictSide, CriterionId } from "@/lib/shared/types";
 import { MONEY_METRIC_LABELS, formatInr, extractVagueMagnitudes } from "./metrics";
 import type { DocBundle } from "../pipeline";
 import { flat } from "../extraction/text";
@@ -29,7 +29,18 @@ function metricLabel(metric: string): string {
 const CRIT_FOR_METRIC = (m: string): CriterionId[] =>
   /cac|price|margin|revenue_net|revenue_gross/.test(m) ? ["business_model", "traction"] : /raise|valuation/.test(m) ? ["capital_fit"] : ["traction"];
 
-const side = (c: Claim) => ({ claimId: c.id, display: c.text, sourceLabel: c.sourceLabel, excerpt: c.excerpt });
+/** A conflict side with full provenance: source, page, document, exact passage, as-of date and origin (P3). */
+export const side = (c: Claim): ConflictSide => ({
+  claimId: c.id,
+  display: c.text,
+  sourceLabel: c.sourceLabel,
+  excerpt: c.excerpt,
+  page: c.page,
+  docId: c.sourceDocId,
+  ...(c.asOf ? { asOf: c.asOf } : {}),
+  ...(c.origin ? { origin: c.origin } : {}),
+  ...(c.restored ? { restored: true } : {}),
+});
 
 export function detectConflicts(appId: string, claims: Claim[], bundle: DocBundle): Conflict[] {
   seq = 0;
@@ -177,7 +188,7 @@ export function detectConflicts(appId: string, claims: Claim[], bundle: DocBundl
         type: "credential",
         metric: "founder_credentials",
         label: `Deck credentials not supported by the form: ${missing.map((m) => m.token).join(", ")}`,
-        a: deckClaim ? { ...side(deckClaim), excerpt: missing[0].excerpt } : { claimId: "", display: missing.map((m) => m.token).join(", "), sourceLabel: `Deck p${missing[0].page}`, excerpt: missing[0].excerpt },
+        a: deckClaim ? { ...side(deckClaim), excerpt: missing[0].excerpt } : { claimId: "", display: missing.map((m) => m.token).join(", "), sourceLabel: `Deck p${missing[0].page}`, page: missing[0].page, excerpt: missing[0].excerpt },
         b: formClaim ? side(formClaim) : { claimId: "", display: bundle.formFounderText.slice(0, 160), sourceLabel: "Form", excerpt: bundle.formFounderText.slice(0, 200) },
         note: "The deck names brands or institutions that the form's own founder description does not mention, or describes differently. Credentials are never scored, but an inconsistency in how the founder presents themself is recorded.",
         criteria: ["founder_quality"],

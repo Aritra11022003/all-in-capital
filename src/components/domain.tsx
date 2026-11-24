@@ -93,29 +93,48 @@ export function SignalList({ items, kind }: { items: Signal[]; kind: "support" |
   );
 }
 
+const RELATION_LABEL: Record<string, string> = {
+  contradiction: "Contradiction",
+  different_period: "Different period",
+  different_definition: "Different definition",
+  possibly_updated: "Possibly updated",
+  one_sided: "One-sided",
+  possible_match: "Possible match",
+};
+
 export function ConflictCard({ c, onResolve }: { c: Conflict; onResolve?: () => void }) {
+  const values = c.values ?? [c.a, c.b];
+  const superseded = c.status === "superseded";
+  const flagOnly = c.scoring === "flag_only";
   return (
-    <div className={cx("rounded-md border", c.status === "open" ? "border-risk-700/25" : "border-line")}>
+    <div className={cx("rounded-md border", c.status === "open" ? "border-risk-700/25" : "border-line", superseded && "opacity-75")}>
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line bg-risk-50/40 px-3 py-1.5">
         <div className="flex items-center gap-2 font-medium text-ink">
           <ArrowLeftRight size={14} className="text-risk-700" />
           {c.label}
         </div>
-        <div className="flex items-center gap-1.5">
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Badge tone={c.relation && c.relation !== "contradiction" ? "neutral" : "risk"}>{RELATION_LABEL[c.relation ?? "contradiction"] ?? c.relation}</Badge>
+          <span title={flagOnly ? "Shown for review only. Does not change any score or recommendation." : "Counts in scoring (existing rule) while open."}>
+            <Badge tone={flagOnly ? "neutral" : "warn"}>{flagOnly ? "flag only" : "scored"}</Badge>
+          </span>
           <Badge tone={c.severity === "high" ? "risk" : c.severity === "medium" ? "warn" : "neutral"}>{c.severity}</Badge>
-          <Badge tone={c.status === "open" ? "risk" : "ok"}>{c.status}</Badge>
-          {onResolve && (
+          <Badge tone={c.status === "open" ? "risk" : superseded ? "neutral" : "ok"}>{c.status}</Badge>
+          {onResolve && !superseded && (
             <button onClick={onResolve} className="text-[12px] font-medium text-teal-700 hover:underline">
               Review
             </button>
           )}
         </div>
       </div>
-      <div className="grid grid-cols-1 divide-y divide-line md:grid-cols-2 md:divide-x md:divide-y-0">
-        {[c.a, c.b].map((s, i) => (
-          <div key={i} className="px-3 py-2">
-            <div className="mb-0.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
-              Source {i === 0 ? "A" : "B"} <span className="rounded bg-navy-50 px-1 font-mono normal-case text-navy-600">{s.sourceLabel}</span>
+      <div className={cx("grid grid-cols-1 divide-y divide-line", values.length === 2 && "md:grid-cols-2 md:divide-x md:divide-y-0")}>
+        {values.map((s, i) => (
+          <div key={`${s.claimId}-${i}`} className="px-3 py-2">
+            <div className="mb-0.5 flex flex-wrap items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-muted">
+              Value {i + 1} <span className="rounded bg-navy-50 px-1 font-mono normal-case text-navy-600">{s.sourceLabel}</span>
+              {s.origin === "human_correction" && <span className="rounded bg-warn-50 px-1 normal-case text-warn-700" title="A reviewer's correction. Not independent verification.">human correction</span>}
+              {s.restored && <span className="rounded bg-warn-50 px-1 normal-case text-warn-700" title="From a passage a reviewer restored. Still an unverified founder claim.">restored passage · unverified</span>}
+              {s.asOf && <span className="rounded bg-navy-50 px-1 normal-case text-navy-600">as of {s.asOf}</span>}
             </div>
             <div className="font-medium">{s.display}</div>
             <div className="mt-1 line-clamp-3 font-mono text-[11px] text-muted">“{s.excerpt}”</div>
@@ -127,6 +146,11 @@ export function ConflictCard({ c, onResolve }: { c: Conflict; onResolve?: () => 
         {c.resolutionNote && (
           <div className="mt-1 text-ink">
             <span className="font-medium">Reviewer:</span> {c.resolutionNote}
+          </div>
+        )}
+        {c.supersededReason && (
+          <div className="mt-1 text-ink">
+            <span className="font-medium">Superseded:</span> {c.supersededReason}
           </div>
         )}
       </div>

@@ -12,7 +12,19 @@ export interface MetricHit {
   excerpt: string;
   index: number;
   display: string;
+  /** P3: explicit "as of <Month> <Year>" in the same sentence (YYYY-MM). */
+  asOf?: string;
+  /** P3: the sentence describes an annual figure. Used only by the period-consistency check; `period` is unchanged. */
+  annualHint?: boolean;
 }
+
+const MONTH_NUM: Record<string, string> = { january: "01", february: "02", march: "03", april: "04", may: "05", june: "06", july: "07", august: "08", september: "09", october: "10", november: "11", december: "12" };
+/** P3: explicit "as of / as on / as at <Month> <Year>" only — never inferred. */
+export function asOfFrom(sentence: string): string | undefined {
+  const m = /\bas (?:of|on|at) (january|february|march|april|may|june|july|august|september|october|november|december),? (\d{4})\b/i.exec(sentence);
+  return m ? `${m[2]}-${MONTH_NUM[m[1].toLowerCase()]}` : undefined;
+}
+const ANNUAL_HINT = /\bannual(?:ly|ised|ized)?\b|\bper (?:year|annum)\b|\byearly\b/i;
 
 export const MONEY_METRIC_LABELS: Record<string, string> = {
   mrr: "Monthly recurring revenue",
@@ -72,7 +84,9 @@ const MONEY_RULES: [string, RegExp][] = [
   ["revenue", /\brevenue\b/gi],
 ];
 
-const PROJECTION = /\bIn \d+ (?:months|years):|\b(?:next|within) \d+ (?:months|years)|\bby (?:FY|20)\d+|\btarget\b|\bgoal\b|\bSOM\b|\bTAM\b|\bSAM\b|at maturity|would mean|capturing just|even 1%|opportunity for|in three years|\s[x×]\s/i;
+const PROJECTION = /\bIn \d+ (?:months|years):|\b(?:next|within) \d+ (?:months|years)|\bby (?:FY|20)\d+|\btarget\b|\bgoal\b|\bSOM\b|\bTAM\b|\bSAM\b|at maturity|would mean|capturing just|even 1%|opportunity for|in three years|\s[x×]\s|\b(?:annual|total|yearly)\b[^.]{0,60}\bin India\b|\bmarket (?:size|opportunity)\b/i;
+// P3 (EXG-02): market sizing stated on the line AFTER the amount ("INR 1.5 lakh Cr / annual urban rent paid in India").
+const MARKET_SIZING = /\b(?:annual|total|yearly)\b[^.]{0,60}\bin India\b|\bmarket (?:size|opportunity)\b/i;
 
 /** Flatten text but remember line boundaries so "sentences" never span a whole slide. */
 function flatWithLines(text: string): { t: string; sentenceAt: (idx: number) => string } {
@@ -129,7 +143,10 @@ export function extractMoney(text: string): MetricHit[] {
     const prevEnd = i > 0 ? matches[i - 1].index! + matches[i - 1][0].length : 0;
     const nextStart = i < matches.length - 1 ? matches[i + 1].index! : t.length;
     const pre = t.slice(Math.max(prevEnd, idx - 60), idx);
-    const post = t.slice(idx + m[0].length, Math.min(nextStart, idx + m[0].length + 45));
+    const rawPost = t.slice(idx + m[0].length, Math.min(nextStart, idx + m[0].length + 45));
+    // P3 (EXG-01): stop at the end of the amount's sentence, so "INR 380. Revenue mix: …" is not revenue.
+    const stop = /[.!?](?=\s|$)/.exec(rawPost);
+    const post = stop ? rawPost.slice(0, stop.index + 1) : rawPost;
     const metric = nearestRule(pre, post);
     if (!metric) return;
     const value = parseInr(m[2], m[3]);
@@ -139,7 +156,7 @@ export function extractMoney(text: string): MetricHit[] {
     // sentence window for projection / period detection
     const sentence = sentenceAt(idx);
     const local = pre.slice(-40) + m[0] + post;
-    const projection = PROJECTION.test(sentence);
+    const projection = PROJECTION.test(sentence) || MARKET_SIZING.test(post);
     const period: MetricPeriod = CUMULATIVE.test(local)
       ? "cumulative"
       : metric === "arr"
@@ -157,6 +174,8 @@ export function extractMoney(text: string): MetricHit[] {
       excerpt: (pre.slice(-50) + m[0] + post.slice(0, 45)).trim(),
       index: idx,
       display: `${bound === "lte" ? "under " : bound === "gte" ? "over " : ""}${formatInr(value)}`,
+      asOf: asOfFrom(sentence),
+      annualHint: ANNUAL_HINT.test(local),
     });
   });
   return hits;
@@ -200,6 +219,7 @@ export function extractCounts(text: string): MetricHit[] {
       excerpt: t.slice(Math.max(0, idx - 30), idx + m[0].length + 30).trim(),
       index: idx,
       display: `${value.toLocaleString("en-IN")} ${m[2]}${m[3]}`.replace(/\s+/g, " "),
+      asOf: asOfFrom(sentenceAt(idx)),
     });
   }
   return hits;

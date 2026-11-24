@@ -138,8 +138,24 @@ export function buildReport(d: WorkspaceData, appId: string): Report {
     {
       id: "conflicts",
       title: "14. Conflicting information",
-      paragraphs: conflicts.length ? [] : ["No conflicts detected between the submitted documents."],
-      table: conflicts.length ? { head: ["Conflict", "Source A", "Source B", "Status"], rows: conflicts.map((c) => [c.label, `${c.a.display} [${c.a.sourceLabel}]`, `${c.b.display} [${c.b.sourceLabel}]`, c.status]) } : undefined,
+      paragraphs: conflicts.length
+        ? [
+            "Every side is a founder-provided claim (or a reviewer's correction, which is not independent verification). 'Flag only' conflicts are shown for review and never change a score or recommendation. Superseded conflicts are kept as history.",
+          ]
+        : ["No conflicts detected between the submitted documents."],
+      table: conflicts.length
+        ? {
+            head: ["Conflict", "Relation", "Scoring", "Values (source, page, passage)", "Status", "Resolution / reason"],
+            rows: conflicts.map((c) => [
+              c.label,
+              (c.relation ?? "contradiction").replace(/_/g, " "),
+              c.scoring === "flag_only" ? "flag only" : "scored",
+              (c.values ?? [c.a, c.b]).map((v) => `${v.display} [${v.sourceLabel}${v.origin === "human_correction" ? ", human correction" : ""}${v.restored ? ", restored passage" : ""}${v.asOf ? `, as of ${v.asOf}` : ""}] "${v.excerpt.slice(0, 120)}"`).join(" · "),
+              c.status,
+              [c.resolutionNote ? `${c.resolutionNote}${c.resolvedBy ? ` (${c.resolvedBy})` : ""}` : "", c.supersededReason ?? ""].filter(Boolean).join(" — ") || "—",
+            ]),
+          }
+        : undefined,
     },
     {
       id: "next",

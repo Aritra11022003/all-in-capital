@@ -65,6 +65,8 @@ export interface ExtractedField {
   confidence: number; // 0..1
   extractedAt: string;
   editedBy?: Role;
+  /** When the current value was last set by a reviewer (P3: the time a correction is recorded with). */
+  editedAt?: string;
   originalValue?: string | null;
 }
 
@@ -106,7 +108,29 @@ export interface Claim {
   excerpt: string;
   classification: EvidenceClass;
   criteria: CriterionId[];
+  // ---- P3 (all optional: older stored workspaces load unchanged) ----
+  /** Missing = "applicant". Human corrections are separate claims; founder claims are never modified. */
+  origin?: ClaimOrigin;
+  /** Human correction: the applicant claim(s) it corrects, who corrected and when. Not verification. */
+  correctsClaimIds?: string[];
+  correctedBy?: Role;
+  correctedAt?: string;
+  /** Earlier correction(s) of the same field that this correction replaces. Those records are kept unchanged. */
+  supersedesCorrectionIds?: string[];
+  /** The extracted field this claim was derived from (form answers). */
+  fieldId?: string;
+  /** Non-numeric fact (company name, founder, role, dates, stage, location, team size). metric = "fact:<key>". */
+  fact?: { key: FactKey; value: string; normalized: string };
+  /** Explicit "as of" date stated in the text (YYYY-MM). */
+  asOf?: string;
+  /** Came from a P2 passage a reviewer restored. Still applicant-provided and unverified. */
+  restored?: boolean;
+  /** No longer produced by the documents (e.g. a passage set aside again). Kept for history; ignored by checks. */
+  withdrawn?: boolean;
 }
+
+export type ClaimOrigin = "applicant" | "human_correction";
+export type FactKey = "company_name" | "founder" | "founder_role" | "founded" | "incorporated" | "stage" | "location" | "team_size";
 
 export type SourceType =
   | "applicant_document"
@@ -145,12 +169,21 @@ export interface ConflictSide {
   display: string;
   sourceLabel: string;
   excerpt: string;
+  // P3 (optional)
+  page?: number | null;
+  docId?: string;
+  asOf?: string;
+  origin?: ClaimOrigin;
+  restored?: boolean;
 }
+
+/** P3: what kind of disagreement this is. */
+export type ConflictRelation = "contradiction" | "different_period" | "different_definition" | "possibly_updated" | "one_sided" | "possible_match";
 
 export interface Conflict {
   id: string;
   applicationId: string;
-  type: "numeric" | "definition" | "credential" | "qualitative" | "arithmetic" | "magnitude";
+  type: "numeric" | "definition" | "credential" | "qualitative" | "arithmetic" | "magnitude" | "identity" | "fact" | "period" | "update" | "coverage"; // last five: P3, always flag-only
   metric: string;
   label: string;
   a: ConflictSide;
@@ -158,9 +191,23 @@ export interface Conflict {
   note: string;
   criteria: CriterionId[];
   severity: "high" | "medium" | "low";
-  status: "open" | "explained" | "confirmed";
+  status: "open" | "explained" | "confirmed" | "superseded";
   resolutionNote?: string;
   resolvedBy?: Role;
+  // ---- P3 (all optional) ----
+  relation?: ConflictRelation;
+  /** Every disagreeing value, including several within one document (a/b kept for compatibility). */
+  values?: ConflictSide[];
+  /** Stable identity: type|metric|relation. With the value signature it forms the id, so resolutions carry over safely. */
+  key?: string;
+  valueSig?: string;
+  /** "flag_only" conflicts are shown and audited but never affect scores or recommendations. Missing = "scored". */
+  scoring?: "scored" | "flag_only";
+  supersededReason?: string;
+  supersededAt?: string;
+  /** Status the conflict had before it was superseded, restored if the same evidence reappears. */
+  supersededFrom?: "open" | "explained" | "confirmed";
+  cycleId?: string;
 }
 
 export type Workstream =

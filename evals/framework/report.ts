@@ -86,7 +86,7 @@ export function toMarkdown(meta: RunMeta, s: Summary, results: AssertionResult[]
 
 const csv = (v: string) => `"${v.replace(/"/g, '""')}"`;
 
-export function writeReports(opts: { reportDir: string; privateDir: string; meta: RunMeta; summary: Summary; results: AssertionResult[]; reviewQueue: ReviewItem[] }) {
+export function writeReports(opts: { reportDir: string; privateDir: string | null; meta: RunMeta; summary: Summary; results: AssertionResult[]; reviewQueue: ReviewItem[] }) {
   const dir = join(opts.reportDir, opts.meta.runId);
   mkdirSync(dir, { recursive: true });
   writeFileSync(join(dir, "report.json"), JSON.stringify({ meta: opts.meta, summary: opts.summary, results: opts.results }, null, 2));
@@ -94,7 +94,7 @@ export function writeReports(opts: { reportDir: string; privateDir: string; meta
   writeFileSync(join(dir, "report.md"), md);
   writeFileSync(join(opts.reportDir, "LATEST.md"), md);
   let reviewPath: string | null = null;
-  if (opts.reviewQueue.length) {
+  if (opts.reviewQueue.length && opts.privateDir) {
     // Review material can contain founder text, so it is written only under the git-ignored private folder.
     mkdirSync(opts.privateDir, { recursive: true });
     reviewPath = join(opts.privateDir, `${opts.meta.runId}-review-queue.csv`);
