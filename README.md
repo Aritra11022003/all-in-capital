@@ -7,12 +7,18 @@ A private decision-support platform for **All In Capital**, a Mumbai pre-seed fu
 - with every claim traced to its source,
 - with conflicts between documents shown side by side, never silently resolved,
 - with what the system could not find out named explicitly,
-- checked against the full portfolio list for conflicts,
+- checked for overlap against the available portfolio dataset: the seven companies named in the case, **unverified and incomplete**, so "no overlap found" is not a clearance,
 - with a suggested next action: take a call, request information, or pass for partner consideration.
 
 **It never decides.** Only Kushal (Principal) records outcomes, and only after opening the application.
 
-> **Demo mode.** The live link needs no login, no database and no API keys. Data lives in your browser. Every AI output comes from a deterministic, rule-based **MockAIProvider** and is labelled *simulated*. No external research is performed or claimed.
+> **Demo mode.** The live link needs no login, no database and no API keys. Data lives in your browser.
+>
+> **What is simulated or not done:**
+> - **The evaluator is simulated.** Every score, recommendation and draft comes from a deterministic, rule-based **MockAIProvider** and is labelled *simulated*. No AI model is called.
+> - **No external research is performed.** Research tasks list where to look; they stay *not started* until a person logs findings. Nothing is verified against outside sources.
+> - **Portfolio data is incomplete.** Only the seven companies named in the case are known, and they are unverified.
+> - **Supabase has not been tested against a live project.** The schema and policies are written but have never been run.
 
 ---
 
@@ -52,7 +58,7 @@ There is also a stateless API: `POST /api/process` with `{ "deckText": "...", "f
 | Research planner (10 workstreams, 7-tier source hierarchy) | `src/lib/engine/research` |
 | Backtesting (retrospective vs approximate point-in-time, hindsight guard) | `src/lib/engine/backtest` |
 | Workspace domain model: permissions, decisions, corrections, learning rules, scheduling, audit | `src/lib/domain` |
-| Supabase schema (25+ tables), RLS, private storage bucket | `supabase/migrations` |
+| Supabase schema (25+ tables), RLS, private storage bucket — written, **not yet tested against a live Supabase project** | `supabase/migrations` |
 | Tests | `tests/` |
 | Docs | `docs/` |
 

@@ -22,6 +22,8 @@ next-env.d.ts
 /data/**/*.pptx
 /data/**/*.docx
 /data/**/*.xlsx
+/data/**/*.csv
+/data/private/
 /uploads/
 /storage/
 
