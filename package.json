@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "seed": "node scripts/build-seed.mjs",
     "eval": "node scripts/run-evals.mjs",
     "eval:review-queue": "EVAL_WRITE_PRIVATE=1 node scripts/run-evals.mjs",

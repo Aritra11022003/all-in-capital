@@ -1,0 +1,140 @@
+# Continuous integration: verifies the app and applies every Supabase migration to a DISPOSABLE local database.
+#
+# Safety properties (see docs/CI.md):
+# - Read-only token (contents: read). No secrets, API keys, Vercel tokens or Supabase access tokens are used or needed.
+# - Never connects to a hosted Supabase project: no `supabase link`, no --linked / --db-url; everything is local Docker.
+# - Never deploys, publishes, pushes or comments. Runs on `pull_request` (not `pull_request_target`), so forked PRs get
+#   no write access and no secrets.
+# - No founder data: data/private is git-ignored and absent on runners; the database is seeded with reference data only.
+# - Third-party code is pinned: actions to commit SHAs, the Supabase CLI to an exact version + SHA-256 checksum.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches-ignore:
+      - main # production branch: changes reach it through reviewed pull requests, which run this workflow
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NEXT_TELEMETRY_DISABLED: "1"
+
+jobs:
+  app:
+    name: App — typecheck, lint, tests, evaluation, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - name: Check out (no persisted credentials)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "24"
+          cache: npm
+
+      - name: Install exact dependencies (package-lock.json)
+        run: npm ci --no-audit --no-fund
+
+      - name: Typecheck (generates Next route types, then tsc)
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Full evaluation suite (private Loop suites are skipped; no kill criterion may fire)
+        run: npm run eval
+
+      - name: Production build
+        run: npm run build
+
+  database:
+    name: Database — apply all migrations to a disposable Supabase stack
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    env:
+      SUPABASE_CLI_VERSION: "2.120.0"
+      SUPABASE_CLI_SHA256: "7074584113aa00495beeac661c41fb09f1ddd0a483cd7333894b0d080086dc6e"
+    steps:
+      - name: Check out (no persisted credentials)
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6.1.0
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js 24
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6.5.0
+        with:
+          node-version: "24"
+
+      - name: Guard — refuse any hosted-database configuration
+        run: |
+          set -euo pipefail
+          for v in SUPABASE_ACCESS_TOKEN SUPABASE_DB_PASSWORD SUPABASE_PROJECT_ID SUPABASE_DB_URL DATABASE_URL; do
+            if [ -n "${!v:-}" ]; then echo "::error::$v is set; this job must only use the local disposable database."; exit 1; fi
+          done
+          if [ -e supabase/.temp/project-ref ]; then echo "::error::supabase/.temp/project-ref exists (a linked project)."; exit 1; fi
+          echo "No hosted-database configuration present."
+
+      - name: Static migration order check
+        run: node scripts/ci/check-migration-order.mjs
+
+      - name: Install pinned Supabase CLI (checksum-verified)
+        run: |
+          set -euo pipefail
+          tarball="supabase_${SUPABASE_CLI_VERSION}_linux_amd64.tar.gz"
+          curl -fsSL --retry 3 -o "$RUNNER_TEMP/$tarball" \
+            "https://github.com/supabase/cli/releases/download/v${SUPABASE_CLI_VERSION}/${tarball}"
+          echo "${SUPABASE_CLI_SHA256}  $RUNNER_TEMP/$tarball" | sha256sum --check --strict
+          mkdir -p "$RUNNER_TEMP/supabase-cli"
+          tar -xzf "$RUNNER_TEMP/$tarball" -C "$RUNNER_TEMP/supabase-cli" supabase
+          echo "$RUNNER_TEMP/supabase-cli" >> "$GITHUB_PATH"
+          "$RUNNER_TEMP/supabase-cli/supabase" --version
+
+      - name: Start disposable local Supabase stack (Docker on the runner)
+        run: |
+          set -euo pipefail
+          # Services not needed to apply and inspect migrations are excluded to save time.
+          # Output (which includes the local stack's well-known development keys) goes to a file, not the log.
+          if ! supabase start -x studio,imgproxy,edge-runtime,logflare,vector,realtime > "$RUNNER_TEMP/supabase-start.log" 2>&1; then
+            echo "::error::supabase start failed"; tail -n 80 "$RUNNER_TEMP/supabase-start.log" | grep -viE "key|secret|jwt" ; exit 1
+          fi
+          echo "Local stack started."
+
+      - name: Reset the database and apply ALL migrations in order (stops at the first failure)
+        run: |
+          set -euo pipefail
+          supabase db reset --local 2>&1 | tee "$RUNNER_TEMP/migrations.log"
+
+      - name: Confirm every migration file was applied
+        run: |
+          set -euo pipefail
+          db="$(docker ps --filter 'name=supabase_db_' --format '{{.Names}}' | head -n 1)"
+          expected="$(ls supabase/migrations/*.sql | xargs -n1 basename | cut -d_ -f1 | sort | paste -sd, -)"
+          applied="$(docker exec "$db" psql -U postgres -d postgres -tAc \
+            "select string_agg(version, ',' order by version) from supabase_migrations.schema_migrations")"
+          echo "expected: $expected"
+          echo "applied:  $applied"
+          if [ "$expected" != "$applied" ]; then echo "::error::Applied migrations differ from supabase/migrations"; exit 1; fi
+
+      - name: Verify the expected final schema
+        run: |
+          set -euo pipefail
+          db="$(docker ps --filter 'name=supabase_db_' --format '{{.Names}}' | head -n 1)"
+          docker exec -i "$db" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < scripts/ci/verify-schema.sql
+
+      - name: Stop and discard the local stack
+        if: always()
+        run: supabase stop --no-backup || true
