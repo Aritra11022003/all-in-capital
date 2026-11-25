@@ -42,7 +42,7 @@ Kushal, Aditya and Riya are the fictional case-study roles (`kushal`, `aditya`, 
 | State | Where | Attacks blocked | Workflows working |
 |---|---|---|---|
 | Before 0003 (0001 + 0002 only) | GitHub Actions run [45554603085](https://github.com/Aritra11022003/all-in-capital/actions/runs/45554603085), real local Supabase stack, commit `5bb76ce` | 28 / 70 | 18 / 32 |
-| After 0003 | The CI run on the pull request (see its checks) | 70 / 70 | 32 / 32 |
+| After 0003 | GitHub Actions run [45555148608](https://github.com/Aritra11022003/all-in-capital/actions/runs/45555148608), real local Supabase stack, commit `104f4e4` | 70 / 70 | 32 / 32 |
 
 **The before-run failures were genuine vulnerabilities:**
 
