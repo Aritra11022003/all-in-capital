@@ -135,6 +135,13 @@ jobs:
           db="$(docker ps --filter 'name=supabase_db_' --format '{{.Names}}' | head -n 1)"
           docker exec -i "$db" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -f - < scripts/ci/verify-schema.sql
 
+      - name: RLS security tests (attacks must be blocked, legitimate workflows must work)
+        run: |
+          set -euo pipefail
+          # Fictional identities and records only, inside one transaction that is rolled back. See docs/SECURITY_TESTS.md.
+          db="$(docker ps --filter 'name=supabase_db_' --format '{{.Names}}' | head -n 1)"
+          docker exec -i "$db" psql -U postgres -d postgres -v ON_ERROR_STOP=1 -P pager=off -f - < supabase/security-tests/rls_attacks.sql
+
       - name: Stop and discard the local stack
         if: always()
         run: supabase stop --no-backup || true
