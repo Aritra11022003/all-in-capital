@@ -26,13 +26,15 @@ Two jobs run in parallel. A pull request is mergeable only when both pass (once 
 5. **Fresh reset**: `supabase db reset --local` drops the local database and applies **all** migrations in version order, then `supabase/seed.sql`. It stops at the first failing statement; the output is in the job log.
 6. **Applied = present**: compares `supabase_migrations.schema_migrations` with the files in `supabase/migrations/`. This catches a migration the CLI silently skipped, for example because of a bad filename.
 7. **Expected final schema** (`scripts/ci/verify-schema.sql`): read-only catalog assertions:
-   - all 30 expected tables, and no unexpected ones;
+   - all 31 expected tables, and no unexpected ones;
    - row-level security **enabled and forced** on every table;
    - at least one policy per table, 53 public policies, and both storage policies;
-   - 13 enum types, the 5 security/guard functions and the decision-guard trigger;
+   - 13 enum types, the 15 security, guard and workflow functions, and the 5 guard triggers;
+   - privilege hardening: `anon` has no table privileges, `authenticated` cannot `TRUNCATE`, cannot update `decision_status` directly, and cannot write audit events or access grants;
    - the `application-documents` bucket exists and is **private**;
    - the seed contains reference data only (1 portfolio dataset, 7 companies, 6 availability rules; zero applications and documents).
-8. **Teardown**: `supabase stop --no-backup` always runs. Nothing persists between runs.
+8. **RLS security tests** (`supabase/security-tests/rls_attacks.sql`): 70 attack cases must be blocked and 32 legitimate-workflow cases must work, run as real database roles with fictional records in a rolled-back transaction. The log prints a PASS/FAIL table. See [SECURITY_TESTS.md](SECURITY_TESTS.md).
+9. **Teardown**: `supabase stop --no-backup` always runs. Nothing persists between runs.
 
 ## How the disposable database works
 
@@ -95,7 +97,7 @@ supabase stop --no-backup
 
 ## What CI does not validate
 
-- **Authorisation behaviour.** CI proves that RLS is enabled and policies *exist*; it does not prove the policies are *correct*. The known policy defects (`docs/PRODUCTION_READINESS_AUDIT.md` DB-1 to DB-6) still pass this check. Behavioural RLS tests are backlog task 0.5.
+- **Authorisation beyond the tested cases.** The RLS security tests cover the attack and workflow cases listed in [SECURITY_TESTS.md](SECURITY_TESTS.md), at the database level. They do not cover the hosted Auth/Storage API path (signed URLs, JWT issuance) or an independent penetration test.
 - **The app against the database.** The app still runs in demo mode from browser storage; no app code talks to Supabase yet (backlog Phase 1).
 - **End-to-end browser flows, accessibility, performance or security scanning** (backlog TST-2, TST-4).
 - **The private Loop 1 / Loop 2 evaluation suites** (no private data on runners, by design).
@@ -113,7 +115,8 @@ supabase stop --no-backup
 | Start stack | Docker image pull or CLI problem (infrastructure, not your change) | Re-run the job. If it persists, check the pinned CLI version |
 | Reset / apply | SQL error in a migration or the seed. The log shows `Applying migration NNNN_…` just before the error | Fix the SQL in a new migration if the broken one was ever applied elsewhere; otherwise fix it in place |
 | Applied = present | The CLI skipped a file | Check the filename pattern |
-| Expected schema | A migration changed tables, RLS, policies, enums, functions, the bucket or the seed. The message lists each problem | If the change is intended, update `scripts/ci/verify-schema.sql` **in the same pull request**; if not, fix the migration |
+| Expected schema | A migration changed tables, RLS, policies, enums, functions, triggers, privileges, the bucket or the seed. The message lists each problem | If the change is intended, update `scripts/ci/verify-schema.sql` **in the same pull request**; if not, fix the migration |
+| RLS security tests | An `ATK-*` case obtained data or changed something it must not, or a `WF-*` workflow broke. The log's table shows each case and what it observed | Fix the policy or migration. Never weaken or delete a case to make it pass |
 
 ## GitHub settings needed (repository owner)
 
